@@ -1,0 +1,6 @@
+{
+  "name": "Backrooms Parallax",
+  "description": "A Backrooms interactive 3D scene using your webcam to create an off-axis parallax illusion.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": []
+}

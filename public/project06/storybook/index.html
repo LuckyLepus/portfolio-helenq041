@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>不完美PBW_404记忆事件</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;600;900&family=Space+Mono:ital,wght@0,400;1,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* 精确匹配 40x17.15 厘米跨页比例：单页宽20，高17.15 -> 17.15/20 = 0.8575 */
+            --book-w: 42vw; 
+            --book-h: calc(var(--book-w) * 0.8575); 
+            --bg: #050508; 
+            --page-bg: #111;
+            --fold-shadow: rgba(0, 0, 0, 0.85);
+        }
+
+        body {
+            background-color: var(--bg);
+            color: #ececec;
+            font-family: 'Noto Serif SC', serif;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 0;
+            pointer-events: auto;
+        }
+
+        #ambient-light {
+            position: fixed;
+            width: 100vw; height: 100vh;
+            background: radial-gradient(circle at 50% 50%, rgba(57, 255, 20, 0.03) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 1;
+            transition: background 0.5s ease;
+        }
+
+        .scene {
+            width: 100vw; height: 100vh;
+            perspective: 2500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .book-wrapper {
+            position: relative;
+            transform-style: preserve-3d;
+            will-change: transform;
+            pointer-events: auto;
+        }
+
+        .zoom-wrapper {
+            position: relative;
+            width: var(--book-w);
+            height: var(--book-h);
+            transform-style: preserve-3d;
+            transition: transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+        }
+        
+        .zoom-wrapper.state-mini { transform: scale(0.65) translateX(0); }
+        .zoom-wrapper.state-zoomed { transform: scale(1.02) translateX(0); }
+        .zoom-wrapper.state-opened { transform: scale(1) translateX(50%); }
+
+        .book {
+            position: absolute;
+            width: 100%; height: 100%;
+            top: 0; left: 0;
+            transform-style: preserve-3d;
+        }
+        
+        .book-shadow {
+            position: absolute;
+            top: 2%; bottom: -4%; right: -2%;
+            left: 2%; 
+            box-shadow: 0 40px 60px rgba(0,0,0,0.8), 0 20px 30px rgba(0,0,0,0.6);
+            border-radius: 4px;
+            transition: left 1.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+            pointer-events: none;
+            transform: translateZ(-5px);
+        }
+        
+        .zoom-wrapper.state-opened .book-shadow { left: -98%; }
+
+        .book-spine {
+            position: absolute;
+            top: 1%; left: -16px; width: 16px; height: 98%;
+            background: #0a0a0a;
+            transform-origin: right center;
+            transform: rotateY(-90deg);
+            box-shadow: inset 5px 0 10px rgba(0,0,0,0.8);
+            transition: opacity 0.5s;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .book-edge-right {
+            position: absolute;
+            top: 1%; right: -16px; width: 16px; height: 98%;
+            background: repeating-linear-gradient(to bottom, #dcdcdc, #dcdcdc 1px, #f0f0f0 1px, #f0f0f0 3px);
+            transform-origin: left center;
+            transform: rotateY(90deg);
+            box-shadow: inset -5px 0 10px rgba(0,0,0,0.4);
+            transition: opacity 0.5s;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .book-edge-bottom {
+            position: absolute;
+            bottom: -16px; left: 1%; right: -1%; height: 16px;
+            background: repeating-linear-gradient(to right, #dcdcdc, #dcdcdc 1px, #f0f0f0 1px, #f0f0f0 3px);
+            transform-origin: top center;
+            transform: rotateX(-90deg);
+            box-shadow: inset 0 -5px 10px rgba(0,0,0,0.4);
+            transition: opacity 0.5s;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .zoom-wrapper.state-opened .book-spine,
+        .zoom-wrapper.state-opened .book-edge-right,
+        .zoom-wrapper.state-opened .book-edge-bottom { opacity: 0; }
+
+        .page {
+            position: absolute;
+            width: 100%; height: 100%;
+            top: 0; left: 0;
+            transform-origin: left center;
+            transform-style: preserve-3d;
+            transition: transform 1.4s cubic-bezier(0.645, 0.045, 0.355, 1);
+            cursor: pointer;
+        }
+
+        .front, .back {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            background-color: var(--page-bg);
+            overflow: hidden;
+            border-radius: 2px 6px 6px 2px;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.5);
+        }
+
+        .front {
+            transform: rotateY(0deg);
+            z-index: 2;
+            border-right: 1px solid rgba(255,255,255,0.08);
+        }
+        .back {
+            transform: rotateY(180deg);
+            z-index: 1;
+            border-left: 1px solid rgba(255,255,255,0.08);
+            border-radius: 6px 2px 2px 6px;
+        }
+
+        .front::after, .back::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(to right, var(--fold-shadow) 0%, rgba(0,0,0,0) 15%, rgba(0,0,0,0) 85%, rgba(0,0,0,0.1) 100%);
+            transition: opacity 1.4s cubic-bezier(0.645, 0.045, 0.355, 1);
+            pointer-events: none;
+            z-index: 10;
+        }
+        .back::after { background: linear-gradient(to left, var(--fold-shadow) 0%, rgba(0,0,0,0) 15%, rgba(0,0,0,0) 85%, rgba(0,0,0,0.1) 100%); }
+        .front::after { opacity: 0.1; }
+        .back::after { opacity: 0.9; }
+
+        .page.flipped { transform: rotateY(-180deg); }
+        .page.flipped .front::after { opacity: 0.9; }
+        .page.flipped .back::after { opacity: 0.1; }
+
+        .visual-layer {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            background-color: #050505;
+            transition: transform 1.5s ease;
+            z-index: 1;
+        }
+
+        .spread-layer {
+            background-size: 200% 100%; 
+            background-repeat: no-repeat;
+            filter: contrast(1.05) saturate(1.1) brightness(1.05); 
+        }
+        .spread-left { background-position: left center; }   
+        .spread-right { background-position: right center; } 
+
+        .page.flipped .visual-layer { transform: scale(1.02); }
+
+        .visual-layer::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.4) 100%);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        @keyframes glitch-skew {
+            0% { transform: skew(0deg); }
+            20% { transform: skew(-3deg); filter: hue-rotate(90deg); }
+            40% { transform: skew(3deg); filter: hue-rotate(-90deg); }
+            60% { transform: skew(0deg); filter: hue-rotate(0deg); }
+            100% { transform: skew(0deg); }
+        }
+        .trigger-glitch { animation: glitch-skew 0.3s ease-in-out; }
+
+        body.system-collapse { animation: reality-break 0.15s infinite; }
+        body.system-collapse .visual-layer {
+            filter: invert(1) hue-rotate(180deg) contrast(300%) grayscale(50%);
+        }
+        #collapse-overlay {
+            position: fixed; inset: 0; z-index: 9999;
+            background: repeating-linear-gradient(0deg, rgba(255,0,0,0.1) 0px, rgba(255,0,0,0.1) 1px, transparent 1px, transparent 2px);
+            mix-blend-mode: color-dodge; opacity: 0; pointer-events: none;
+            transition: opacity 0.1s;
+        }
+        body.system-collapse #collapse-overlay {
+            opacity: 1;
+            animation: red-flicker 0.1s infinite;
+        }
+        @keyframes reality-break {
+            0% { filter: hue-rotate(0deg); transform: translate(2px, -2px); }
+            25% { filter: hue-rotate(90deg); transform: translate(-2px, 2px); }
+            50% { filter: hue-rotate(180deg); transform: translate(2px, 2px); }
+            75% { filter: hue-rotate(270deg); transform: translate(-2px, -2px); }
+            100% { filter: hue-rotate(360deg); transform: translate(0, 0); }
+        }
+        @keyframes red-flicker {
+            0% { opacity: 0.6; background-color: rgba(255,0,0,0.1); }
+            50% { opacity: 0.9; background-color: rgba(150,0,0,0.3); }
+            100% { opacity: 0.7; background-color: rgba(255,0,0,0.1); }
+        }
+
+        .placeholder-text {
+            font-family: 'Space Mono', monospace;
+            color: rgba(255,255,255,0.3);
+            text-align: center;
+            z-index: 1;
+        }
+
+        @media (max-width: 1024px) { :root { --book-w: 45vw; } }
+        @media (max-width: 768px) {
+            :root { --book-w: 85vw; }
+            .zoom-wrapper.state-mini, .zoom-wrapper.state-zoomed { transform: scale(0.85) translateX(0); }
+            .zoom-wrapper.state-opened { transform: scale(0.5) translateX(50%); } 
+            .scene { perspective: 1500px; }
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="local-bgm" src="bgm.mp3" loop preload="auto"></audio>
+    <div id="collapse-overlay"></div>
+    <canvas id="bg-canvas"></canvas>
+    <div id="ambient-light"></div>
+
+    <div class="fixed top-8 left-8 z-50 font-mono text-xs tracking-widest text-zinc-500 flex flex-col gap-1 pointer-events-none">
+        <span class="text-green-500">SYSTEM.404_ACTIVE</span>
+        <span>PROJECT: PBW_404</span>
+        <span id="page-indicator">STATUS: AWAITING FOCUS</span>
+    </div>
+
+    <div class="fixed bottom-8 right-8 z-50 flex gap-4">
+        <button id="audio-btn" class="font-mono text-xs border border-zinc-800 px-4 py-2 hover:bg-white hover:text-black hover:border-white transition-colors duration-300">
+            [ SOUND: OFF ]
+        </button>
+    </div>
+
+    <div id="help-text" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 font-mono text-[10px] tracking-[0.3em] text-zinc-600 opacity-70 pointer-events-none transition-opacity duration-500 text-center w-full">
+        CLICK COVER TO FOCUS // CLICK BACKGROUND TO MINIMIZE
+    </div>
+
+    <div class="scene">
+        <div class="book-wrapper" id="book-wrapper">
+            <div class="zoom-wrapper state-mini" id="zoom-wrapper">
+                
+                <div class="book-shadow"></div>
+
+                <div class="book" id="book">
+                    
+                    <!-- ========================================================== -->
+                    <!-- === 全局底部字幕系统：你只需要在这里编辑所有的文字！ === -->
+                    <!-- ========================================================== -->
+                    <div id="global-subtitle-container" class="absolute bottom-0 left-[-100%] w-[200%] h-[30%] bg-gradient-to-t from-black/90 via-black/40 to-transparent z-[100] pointer-events-none flex items-end justify-center pb-8 md:pb-12 px-12 opacity-0 transition-opacity duration-500" style="transform: translateZ(5px);">
+                        
+                        <!-- 序言文字 (当前是 Spread 1: 第 1 次翻开，封面背后的序言) -->
+                        <div class="subtitle-item hidden w-full text-center" data-spread="1">
+                            <p class="text-zinc-300 text-sm md:text-base tracking-[0.2em] font-serif italic drop-shadow-lg">
+                                “<br>世界重置了关于他的一切记录。<br>但只有我相信，是他被抹除了。”
+                            </p>
+                        </div>
+
+                        <!-- 跨页 1 文字 (第 2 次翻开，对应图像 spread1.jpg) -->
+                        <div class="subtitle-item hidden w-full text-center" data-spread="2">
+                            <p class="text-yellow-500 text-base md:text-xl tracking-[0.1em] md:tracking-[0.2em] font-bold drop-shadow-2xl">
+                                那天，世界把他抹平了。那个水洼，倒影里却是一个黄色的的空间，世界在我面前弹出了错误代码。
+                            </p>
+                        </div>
+
+                        <!-- 跨页 2 文字 (第 3 次翻开，对应图像 spread2.jpg) -->
+                        <div class="subtitle-item hidden w-full text-center" data-spread="3">
+                            <p class="text-zinc-200 text-base md:text-lg tracking-[0.1em] md:tracking-[0.2em] font-light drop-shadow-2xl">
+                                没有人相信我，他们觉得我很怪，他们觉得我疯了。我没有记错！
+                            </p>
+                        </div>
+
+                        <!-- 跨页 3 文字 (第 4 次翻开，对应图像 spread3.jpg) -->
+                        <div class="subtitle-item hidden w-full text-center" data-spread="4">
+                            <p class="text-zinc-200 text-base md:text-lg tracking-[0.1em] md:tracking-[0.2em] font-light drop-shadow-2xl">
+                                你在哪？我到处找你，你不是我的幻想！
+                            </p>
+                        </div>
+
+                        <!-- 跨页 4 文字 (第 5 次翻开，对应图像 spread4.jpg) -->
+                        <div class="subtitle-item hidden w-full text-center" data-spread="5">
+                            <p class="text-zinc-200 text-base md:text-lg tracking-[0.1em] md:tracking-[0.2em] font-light drop-shadow-2xl">
+                                他们在观察我，测试我，我慢慢的也相信，一切都是我编造的故事。
+                            </p>
+                        </div>
+
+                        <!-- 跨页 5 文字 (第 6 次翻开，对应图像 spread5.jpg) -->
+                        <div class="subtitle-item hidden w-full text-center" data-spread="6">
+                            <p class="text-zinc-200 text-base md:text-lg tracking-[0.1em] md:tracking-[0.2em] font-light drop-shadow-2xl">
+                                时间过得很慢，我逐渐习惯了，一切都被埋藏在时间的秘密里。周围人的记忆像被抽干的河床，连你的名字都蒸发了。
+                            </p>
+                        </div>
+
+                        <!-- 跨页 6 文字 (第 7 次翻开，对应图像 spread6.jpg) -->
+                        <div class="subtitle-item hidden w-full text-center" data-spread="7">
+                            <p class="text-zinc-200 text-base md:text-lg tracking-[0.1em] md:tracking-[0.2em] font-light drop-shadow-2xl">
+                                又是一个雨天，在人群里，我看见了一个熟悉的身影！  不可能啊！  不可能！
+                            </p>
+                        </div>
+
+                        <!-- 跨页 7 文字 (第 8 次翻开，对应图像 spread7.jpg) -->
+                        <div class="subtitle-item hidden w-full text-center" data-spread="8">
+                            <p class="text-zinc-200 text-base md:text-lg tracking-[0.1em] md:tracking-[0.2em] font-light drop-shadow-2xl">
+                                你开始无处不在，路上，行人中，车厢里，你甚至跟我到住处，我知道那是你，你怎么了？你是什么？
+                            </p>
+                        </div>
+
+                        <!-- 跨页 8 文字 (第 9 次翻开，对应图像 spread8.jpg) -->
+                        <div class="subtitle-item hidden w-full text-center" data-spread="9">
+                            <p class="text-zinc-200 text-base md:text-lg tracking-[0.1em] md:tracking-[0.2em] font-light drop-shadow-2xl">
+                                我掉进了一个地方，我不知道那是哪里，我跑啊跑啊跑啊……你还记得我吗？我还没说喜欢你呢？
+                            </p>
+                        </div>
+
+                        <!-- 跨页 9 文字 (第 10 次翻开，对应图像 spread9.jpg) -->
+                        <div class="subtitle-item hidden w-full text-center" data-spread="10">
+                            <p class="text-zinc-200 text-base md:text-lg tracking-[0.1em] md:tracking-[0.2em] font-light drop-shadow-2xl">
+                                啊，你回来了！  嗯！我回来了！
+                            </p>
+                        </div>
+
+                        <!-- 跨页 10 文字 (第 11 次翻开，对应图像 spread10.jpg) -->
+                        <div class="subtitle-item hidden w-full text-center" data-spread="11">
+                            <p class="text-red-500 text-base md:text-xl tracking-[0.1em] md:tracking-[0.2em] font-bold drop-shadow-2xl">
+                                请挑选属于人类的部分，那些完美的部分，就是人类的部分……没有……请跳过……
+                            </p>
+                        </div>
+                    </div>
+                    <!-- ================= 结尾：全局跨页字幕系统 ================= -->
+
+
+                    <!-- 第 12 片纸 (最后一片) -->
+                    <div class="page" data-page="12">
+                        <div class="front">
+                            <!-- ★ 第10张画的【右半边】 -->
+                            <div class="visual-layer spread-layer spread-right" style="background-image: url('spread10.jpg');"></div>
+                        </div>
+                        <div class="back flex items-center justify-center bg-[#050505]">
+                            <div class="text-center">
+                                <div class="font-mono text-3xl font-black tracking-[1em] text-zinc-800 mb-4">404</div>
+                                <div class="font-mono text-xs tracking-[0.5em] text-zinc-600">END OF LOG</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 第 11 片纸 -->
+                    <div class="page" data-page="11">
+                        <div class="front">
+                            <!-- ★ 第9张画的【右半边】 -->
+                            <div class="visual-layer spread-layer spread-right" style="background-image: url('spread9.jpg');"></div>
+                        </div>
+                        <div class="back">
+                            <!-- ★ 第10张画的【左半边】 -->
+                            <div class="visual-layer spread-layer spread-left" style="background-image: url('spread10.jpg');"></div>
+                        </div>
+                    </div>
+
+                    <!-- 第 10 片纸 -->
+                    <div class="page" data-page="10">
+                        <div class="front">
+                            <!-- ★ 第8张画的【右半边】 -->
+                            <div class="visual-layer spread-layer spread-right" style="background-image: url('spread8.jpg');"></div>
+                        </div>
+                        <div class="back">
+                            <!-- ★ 第9张画的【左半边】 -->
+                            <div class="visual-layer spread-layer spread-left" style="background-image: url('spread9.jpg');"></div>
+                        </div>
+                    </div>
+
+                    <!-- 第 9 片纸 -->
+                    <div class="page" data-page="9">
+                        <div class="front">
+                            <!-- ★ 第7张画的【右半边】 -->
+                            <div class="visual-layer spread-layer spread-right" style="background-image: url('spread7.jpg');"></div>
+                        </div>
+                        <div class="back">
+                            <!-- ★ 第8张画的【左半边】 -->
+                            <div class="visual-layer spread-layer spread-left" style="background-image: url('spread8.jpg');"></div>
+                        </div>
+                    </div>
+
+                    <!-- 第 8 片纸 -->
+                    <div class="page" data-page="8">
+                        <div class="front">
+                            <!-- ★ 第6张画的【右半边】 -->
+                            <div class="visual-layer spread-layer spread-right" style="background-image: url('spread6.jpg');"></div>
+                        </div>
+                        <div class="back">
+                            <!-- ★ 第7张画的【左半边】 -->
+                            <div class="visual-layer spread-layer spread-left" style="background-image: url('spread7.jpg');"></div>
+                        </div>
+                    </div>
+
+                    <!-- 第 7 片纸 -->
+                    <div class="page" data-page="7">
+                        <div class="front">
+                            <!-- ★ 第5张画的【右半边】 -->
+                            <div class="visual-layer spread-layer spread-right" style="background-image: url('spread5.jpg');"></div>
+                        </div>
+                        <div class="back">
+                            <!-- ★ 第6张画的【左半边】 -->
+                            <div class="visual-layer spread-layer spread-left" style="background-image: url('spread6.jpg');"></div>
+                        </div>
+                    </div>
+
+                    <!-- 第 6 片纸 -->
+                    <div class="page" data-page="6">
+                        <div class="front">
+                            <!-- ★ 第4张画的【右半边】 -->
+                            <div class="visual-layer spread-layer spread-right" style="background-image: url('spread4.jpg');"></div>
+                        </div>
+                        <div class="back">
+                            <!-- ★ 第5张画的【左半边】 -->
+                            <div class="visual-layer spread-layer spread-left" style="background-image: url('spread5.jpg');"></div>
+                        </div>
+                    </div>
+
+                    <!-- 第 5 片纸 -->
+                    <div class="page" data-page="5">
+                        <div class="front">
+                            <!-- ★ 第3张画的【右半边】 -->
+                            <div class="visual-layer spread-layer spread-right" style="background-image: url('spread3.jpg');"></div>
+                        </div>
+                        <div class="back">
+                            <!-- ★ 第4张画的【左半边】 -->
+                            <div class="visual-layer spread-layer spread-left" style="background-image: url('spread4.jpg');"></div>
+                        </div>
+                    </div>
+
+                    <!-- 第 4 片纸 -->
+                    <div class="page" data-page="4">
+                        <div class="front">
+                            <!-- ★ 第2张画的【右半边】 -->
+                            <div class="visual-layer spread-layer spread-right" style="background-image: url('spread2.jpg');"></div>
+                        </div>
+                        <div class="back">
+                            <!-- ★ 第3张画的【左半边】 -->
+                            <div class="visual-layer spread-layer spread-left" style="background-image: url('spread3.jpg');"></div>
+                        </div>
+                    </div>
+
+                    <!-- 第 3 片纸 -->
+                    <div class="page" data-page="3">
+                        <div class="front">
+                            <!-- ★ 第1张长画的【右半边】 -->
+                            <div class="visual-layer spread-layer spread-right" style="background-image: url('spread1.jpg');"></div>
+                        </div>
+                        <div class="back">
+                            <!-- ★ 第2张长画的【左半边】 -->
+                            <div class="visual-layer spread-layer spread-left" style="background-image: url('spread2.jpg');"></div>
+                        </div>
+                    </div>
+
+                    <!-- 第 2 片纸 (封面下第一页)：序言 / 图1左半边 -->
+                    <div class="page" data-page="2">
+                        <div class="front">
+                            <div class="visual-layer bg-[#0a0a0a]">
+                                <div class="w-full h-full flex flex-col justify-center items-center text-center">
+                                    <h2 class="text-3xl font-bold text-zinc-200 mb-4 font-mono tracking-tighter opacity-10">THE ALTERNATES</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="back">
+                            <!-- ★ 第1张长画的【左半边】 (这是进入绘本后，左边展示的第一幅长画的起头) -->
+                            <div class="visual-layer spread-layer spread-left" style="background-image: url('spread1.jpg');"></div>
+                        </div>
+                    </div>
+
+                    <!-- 第 1 片纸 (封面)：封面图 / 内封黑屏 -->
+                    <div class="page" data-page="1">
+                        <div class="front">
+                            <div class="visual-layer" style="background-image: url('0a4b4b48b02076b435b17cca3bc1e106.jpg'); background-size: cover; background-position: center;"></div>
+                            <div class="absolute inset-0 flex flex-col justify-between p-8 md:p-10 z-10 pointer-events-none">
+                                <div class="text-right">
+                                    <span class="text-xs font-mono text-green-400 bg-black/50 px-2 py-1">VOL. 01</span>
+                                </div>
+                                <div class="bg-black/30 p-4 inline-block backdrop-blur-sm self-start">
+                                    <h1 class="text-4xl md:text-6xl font-black italic tracking-tighter text-white mb-3" style="text-shadow: 2px 2px 0 #000; line-height: 1.1;">
+                                        不完美<br>PBW_404<br>记忆事件
+                                    </h1>
+                                    <p class="font-mono text-[10px] md:text-xs tracking-[0.2em] md:tracking-[0.4em] text-white">FALLOUT 404 // THE DISSONANCE</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="back">
+                            <div class="visual-layer bg-[#0a0a0d]"></div>
+                        </div>
+                    </div>
+
+                    <div class="book-spine"></div>
+                    <div class="book-edge-right"></div>
+                    <div class="book-edge-bottom"></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('bg-canvas');
+            const ctx = canvas.getContext('2d');
+            let w, h, time = 0;
+
+            function resizeCanvas() {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+
+            function drawLiquidWireframe() {
+                const isCollapsed = document.body.classList.contains('system-collapse');
+
+                ctx.fillStyle = isCollapsed ? 'rgba(30, 0, 0, 0.95)' : 'rgba(6, 6, 10, 0.85)'; 
+                ctx.fillRect(0, 0, w, h);
+
+                ctx.strokeStyle = isCollapsed ? 'rgba(255, 0, 50, 0.6)' : 'rgba(150, 120, 255, 0.15)';
+                ctx.lineWidth = isCollapsed ? 2 : 1.2;
+
+                const rows = 25;
+                const cols = 40;
+                const gridW = w * 1.5;
+                const startX = -w * 0.25;
+
+                const points = [];
+
+                for (let y = 0; y < rows; y++) {
+                    const row = [];
+                    const py = y / rows;
+                    const perspective = 0.1 + py * 0.9; 
+                    const screenY = h * 0.25 + Math.pow(py, 2.5) * h * 0.75; 
+                    
+                    for (let x = 0; x <= cols; x++) {
+                        const px = x / cols;
+                        const worldX = startX + px * gridW;
+                        const cx = w / 2;
+                        const screenX = cx + (worldX - cx) * perspective;
+
+                        const depthOffset = py * 10;
+                        const glitchJitter = isCollapsed ? (Math.random() - 0.5) * 60 : 0;
+                        const wave1 = Math.sin(px * 8 + time + depthOffset) * 25 * perspective + glitchJitter;
+                        const wave2 = Math.cos(px * 12 - time * 0.6 + depthOffset) * 10 * perspective;
+                        
+                        row.push({ x: screenX, y: screenY + wave1 + wave2 });
+                    }
+                    points.push(row);
+                }
+
+                ctx.beginPath();
+                for (let y = 0; y < rows; y++) {
+                    for (let x = 0; x <= cols; x++) {
+                        const p = points[y][x];
+                        if (x === 0) ctx.moveTo(p.x, p.y);
+                        else ctx.lineTo(p.x, p.y);
+                    }
+                }
+                for (let x = 0; x <= cols; x++) {
+                    for (let y = 0; y < rows; y++) {
+                        const p = points[y][x];
+                        if (y === 0) ctx.moveTo(p.x, p.y);
+                        else ctx.lineTo(p.x, p.y);
+                    }
+                }
+                ctx.stroke();
+
+                if (isCollapsed) {
+                    const numDeadPixels = Math.floor(Math.random() * 200) + 50; 
+                    for (let i = 0; i < numDeadPixels; i++) {
+                        const randColor = Math.random();
+                        if (randColor < 0.4) ctx.fillStyle = '#ffffff';
+                        else if (randColor < 0.7) ctx.fillStyle = '#39ff14';
+                        else ctx.fillStyle = '#ff003c';
+                        
+                        const px = Math.random() * w;
+                        const py = Math.random() * h;
+                        const size = Math.random() * 4 + 1; 
+                        ctx.fillRect(px, py, size, size);
+                    }
+                }
+
+                time += isCollapsed ? 0.3 : 0.001;
+                requestAnimationFrame(drawLiquidWireframe);
+            }
+            drawLiquidWireframe();
+
+            // === 2. 书本交互与状态机 ===
+            const pages = document.querySelectorAll('.page');
+            const bookWrapper = document.getElementById('book-wrapper');
+            const zoomWrapper = document.getElementById('zoom-wrapper');
+            const indicator = document.getElementById('page-indicator');
+            const helpText = document.getElementById('help-text');
+            const ambient = document.getElementById('ambient-light');
+            
+            let appState = 0; 
+            let currentSpread = 0;
+            const totalPages = pages.length; // 12
+            let isAnimating = false;
+            let collapseTimeout = null;
+            let autoResetTimeout = null;
+
+            // ================= 新增：全局字幕控制算法 =================
+            function updateSubtitles(spreadIdx) {
+                const container = document.getElementById('global-subtitle-container');
+                const items = document.querySelectorAll('.subtitle-item');
+
+                if (appState !== 2) {
+                    container.style.opacity = '0';
+                    return;
+                }
+
+                // 翻页瞬间隐去字幕，防穿模
+                container.style.opacity = '0';
+
+                // 等待页面落稳，淡入新字幕
+                setTimeout(() => {
+                    items.forEach(item => {
+                        if (parseInt(item.getAttribute('data-spread')) === spreadIdx) {
+                            item.classList.remove('hidden');
+                        } else {
+                            item.classList.add('hidden');
+                        }
+                    });
+                    
+                    const activeItem = document.querySelector(`.subtitle-item[data-spread="${spreadIdx}"]`);
+                    // 只有当这一页确实有文字时才显示
+                    if(activeItem && activeItem.innerText.trim() !== '' && appState === 2) {
+                        container.style.opacity = '1';
+                    }
+                }, 800); 
+            }
+            // ========================================================
+
+            canvas.addEventListener('click', () => {
+                if (appState === 1 && currentSpread === 0) {
+                    appState = 0;
+                    zoomWrapper.className = 'zoom-wrapper state-mini';
+                    indicator.innerText = 'STATUS: AWAITING FOCUS';
+                    helpText.innerText = 'CLICK COVER TO FOCUS';
+                    playThudSound(40); 
+                }
+            });
+
+            function updateZIndexes() {
+                pages.forEach((page, index) => {
+                    const pageNum = totalPages - index; 
+                    if (page.classList.contains('flipped')) {
+                        page.style.zIndex = pageNum;
+                    } else {
+                        page.style.zIndex = totalPages - pageNum + 10;
+                    }
+                });
+            }
+            updateZIndexes();
+
+            function padNum(num) { return String(num).padStart(2, '0'); }
+
+            pages.forEach((page, index) => {
+                const isCoverPage = index === totalPages - 1;
+
+                page.addEventListener('click', (e) => {
+                    if (isAnimating) return;
+                    e.stopPropagation(); 
+
+                    const isFlipped = page.classList.contains('flipped');
+
+                    if (appState === 0) {
+                        if (isCoverPage) {
+                            appState = 1;
+                            zoomWrapper.className = 'zoom-wrapper state-zoomed';
+                            indicator.innerText = 'STATUS: READY TO OPEN';
+                            helpText.innerText = 'CLICK AGAIN TO OPEN // CLICK BG TO MINIMIZE';
+                            playThudSound(60);
+                            return; 
+                        }
+                    }
+
+                    if (appState === 1 && isCoverPage && !isFlipped) {
+                        appState = 2;
+                        zoomWrapper.className = 'zoom-wrapper state-opened';
+                        helpText.style.opacity = '0'; 
+                    }
+
+                    if (!isFlipped) {
+                        isAnimating = true;
+                        page.classList.add('flipped');
+                        currentSpread++;
+
+                        triggerGlitch(page);
+                        playThudSound(80);
+                        updateAmbientColor();
+                        updateSubtitles(currentSpread); // 更新字幕
+
+                        if (currentSpread === totalPages) {
+                            collapseTimeout = setTimeout(() => {
+                                triggerSystemCollapse();
+                            }, 1000); 
+                        }
+
+                        setTimeout(() => {
+                            updateZIndexes();
+                            isAnimating = false;
+                        }, 1400);
+
+                    } else {
+                        isAnimating = true;
+                        page.classList.remove('flipped');
+                        currentSpread--;
+
+                        triggerGlitch(page);
+                        playThudSound(80);
+                        updateAmbientColor();
+                        updateSubtitles(currentSpread); // 更新字幕
+
+                        if (document.body.classList.contains('system-collapse')) {
+                            clearTimeout(collapseTimeout);
+                            removeSystemCollapse();
+                        }
+
+                        if (currentSpread === 0) {
+                            appState = 1;
+                            zoomWrapper.className = 'zoom-wrapper state-zoomed';
+                            helpText.style.opacity = '0.7';
+                            helpText.innerText = 'CLICK COVER TO OPEN // CLICK BG TO MINIMIZE';
+                            updateSubtitles(0); // 隐藏字幕
+                        }
+
+                        setTimeout(() => {
+                            updateZIndexes();
+                            isAnimating = false;
+                        }, 1400);
+                    }
+
+                    indicator.innerText = `SPREAD: ${padNum(currentSpread)} / ${padNum(totalPages)}`;
+                });
+            });
+
+            function triggerGlitch(pageEl) {
+                const layers = pageEl.querySelectorAll('.visual-layer');
+                layers.forEach(layer => {
+                    layer.classList.add('trigger-glitch');
+                    setTimeout(() => layer.classList.remove('trigger-glitch'), 400);
+                });
+            }
+
+            const uiStatus = document.getElementById('page-indicator');
+            const uiProject = uiStatus.previousElementSibling;
+            const uiSystem = uiProject.previousElementSibling;
+
+            function triggerSystemCollapse() {
+                document.body.classList.add('system-collapse');
+                
+                uiSystem.innerText = 'FATAL_ERROR: ENTITY_BREACH';
+                uiSystem.classList.replace('text-green-500', 'text-red-600');
+                uiProject.innerText = 'THEY_ARE_HERE';
+                uiStatus.innerText = 'REALITY_CORRUPTED';
+                document.getElementById('help-text').innerText = 'NO ESCAPE // NO ESCAPE // NO ESCAPE';
+                document.getElementById('help-text').style.color = 'red';
+                
+                ambient.style.background = `radial-gradient(circle at 50% 50%, rgba(255, 0, 0, 0.4) 0%, transparent 80%)`;
+                
+                playCollapseSound();
+                document.getElementById('global-subtitle-container').style.opacity = '0'; // 崩坏时隐藏字幕
+
+                const randomDuration = Math.floor(Math.random() * 2000) + 1000; 
+                autoResetTimeout = setTimeout(() => {
+                    autoResetFromCollapse();
+                }, randomDuration);
+            }
+
+            function removeSystemCollapse() {
+                document.body.classList.remove('system-collapse');
+                
+                if (autoResetTimeout) {
+                    clearTimeout(autoResetTimeout);
+                    autoResetTimeout = null;
+                }
+                
+                uiSystem.innerText = 'SYSTEM.404_ACTIVE';
+                uiSystem.classList.replace('text-red-600', 'text-green-500');
+                uiProject.innerText = 'PROJECT: PBW_404';
+                uiStatus.innerText = `SPREAD: ${padNum(currentSpread)} / ${padNum(totalPages)}`;
+                document.getElementById('help-text').innerText = 'CLICK COVER TO OPEN // CLICK BG TO MINIMIZE';
+                document.getElementById('help-text').style.color = '';
+                
+                updateAmbientColor();
+                stopCollapseSound();
+            }
+
+            function autoResetFromCollapse() {
+                removeSystemCollapse();
+                isAnimating = true;
+                
+                pages.forEach(page => {
+                    page.style.zIndex = 50; 
+                    page.classList.remove('flipped');
+                    triggerGlitch(page);
+                });
+
+                currentSpread = 0;
+                appState = 0; 
+                zoomWrapper.className = 'zoom-wrapper state-mini';
+                
+                uiStatus.innerText = 'STATUS: AWAITING FOCUS';
+                document.getElementById('help-text').innerText = 'CLICK COVER TO FOCUS';
+                document.getElementById('help-text').style.opacity = '0.7';
+
+                playThudSound(30); 
+                updateAmbientColor();
+                updateSubtitles(0);
+
+                setTimeout(() => {
+                    updateZIndexes();
+                    isAnimating = false;
+                }, 1400);
+            }
+
+            const colors = [
+                'rgba(57, 255, 20, 0.04)',  
+                'rgba(234, 179, 8, 0.04)',  
+                'rgba(255, 0, 60, 0.04)',   
+                'rgba(147, 51, 234, 0.04)', 
+                'rgba(6, 182, 212, 0.04)',  
+                'rgba(255, 255, 255, 0.04)' 
+            ];
+            
+            function updateAmbientColor() {
+                ambient.style.background = `radial-gradient(circle at 50% 50%, ${colors[currentSpread % colors.length]} 0%, transparent 70%)`;
+            }
+
+            let audioEnabled = false;
+            const audioBtn = document.getElementById('audio-btn');
+            const localBgm = document.getElementById('local-bgm');
+            
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            let actx;
+            
+            let bgMasterGain = null;
+            let ambientOscillators = [];
+            let ambientIntervalId = null; 
+
+            audioBtn.addEventListener('click', () => {
+                audioEnabled = !audioEnabled;
+                audioBtn.innerText = `[ SOUND: ${audioEnabled ? 'ON' : 'OFF'} ]`;
+                audioBtn.classList.toggle('text-green-400');
+                audioBtn.classList.toggle('border-green-400');
+                
+                if (audioEnabled) {
+                    if (!actx) actx = new AudioContext();
+                    if (actx.state === 'suspended') actx.resume();
+                    
+                    localBgm.volume = 0.6;
+                    const playPromise = localBgm.play();
+                    
+                    if (playPromise !== undefined) {
+                        playPromise.catch(error => {
+                            console.log("未检测到本地 bgm.mp3 文件，启动内置代码合成暗黑环境音 (Procedural Drone)。");
+                            startProceduralAmbient();
+                        });
+                    }
+                } else {
+                    localBgm.pause();
+                    stopProceduralAmbient();
+                }
+            });
+
+            function startProceduralAmbient() {
+                if (bgMasterGain) return; 
+                
+                bgMasterGain = actx.createGain();
+                bgMasterGain.gain.setValueAtTime(0, actx.currentTime);
+                bgMasterGain.gain.linearRampToValueAtTime(0.4, actx.currentTime + 5); 
+                bgMasterGain.connect(actx.destination);
+
+                const delay = actx.createDelay();
+                delay.delayTime.value = 1.5; 
+                const feedback = actx.createGain();
+                feedback.gain.value = 0.7; 
+                const filter = actx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.value = 400; 
+
+                const filterLfo = actx.createOscillator();
+                filterLfo.type = 'sine';
+                filterLfo.frequency.value = 0.04; 
+                const filterLfoGain = actx.createGain();
+                filterLfoGain.gain.value = 300; 
+                filterLfo.connect(filterLfoGain);
+                filterLfoGain.connect(filter.frequency);
+                filterLfo.start();
+                ambientOscillators.push({osc: filterLfo, lfo: null, pitchLfo: null});
+
+                delay.connect(feedback);
+                feedback.connect(filter);
+                filter.connect(delay);
+                bgMasterGain.connect(delay);
+
+                const freqs = [73.42, 110, 146.83, 164.81, 220, 329.63];
+                
+                freqs.forEach((f, i) => {
+                    const osc = actx.createOscillator();
+                    osc.type = i % 2 === 0 ? 'sine' : 'triangle';
+                    osc.frequency.value = f + (Math.random() * 2 - 1); 
+
+                    const pitchLfo = actx.createOscillator();
+                    pitchLfo.type = 'sine';
+                    pitchLfo.frequency.value = 0.02 + Math.random() * 0.03;
+                    const pitchGain = actx.createGain();
+                    pitchGain.gain.value = f * 0.025; 
+                    pitchLfo.connect(pitchGain);
+                    pitchGain.connect(osc.frequency);
+                    pitchLfo.start();
+
+                    const oscGain = actx.createGain();
+                    oscGain.gain.value = 0.4 / freqs.length;
+
+                    const lfo = actx.createOscillator();
+                    lfo.type = 'sine';
+                    lfo.frequency.value = 0.03 + Math.random() * 0.05; 
+                    const lfoGain = actx.createGain();
+                    lfoGain.gain.value = oscGain.gain.value * 0.9;
+
+                    lfo.connect(lfoGain);
+                    osc.connect(oscGain);
+                    oscGain.connect(bgMasterGain);
+                    
+                    osc.start();
+                    lfo.start();
+                    ambientOscillators.push({osc, lfo, pitchLfo});
+                });
+
+                ambientIntervalId = setInterval(() => {
+                    if (Math.random() > 0.6) return; 
+                    const noteFreqs = [329.63, 440, 523.25, 659.25, 880]; 
+                    const f = noteFreqs[Math.floor(Math.random() * noteFreqs.length)];
+
+                    const chime = actx.createOscillator();
+                    chime.type = 'sine';
+                    chime.frequency.value = f;
+
+                    const chimeGain = actx.createGain();
+                    chimeGain.gain.setValueAtTime(0, actx.currentTime);
+                    chimeGain.gain.linearRampToValueAtTime(0.08, actx.currentTime + 1); 
+                    chimeGain.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + 8); 
+
+                    chime.connect(chimeGain);
+                    chimeGain.connect(delay); 
+                    chimeGain.connect(bgMasterGain);
+
+                    chime.start(actx.currentTime);
+                    chime.stop(actx.currentTime + 8);
+                }, 5000); 
+            }
+
+            function stopProceduralAmbient() {
+                if (!bgMasterGain) return;
+                
+                if (ambientIntervalId) {
+                    clearInterval(ambientIntervalId);
+                    ambientIntervalId = null;
+                }
+
+                bgMasterGain.gain.linearRampToValueAtTime(0, actx.currentTime + 2);
+                setTimeout(() => {
+                    ambientOscillators.forEach(n => { 
+                        if (n.osc) n.osc.stop(); 
+                        if (n.lfo) n.lfo.stop(); 
+                        if (n.pitchLfo) n.pitchLfo.stop();
+                    });
+                    ambientOscillators = [];
+                    bgMasterGain.disconnect();
+                    bgMasterGain = null;
+                }, 2000);
+            }
+
+            function playThudSound(freq = 80) {
+                if (!audioEnabled) return;
+                if (!actx) actx = new AudioContext();
+                
+                const osc = actx.createOscillator();
+                const gain = actx.createGain();
+                
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, actx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(20, actx.currentTime + 0.3);
+                
+                gain.gain.setValueAtTime(0.5, actx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, actx.currentTime + 0.3);
+                
+                osc.connect(gain);
+                gain.connect(actx.destination);
+                
+                osc.start();
+                osc.stop(actx.currentTime + 0.3);
+            }
+
+            let collapseIntervalId;
+            function playCollapseSound() {
+                if (!audioEnabled) return;
+                if (!actx) actx = new AudioContext();
+                
+                collapseIntervalId = setInterval(() => {
+                    if(!document.body.classList.contains('system-collapse')) return;
+                    
+                    const osc = actx.createOscillator();
+                    const gain = actx.createGain();
+                    osc.type = ['sawtooth', 'square'][Math.floor(Math.random()*2)];
+                    osc.frequency.setValueAtTime(200 + Math.random() * 3000, actx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(10 + Math.random()*100, actx.currentTime + 0.1);
+                    
+                    gain.gain.setValueAtTime(0.1 + Math.random()*0.2, actx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, actx.currentTime + 0.1);
+                    
+                    osc.connect(gain);
+                    gain.connect(actx.destination);
+                    osc.start();
+                    osc.stop(actx.currentTime + 0.1);
+                }, 50); 
+            }
+
+            function stopCollapseSound() {
+                clearInterval(collapseIntervalId);
+            }
+
+            let mouseX = 0, mouseY = 0;
+            let currentX = 0, currentY = 0;
+            
+            window.addEventListener('mousemove', (e) => {
+                mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+                mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+            });
+
+            function lerp(start, end, factor) {
+                return start + (end - start) * factor;
+            }
+
+            function animateParallax() {
+                if (window.innerWidth > 768) {
+                    currentX = lerp(currentX, mouseX, 0.05);
+                    currentY = lerp(currentY, mouseY, 0.05);
+
+                    if (document.body.classList.contains('system-collapse')) {
+                        const glitchX = (Math.random() - 0.5) * 30;
+                        const glitchY = (Math.random() - 0.5) * 30;
+                        const rotX = 12 + (currentY * 8) + glitchY; 
+                        const rotY = -5 + (currentX * 10) + glitchX;
+                        bookWrapper.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) translate(${glitchX}px, ${glitchY}px) skew(${glitchX/3}deg)`;
+                    } else {
+                        const rotX = 12 + (currentY * 8); 
+                        const rotY = -5 + (currentX * 10);
+                        bookWrapper.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) translate(0px, 0px) skew(0deg)`;
+                    }
+                }
+                requestAnimationFrame(animateParallax);
+            }
+            animateParallax();
+        });
+    </script>
+</body>
+</html>

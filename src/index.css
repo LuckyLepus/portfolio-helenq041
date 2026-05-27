@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply font-sans bg-[#4A3AFF] text-white antialiased;
+    user-select: none; /* 防止选中文本 */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    cursor: none; /* Custom cursor */
+  }
+  
+  a, button {
+    cursor: none;
+  }
+}
+
+/* Custom Cursor Styles */
+.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #00FF85;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s, height 0.2s, background-color 0.2s, border 0.2s;
+}
+
+.custom-cursor.hover {
+  width: 40px;
+  height: 40px;
+  background-color: rgba(0, 255, 133, 0.1);
+  border: 1px solid #00FF85;
+}
+
+/* Marquee Animation */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 20s linear infinite;
+}
+
+/* 3D Floating & Breathing Animations for Home Page */
+@keyframes float-1 {
+  0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+  50% { transform: translateY(-15px) rotate(3deg) scale(1.02); }
+}
+@keyframes float-2 {
+  0%, 100% { transform: translateY(0) perspective(1000px) rotateY(0deg); }
+  50% { transform: translateY(-10px) perspective(1000px) rotateY(25deg); }
+}
+@keyframes float-3 {
+  0%, 100% { transform: translateY(0) perspective(1000px) rotateX(0deg); }
+  50% { transform: translateY(-20px) perspective(1000px) rotateX(20deg); }
+}
+@keyframes float-4 {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-10px) rotate(3deg); }
+}
+
+.anim-float-1 { animation: float-1 6s ease-in-out infinite; }
+.anim-float-2 { animation: float-2 8s ease-in-out infinite; }
+.anim-float-3 { animation: float-3 7s ease-in-out infinite; }
+.anim-float-4 { animation: float-4 9s ease-in-out infinite; }
+
+/* Hide scrollbar for clean look */
+::-webkit-scrollbar {
+  display: none;
+}
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Railroad.ai - 深夜树洞列车</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Noto+Serif+SC:wght@300;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background-color: #070913;
+            overflow: hidden;
+        }
+
+        /* 预设火车的轻微晃动效果 */
+        @keyframes trainVibration {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(0.8px) rotate(0.05deg); }
+        }
+        .vibrating-cabin {
+            animation: trainVibration 4s ease-in-out infinite;
+        }
+
+        /* 窗外风景水平滚动 */
+        @keyframes sceneryScroll {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        .scrolling-bg {
+            animation: sceneryScroll 45s linear infinite;
+            background-size: 200% auto;
+        }
+
+        /* 路灯/树影飞掠 */
+        @keyframes flyby {
+            0% { transform: translateX(120%) scaleY(0.9); opacity: 0; }
+            10% { opacity: 0.3; }
+            90% { opacity: 0.3; }
+            100% { transform: translateX(-120%) scaleY(1.1); opacity: 0; }
+        }
+        .shadow-flyby {
+            animation: flyby 6s linear infinite;
+        }
+
+        /* 雨滴顺着窗户斜向滑落（受风力影响） */
+        @keyframes raindrop {
+            0% { transform: translate(100px, -100px) scale(0.8); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translate(-150px, 400px) scale(0.5); opacity: 0; }
+        }
+        .rain-streak {
+            animation: raindrop 4s linear infinite;
+        }
+
+        /* 温暖室内灯光掠过车窗的倒影 */
+        @keyframes cabinReflection {
+            0%, 100% { opacity: 0.15; }
+            50% { opacity: 0.25; }
+        }
+        .reflection-glow {
+            animation: cabinReflection 8s ease-in-out infinite;
+        }
+
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(245, 158, 11, 0.3);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="text-slate-100 select-none">
+
+    <!-- 主容器 -->
+    <div class="relative w-screen h-screen flex flex-row overflow-hidden bg-[#070913] min-w-[900px]">
+        
+        <!-- 环境声源 -->
+        <audio id="ambient-audio" loop></audio>
+
+        <!-- 左侧：全景列车车厢（视觉核心） -->
+        <div class="relative flex-1 h-full flex flex-col items-center justify-between p-6 overflow-hidden">
+            
+            <!-- 顶部装饰栏 -->
+            <div class="w-full flex justify-between items-center z-20 px-4 pt-2">
+                <div class="flex items-center gap-3">
+                    <span class="font-serif tracking-widest text-amber-500 font-bold text-lg">RAILROAD.AI</span>
+                    <span class="text-xs bg-amber-500/10 border border-amber-500/20 text-amber-400 px-2.5 py-0.5 rounded-full">NO.9 心灵树洞号</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="btn-sound-toggle" class="p-2 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-slate-400 hover:text-amber-400 transition" title="背景音效">
+                        <i data-lucide="volume-x" class="w-4 h-4"></i>
+                    </button>
+                    <div class="text-right text-xs text-slate-400">
+                        <p id="system-time">23:45</p>
+                        <p class="font-serif tracking-tight text-[10px]">MIDNIGHT EXPRESS</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 车窗主体区域 -->
+            <div class="relative w-full max-w-4xl h-[55vh] md:h-[60vh] flex items-center justify-center z-10 my-auto vibrating-cabin">
+                
+                <!-- 复古车窗外框 -->
+                <div class="relative w-full h-full rounded-[3.5rem] border-[12px] border-neutral-900 shadow-[inset_0_20px_50px_rgba(0,0,0,0.9),0_10px_30px_rgba(0,0,0,0.8)] overflow-hidden bg-black flex items-center justify-center">
+                    
+                    <!-- 背景：外部流动的风景 -->
+                    <div id="window-scenery" class="absolute inset-0 bg-cover bg-center transition-all duration-1000 brightness-[0.4] saturate-[0.8]">
+                        <div class="absolute inset-0 bg-gradient-to-b from-indigo-950/40 via-purple-950/20 to-black"></div>
+                        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.15),transparent)]"></div>
+                    </div>
+
+                    <!-- 动态视差层 -->
+                    <div class="absolute inset-x-0 bottom-0 h-48 pointer-events-none overflow-hidden opacity-40">
+                        <div class="absolute bottom-2 w-1.5 h-32 bg-black/80 shadow-flyby" style="animation-delay: 0s;"></div>
+                        <div class="absolute bottom-2 w-1 h-32 bg-black/80 shadow-flyby" style="animation-delay: 2s;"></div>
+                        <div class="absolute bottom-0 w-8 h-40 bg-black/90 rounded-t-full shadow-flyby" style="animation-delay: 3.5s; filter: blur(1px);"></div>
+                    </div>
+
+                    <!-- 玻璃反光与雨水效果 -->
+                    <div class="absolute inset-0 pointer-events-none reflection-glow z-10 bg-gradient-to-tr from-white/0 via-white/5 to-white/10 mix-blend-overlay"></div>
+                    <div class="absolute inset-0 pointer-events-none z-10 opacity-60">
+                        <div class="absolute w-[2px] h-8 bg-white/30 rounded-full rain-streak" style="top: 10%; left: 30%; animation-duration: 3s;"></div>
+                        <div class="absolute w-[1.5px] h-12 bg-white/20 rounded-full rain-streak" style="top: 25%; left: 70%; animation-duration: 4s; animation-delay: 1s;"></div>
+                        <div class="absolute w-[2px] h-6 bg-white/20 rounded-full rain-streak" style="top: 5%; left: 50%; animation-duration: 2.5s; animation-delay: 1.8s;"></div>
+                        <div class="absolute w-[1px] h-10 bg-white/15 rounded-full rain-streak" style="top: 40%; left: 15%; animation-duration: 4.5s; animation-delay: 0.5s;"></div>
+                    </div>
+
+                    <div class="absolute inset-0 pointer-events-none shadow-[inset_0_0_80px_rgba(0,0,0,0.95)]"></div>
+
+                    <!-- 引导交互卡片 -->
+                    <div id="upload-placeholder" class="absolute inset-0 flex flex-col items-center justify-center text-center p-6 z-20 bg-black/60 backdrop-blur-[2px] transition-all duration-700">
+                        <div class="w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-4 animate-pulse">
+                            <i data-lucide="image" class="w-8 h-8"></i>
+                        </div>
+                        <h2 class="text-xl font-medium tracking-wider mb-2 text-amber-200">投递一张风景照片</h2>
+                        <p class="text-xs text-slate-400 max-w-sm leading-relaxed mb-6">照片将变为窗外的无尽夜色，列车由此启动。温柔的乘务广播会与你深夜长谈，倾听你所有的故事。</p>
+                        <button onclick="document.getElementById('input-file').click()" class="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-900 font-bold rounded-full shadow-lg shadow-amber-500/20 text-sm tracking-widest transition transform hover:scale-105 active:scale-95">
+                            分享今晚的画面
+                        </button>
+                    </div>
+
+                    <!-- 动态状态提示浮窗 -->
+                    <div id="ai-status-pill" class="absolute top-6 left-6 z-20 px-3 py-1.5 rounded-full bg-black/70 border border-white/10 text-xs text-amber-400 flex items-center gap-2 transition-all duration-300 opacity-0 transform -translate-y-4">
+                        <div class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></div>
+                        <span id="ai-status-text">大模型正在凝视窗外...</span>
+                    </div>
+
+                    <!-- 实时音频波动曲线 -->
+                    <canvas id="waveform-canvas" class="absolute bottom-6 inset-x-6 h-12 z-20 opacity-0 transition-opacity duration-500 pointer-events-none"></canvas>
+                </div>
+            </div>
+
+            <!-- 下方车门面板与复古小桌台 -->
+            <div class="w-full max-w-4xl flex justify-between items-end z-20">
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-3 h-3 rounded-full bg-amber-500 shadow-[0_0_15px_#f59e0b] animate-pulse"></div>
+                    <span class="text-xs text-amber-500/70 font-mono tracking-widest">CABIN LIGHT ACTIVE</span>
+                </div>
+                <p class="text-[10px] text-slate-500 font-mono tracking-widest uppercase">Visual powered by Parallax & CSS Glass</p>
+            </div>
+        </div>
+
+        <!-- 右侧：AI 树洞控制舱 & 日记收藏夹 -->
+        <div class="w-[380px] shrink-0 h-full bg-[#0b0e1d]/90 border-l border-white/5 backdrop-blur-xl flex flex-col justify-between p-6 z-30 shadow-2xl relative">
+            
+            <input type="file" id="input-file" accept="image/*" class="hidden">
+
+            <!-- 顶部树洞控制头部 -->
+            <div class="flex justify-between items-center pb-4 border-b border-white/5">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="compass" class="w-5 h-5 text-amber-500"></i>
+                    <h3 class="font-serif tracking-widest text-sm font-bold text-amber-400">心灵树洞电台</h3>
+                </div>
+                <button id="btn-toggle-ticket" class="text-xs text-slate-400 hover:text-amber-400 flex items-center gap-1 transition">
+                    <i data-lucide="ticket" class="w-3.5 h-3.5"></i>
+                    <span>历史声音车票</span>
+                    <span id="ticket-count" class="bg-amber-500/20 text-amber-400 px-1.5 py-0.2 rounded-full text-[9px] font-mono">0</span>
+                </button>
+            </div>
+
+            <!-- 中间：对话实况流动区 -->
+            <div class="flex-1 my-4 overflow-y-auto flex flex-col justify-between relative" id="main-panel-content">
+                
+                <!-- 聊天气泡流容器 -->
+                <div id="chat-feed" class="flex-1 overflow-y-auto space-y-4 pr-1 flex flex-col justify-start min-h-[300px] max-h-[50vh] md:max-h-[55vh] py-2">
+                    
+                    <!-- 默认占位静谧寄语 -->
+                    <div class="bg-white/5 border border-white/10 rounded-2xl p-4 opacity-75">
+                        <div class="flex items-center gap-2 mb-2 text-xs text-amber-500">
+                            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                            <span>深夜广播</span>
+                        </div>
+                        <p class="text-sm text-slate-300 leading-relaxed font-serif">
+                            “车窗外还没有风景亮起。在等一列夜车，也等一个倾听你心事的契机……分享画面后，列车便会启动。”
+                        </p>
+                    </div>
+
+                </div>
+
+                <!-- 操作控制与输入大纽扣区域 -->
+                <div class="mt-4 space-y-3">
+                    <p id="interactive-hint" class="text-center text-[11px] text-slate-500 italic">
+                        分享一张夜景/生活画面，树洞将为您鸣笛启程
+                    </p>
+
+                    <!-- 主要控制按钮 -->
+                    <div class="flex items-center justify-center gap-6">
+                        
+                        <!-- 结束对话按钮（对话进行中时显现） -->
+                        <button id="btn-end-chat" class="w-12 h-12 rounded-full bg-red-950/40 border border-red-500/30 hover:bg-red-950/80 text-red-400 flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none transform scale-90" title="结束今夜倾诉">
+                            <i data-lucide="door-closed" class="w-5 h-5"></i>
+                        </button>
+
+                        <!-- 大麦克风录音按钮 -->
+                        <button id="btn-action" disabled class="w-16 h-16 rounded-full bg-slate-850 border-4 border-slate-800/50 flex flex-col items-center justify-center text-slate-500 cursor-not-allowed transition transform duration-300 relative focus:outline-none overflow-hidden">
+                            <div id="record-glow" class="absolute inset-0 bg-amber-500/20 opacity-0 transition-opacity duration-300"></div>
+                            <i id="btn-action-icon" data-lucide="lock" class="w-6 h-6 relative z-10"></i>
+                            <span id="btn-action-text" class="text-[8px] font-bold mt-1 tracking-widest relative z-10">锁定</span>
+                        </button>
+
+                        <!-- 输入框切换按钮（供打字星人） -->
+                        <button id="btn-keyboard-toggle" class="w-12 h-12 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-slate-400 flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none transform scale-90" title="切换键盘输入">
+                            <i data-lucide="keyboard" class="w-5 h-5"></i>
+                        </button>
+
+                    </div>
+
+                    <!-- 键盘文字回复辅助输入区 (默认隐藏) -->
+                    <div id="keyboard-input-area" class="hidden bg-white/5 border border-white/10 rounded-xl p-2 flex items-center gap-2">
+                        <input type="text" id="text-reply-input" placeholder="写下你想对树洞说的话..." class="flex-1 bg-transparent border-none text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-0 px-2">
+                        <button id="btn-send-text" class="p-2 bg-amber-500 hover:bg-amber-600 rounded-lg text-slate-900 transition">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <!-- 保存声音车票（完结时呈现） -->
+                    <div class="flex justify-center">
+                        <button id="btn-save-diary" class="hidden w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-900 font-bold text-sm tracking-widest shadow-lg shadow-amber-500/10 transition flex items-center justify-center gap-2 transform active:scale-95">
+                            <i data-lucide="ticket-plus" class="w-4 h-4"></i>
+                            <span>将今晚的谈话存入声音车票</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 底款 -->
+            <div class="text-[10px] text-slate-600 text-center border-t border-white/5 pt-3">
+                <span>树洞将妥善密封你与外界的一切深夜记忆</span>
+            </div>
+
+            <!-- 侧边车票夹抽屉 -->
+            <div id="ticket-drawer" class="absolute inset-0 bg-[#070913] z-40 p-6 flex flex-col justify-between transform translate-x-full transition-transform duration-500 ease-in-out">
+                <div class="flex flex-col h-full">
+                    <div class="flex justify-between items-center pb-4 border-b border-white/10">
+                        <div class="flex items-center gap-2 text-amber-400">
+                            <i data-lucide="archive" class="w-5 h-5"></i>
+                            <h4 class="font-serif tracking-widest text-sm font-bold">往期声音车票</h4>
+                        </div>
+                        <button id="btn-close-drawer" class="p-1 rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition">
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+
+                    <div id="tickets-list" class="flex-1 overflow-y-auto my-4 space-y-4 pr-1">
+                        <div id="empty-tickets-view" class="h-full flex flex-col items-center justify-center text-center p-4">
+                            <i data-lucide="ticket" class="w-12 h-12 text-slate-700 mb-2"></i>
+                            <p class="text-xs text-slate-500">旅人，你还没有录制任何日记车票</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- 车票细节阅览浮窗 (Modal) -->
+    <div id="ticket-detail-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-gradient-to-b from-[#111424] to-[#0b0c16] border border-amber-500/30 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative">
+            <button onclick="closeTicketModal()" class="absolute top-4 right-4 p-1 rounded-full hover:bg-white/10 text-slate-400 transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="text-center mb-4">
+                <span class="text-xs font-mono tracking-widest text-amber-500" id="modal-ticket-id">TICKET-000000</span>
+                <h3 class="text-lg font-serif text-amber-100" id="modal-ticket-date">声音日记卡片</h3>
+            </div>
+            <!-- 对话复现列表 -->
+            <div id="modal-chat-history" class="space-y-3 max-h-[50vh] overflow-y-auto pr-1 py-2 text-left text-xs text-slate-300">
+                <!-- 动态渲染 -->
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/10 flex justify-end">
+                <button onclick="closeTicketModal()" class="px-5 py-2 bg-amber-500 text-slate-900 font-bold rounded-full text-xs hover:bg-amber-400 transition">确认收起</button>
+            </div>
+        </div>
+    </div>
+
+    <audio id="diary-playback-audio" class="hidden"></audio>
+
+    <script>
+        // ==========================================
+        // 核心配置与 Gemini API 极简多轮交互
+        // ==========================================
+        const apiKey = ""; // 运行时环境提供
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'railroad-treehole-app';
+
+        // 状态存储（多轮对话核心）
+        const state = {
+            appState: 'idle', // idle, analyzing, ai_speaking, user_ready, user_recording, user_typing, conversation_done
+            uploadedImage: null, 
+            uploadedImageFile: null,
+            chatHistory: [], // 格式化存储用户与模型间对话 (roles: user, model)
+            audioBlob: null,
+            audioUrl: null,
+            diaries: [],
+            isMuted: true,
+            isKeyboardMode: false
+        };
+
+        const fallbackInitiations = [
+            "夜雨打在车窗上，窗外倒影出的微光显得有些斑驳。看着这抹暗淡却温润的色调，你在想些什么呢？对我说说话吧，我在这里听着呢。",
+            "列车在黑夜里往前开，这盏微弱的台灯照亮了车窗前的一角。感觉你今晚带了些不易察觉的倦意。这一天过得辛苦吗？别紧绷着了，和我说说吧。",
+            "风好像把夜雨都吹散了，只剩下车轮规律的碰撞声。这样寂静的时刻，很适合把那些藏在白昼里不便言说的心事拿出来。想聊聊此刻的心情吗？"
+        ];
+
+        const fallbackReplies = [
+            "嗯，我听到了。独自面对这些一定很不容易吧。车轮还在滚滚向前，把这些沉重的东西留在今夜的铁轨上好吗？",
+            "原来是这样……听着你的声音，好像能感受到那份沉甸甸的情绪。别担心，在列车到达终点前，你可以一直在这里靠着歇一歇。",
+            "原来你一直在这样默默坚持。其实，有时候承认自己累了也挺好的。今晚在这里，就做最真实的自己吧，想说什么都可以。"
+        ];
+
+        // ==========================================
+        // 初始化
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            initAmbientSounds();
+            setupDomEventListeners();
+            updateTime();
+            setInterval(updateTime, 60000);
+            
+            // 从本地 LocalStorage 读取以前存过的车票
+            loadLocalDiaries();
+        });
+
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('system-time').innerText = 
+                `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+        }
+
+        function loadLocalDiaries() {
+            try {
+                const stored = localStorage.getItem(`diaries_${appId}`);
+                if (stored) {
+                    state.diaries = JSON.parse(stored);
+                    renderDiaries();
+                }
+            } catch (e) {
+                console.warn("未能成功读取本地日记缓存:", e);
+            }
+        }
+
+        function saveLocalDiaries() {
+            try {
+                localStorage.setItem(`diaries_${appId}`, JSON.stringify(state.diaries));
+            } catch (e) {
+                console.warn("未能成功保存日记到本地:", e);
+            }
+        }
+
+        // ==========================================
+        // 音效控制系统 (铁轨和雨声物理合成)
+        // ==========================================
+        let audioCtx, whiteNoiseNode, rainFilter, trackOsc, mainGain;
+
+        function initAmbientSounds() {
+            const soundBtn = document.getElementById('btn-sound-toggle');
+            soundBtn.addEventListener('click', () => {
+                if (!audioCtx) {
+                    try {
+                        const AudioContext = window.AudioContext || window.webkitAudioContext;
+                        audioCtx = new AudioContext();
+                        
+                        const bufferSize = 2 * audioCtx.sampleRate;
+                        const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                        const output = noiseBuffer.getChannelData(0);
+                        for (let i = 0; i < bufferSize; i++) {
+                            output[i] = Math.random() * 2 - 1;
+                        }
+                        
+                        whiteNoiseNode = audioCtx.createBufferSource();
+                        whiteNoiseNode.buffer = noiseBuffer;
+                        whiteNoiseNode.loop = true;
+                        
+                        rainFilter = audioCtx.createBiquadFilter();
+                        rainFilter.type = 'lowpass';
+                        rainFilter.frequency.value = 550;
+                        
+                        trackOsc = audioCtx.createOscillator();
+                        trackOsc.type = 'sine';
+                        trackOsc.frequency.value = 42;
+                        
+                        const trackGain = audioCtx.createGain();
+                        trackGain.gain.setValueAtTime(0, audioCtx.currentTime);
+                        
+                        setInterval(() => {
+                            if (state.isMuted) return;
+                            const t = audioCtx.currentTime;
+                            trackGain.gain.setValueAtTime(0, t);
+                            trackGain.gain.linearRampToValueAtTime(0.09, t + 0.1);
+                            trackGain.gain.linearRampToValueAtTime(0, t + 0.25);
+                            trackGain.gain.linearRampToValueAtTime(0.07, t + 0.35);
+                            trackGain.gain.linearRampToValueAtTime(0, t + 0.5);
+                        }, 2400);
+
+                        mainGain = audioCtx.createGain();
+                        mainGain.gain.value = 0.12;
+
+                        whiteNoiseNode.connect(rainFilter);
+                        const rainGain = audioCtx.createGain();
+                        rainGain.gain.value = 0.08;
+                        rainFilter.connect(rainGain);
+                        rainGain.connect(mainGain);
+
+                        trackOsc.connect(trackGain);
+                        trackGain.connect(mainGain);
+
+                        mainGain.connect(audioCtx.destination);
+
+                        whiteNoiseNode.start(0);
+                        trackOsc.start(0);
+                    } catch (e) {
+                        console.error("音频系统启动失败:", e);
+                    }
+                }
+
+                if (state.isMuted) {
+                    audioCtx.resume().then(() => {
+                        mainGain.gain.linearRampToValueAtTime(0.12, audioCtx.currentTime + 0.5);
+                        state.isMuted = false;
+                        soundBtn.innerHTML = '<i data-lucide="volume-2" class="w-4 h-4 text-amber-400"></i>';
+                        lucide.createIcons();
+                    });
+                } else {
+                    mainGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+                    state.isMuted = true;
+                    soundBtn.innerHTML = '<i data-lucide="volume-x" class="w-4 h-4 text-slate-400"></i>';
+                    lucide.createIcons();
+                }
+            });
+        }
+
+        // ==========================================
+        // 界面绑定
+        // ==========================================
+        function setupDomEventListeners() {
+            const inputFile = document.getElementById('input-file');
+            const btnAction = document.getElementById('btn-action');
+            const btnEndChat = document.getElementById('btn-end-chat');
+            const btnKeyboardToggle = document.getElementById('btn-keyboard-toggle');
+            const btnSendText = document.getElementById('btn-send-text');
+            const textReplyInput = document.getElementById('text-reply-input');
+            const btnSaveDiary = document.getElementById('btn-save-diary');
+            const btnToggleTicket = document.getElementById('btn-toggle-ticket');
+            const btnCloseDrawer = document.getElementById('btn-close-drawer');
+            const ticketDrawer = document.getElementById('ticket-drawer');
+
+            inputFile.addEventListener('change', handleImageUpload);
+            btnAction.addEventListener('click', handleMainActionButton);
+            
+            // 结束对谈
+            btnEndChat.addEventListener('click', handleEndConversation);
+
+            // 切换键盘打字
+            btnKeyboardToggle.addEventListener('click', toggleKeyboardMode);
+
+            // 发送打字回复
+            btnSendText.addEventListener('click', handleTextReplySubmit);
+            textReplyInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleTextReplySubmit();
+            });
+
+            // 存储声音车票
+            btnSaveDiary.addEventListener('click', saveDiaryToTicket);
+
+            // 车票柜开关
+            btnToggleTicket.addEventListener('click', () => ticketDrawer.classList.remove('translate-x-full'));
+            btnCloseDrawer.addEventListener('click', () => ticketDrawer.classList.add('translate-x-full'));
+        }
+
+        // ==========================================
+        // 图片上传视差启动
+        // ==========================================
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            state.uploadedImageFile = file;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                state.uploadedImage = event.target.result.split(',')[1];
+                
+                // 更换窗外风景（将图设置为背景，并加速滚动）
+                const windowScenery = document.getElementById('window-scenery');
+                windowScenery.style.backgroundImage = `url(${event.target.result})`;
+                windowScenery.classList.add('scrolling-bg');
+                windowScenery.style.animationDuration = '12s'; // 加速鸣笛启航
+
+                // 收起占位卡
+                document.getElementById('upload-placeholder').classList.add('opacity-0', 'pointer-events-none');
+                
+                // 启动第一轮对话：分析图片并破冰
+                triggerConversationInitiation();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // ==========================================
+        // 对话引擎流程（多轮对讲）
+        // ==========================================
+        
+        // 1. 发起破冰
+        async function triggerConversationInitiation() {
+            updateAppState('analyzing');
+            
+            // 清空上一场心事
+            state.chatHistory = [];
+            document.getElementById('chat-feed').innerHTML = '';
+
+            // 在聊天流里静静展示刚才上传的那一抹夜景
+            appendImageBubbleToFeed(document.getElementById('window-scenery').style.backgroundImage);
+
+            // 预设第一轮的 System Instruction
+            const systemInstruction = `
+你是一个隐匿在深夜奔驰的树洞列车上的温柔乘务广播。
+用户刚向车厢投递了一张图片作为车窗外的风景。
+你需要敏锐捕捉图片中的氛围、色彩与微小景物，并转化成一两句直击心灵的治愈开场白，邀请他们向你倾诉。
+请遵循以下规则：
+1. 绝对不要直接暴露你是 AI，不要说"在图片里我看到"、"根据图片"这样的空洞句式，直接切入对画面传递的情感温度的抚慰。
+2. 句式极度简短、轻柔、有呼吸感，符合口语发音。不要超过90字（最长3句话），适合TTS播报。
+3. 全文绝对不要含有任何 Markdown 的星号或特殊符号。
+4. 结尾留下一个非常温柔的开放式邀请提问，呼唤他们开口倾诉。
+            `;
+
+            // 构建符合 Gemini 多轮格式的第一条记录
+            state.chatHistory = [
+                {
+                    role: 'user',
+                    parts: [
+                        { text: "这是我今晚车窗外的风景……我想和列车广播聊聊。" },
+                        { inlineData: { mimeType: state.uploadedImageFile.type, data: state.uploadedImage } }
+                    ]
+                }
+            ];
+
+            const payload = {
+                contents: state.chatHistory,
+                systemInstruction: {
+                    parts: [{ text: systemInstruction }]
+                }
+            };
+
+            let aiIntroText = '';
+
+            try {
+                const response = await fetchWithRetry(
+                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`,
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    }
+                );
+
+                const data = await response.json();
+                aiIntroText = data.candidates?.[0]?.content?.parts?.[0]?.text || getRandomElement(fallbackInitiations);
+            } catch (err) {
+                console.error("Gemini 识图破冰接口不适，采用柔性预设:", err);
+                aiIntroText = getRandomElement(fallbackInitiations);
+            }
+
+            // 更新对话记录
+            state.chatHistory.push({
+                role: 'model',
+                parts: [{ text: aiIntroText }]
+            });
+
+            // 广播发出声音
+            playAiSpeech(aiIntroText);
+        }
+
+        // 2. 持续对话响应
+        async function triggerConversationNextTurn(userMessageText) {
+            updateAppState('analyzing');
+
+            // 渲染用户的话语到气泡
+            appendUserBubbleToFeed(userMessageText);
+
+            // 更新到历史记录中
+            state.chatHistory.push({
+                role: 'user',
+                parts: [{ text: userMessageText }]
+            });
+
+            const systemInstruction = `
+你是一个隐匿在深夜奔驰的树洞列车上的温柔乘务广播。
+用户此时在车窗前对你进行深夜长谈，你需要像一个富有同理心、温存和耐心的密友一样聆听并继续对话。
+请务必遵循以下规则：
+1. 顺着对方提供的话题继续探讨，肯定、接纳他们的脆弱或倾诉，不要敷衍。
+2. 回复简短、完全口语化，不要进行廉价的说教或过于欢快的鸡汤。不要超过90字（2-3句话）。
+3. 绝对不要透露你是程序或 AI，不使用任何 Markdown 格式。
+4. 在话语的收尾处，可以用一个淡淡的反问或者温暖的留白，引导他们说出更多内心深处的心事。
+            `;
+
+            const payload = {
+                contents: state.chatHistory,
+                systemInstruction: {
+                    parts: [{ text: systemInstruction }]
+                }
+            };
+
+            let aiReplyText = '';
+
+            try {
+                const response = await fetchWithRetry(
+                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`,
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    }
+                );
+
+                const data = await response.json();
+                aiReplyText = data.candidates?.[0]?.content?.parts?.[0]?.text || getRandomElement(fallbackReplies);
+            } catch (err) {
+                console.error("多轮对谈接口故障，接入备用树洞广播:", err);
+                aiReplyText = getRandomElement(fallbackReplies);
+            }
+
+            // 更新对话历史
+            state.chatHistory.push({
+                role: 'model',
+                parts: [{ text: aiReplyText }]
+            });
+
+            // 再次发出温润的播报
+            playAiSpeech(aiReplyText);
+        }
+
+        // 3. 用户选择结束对谈，由 AI 产出一段极其温柔的告别
+        async function handleEndConversation() {
+            updateAppState('analyzing');
+
+            const farewellSystem = `
+你是一个隐匿在深夜奔驰的树洞列车上的温柔乘务广播。
+用户已经对你倾述完了他们今晚所有积攒在心中的倾诉，并按下了“结束对话”的按钮。
+你需要在今夜的终点前，送上一段极其温暖、令人宽心释怀、并正式将今晚的谈话打包封锁为“树洞声音车票”的最终告别词。
+请务必遵循：
+1. 让语气极度柔和、抚慰、安心。告诉旅人他们今晚所分享的心事都会被列车带走，并被温柔封存，他们可以放心去睡一个好觉。
+2. 回复保持口语，不要超过100字（最长3句话）。不使用 Markdown。
+            `;
+
+            const payload = {
+                contents: state.chatHistory,
+                systemInstruction: {
+                    parts: [{ text: farewellSystem }]
+                }
+            };
+
+            let farewellText = '';
+
+            try {
+                const response = await fetchWithRetry(
+                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`,
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    }
+                );
+
+                const data = await response.json();
+                farewellText = data.candidates?.[0]?.content?.parts?.[0]?.text || "好，今晚积攒的心事，我都为你好好收下了。列车还在不知疲倦地向前开，把这些重担都丢在后面的轨道上吧。累了的话，合上眼睡一觉。我把今晚的对话打包成了一张车票，永远为你保存着。";
+            } catch (err) {
+                farewellText = "好，今晚积攒的心事，我都为你好好收下了。列车还在不知疲倦地向前开，把这些重担都丢在后面的轨道上吧。累了的话，合上眼睡一觉。我把今晚的对话打包成了一张车票，永远为你保存着。";
+            }
+
+            // 补足最后一段到历史中
+            state.chatHistory.push({
+                role: 'model',
+                parts: [{ text: farewellText }]
+            });
+
+            // 播放告别语音
+            await playAiSpeech(farewellText, true);
+        }
+
+        // ==========================================
+        // 语音生成与播报系统 (TTS)
+        // ==========================================
+        async function playAiSpeech(text, isFarewell = false) {
+            updateAppState('ai_speaking');
+
+            // 在聊天区挂接 AI 气泡
+            const aiBubbleId = appendAiBubbleToFeed(text);
+
+            const payload = {
+                contents: [{ parts: [{ text: `Say gently: ${text}` }] }],
+                generationConfig: {
+                    responseModalities: ["AUDIO"],
+                    speechConfig: {
+                        voiceConfig: {
+                            prebuiltVoiceConfig: {
+                                voiceName: "Leda" // 温暖如风的女中音
+                            }
+                        }
+                    }
+                },
+                model: "gemini-2.5-flash-preview-tts"
+            };
+
+            try {
+                const response = await fetchWithRetry(
+                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`,
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    }
+                );
+
+                const result = await response.json();
+                const pcmData = result.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+                const mimeType = result.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.mimeType || 'audio/L16;rate=24000';
+                
+                if (pcmData) {
+                    const sampleRate = parseInt(mimeType.match(/rate=(\d+)/)?.[1] || "24000");
+                    const audioUrl = pcmToWav(pcmData, sampleRate);
+                    
+                    const audio = new Audio(audioUrl);
+                    setupSpeechVisualizer(audio);
+                    audio.play();
+                    
+                    audio.onended = () => {
+                        handlePostSpeechTransition(isFarewell);
+                    };
+                } else {
+                    webSpeechSynthesizeFallback(text, isFarewell);
+                }
+            } catch (err) {
+                console.warn("TTS 接口发生波动，采用本地 Speech Synthesis:", err);
+                webSpeechSynthesizeFallback(text, isFarewell);
+            }
+        }
+
+        function webSpeechSynthesizeFallback(text, isFarewell) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'zh-CN';
+                utterance.pitch = 1.0;
+                utterance.rate = 0.88;
+                utterance.onend = () => {
+                    handlePostSpeechTransition(isFarewell);
+                };
+                window.speechSynthesis.speak(utterance);
+            } else {
+                setTimeout(() => {
+                    handlePostSpeechTransition(isFarewell);
+                }, text.length * 280);
+            }
+        }
+
+        // 音频播放完毕后的状态流转
+        function handlePostSpeechTransition(isFarewell) {
+            if (isFarewell) {
+                updateAppState('conversation_done');
+            } else {
+                if (state.isKeyboardMode) {
+                    updateAppState('user_typing');
+                } else {
+                    updateAppState('user_ready');
+                }
+            }
+        }
+
+        // ==========================================
+        // 前端录音核心逻辑
+        // ==========================================
+        let mediaRecorder;
+        let localAudioStream;
+        let recordedChunks = [];
+        let recognition;
+
+        async function startUserVoiceRecording() {
+            try {
+                localAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                recordedChunks = [];
+                
+                mediaRecorder = new MediaRecorder(localAudioStream);
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) recordedChunks.push(event.data);
+                };
+                mediaRecorder.onstop = () => {
+                    state.audioBlob = new Blob(recordedChunks, { type: 'audio/webm' });
+                    state.audioUrl = URL.createObjectURL(state.audioBlob);
+                };
+
+                // 音频波形动态捕捉展示
+                setupStreamVisualizer(localAudioStream);
+
+                // H5听写捕获
+                setupSpeechRecognition();
+
+                mediaRecorder.start();
+                updateAppState('user_recording');
+
+            } catch (err) {
+                console.error("启动音频输入设备失败:", err);
+                showNotification("麦克风权限受阻，已为您打开深夜小键盘...");
+                toggleKeyboardMode();
+            }
+        }
+
+        function stopUserVoiceRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                if (localAudioStream) {
+                    localAudioStream.getTracks().forEach(track => track.stop());
+                }
+                if (recognition) {
+                    recognition.stop();
+                }
+
+                // 延迟等待听写结果落地后再发往大模型
+                setTimeout(() => {
+                    const tempUserText = document.getElementById('temp-recording-text')?.innerText || "一些无声的唏嘘";
+                    // 清除临时占位泡泡
+                    const tempBubble = document.getElementById('temp-user-bubble');
+                    if (tempBubble) tempBubble.remove();
+                    
+                    // 正式发往多轮对话
+                    triggerConversationNextTurn(tempUserText);
+                }, 1000);
+            }
+        }
+
+        function setupSpeechRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (SpeechRecognition) {
+                recognition = new SpeechRecognition();
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = 'zh-CN';
+
+                // 挂一个临时的用户声音泡泡在 Feed 里展现听写实况
+                appendTempUserBubbleToFeed();
+
+                const tempTextSpan = document.getElementById('temp-recording-text');
+
+                recognition.onresult = (event) => {
+                    let resultText = '';
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        resultText += event.results[i][0].transcript;
+                    }
+                    if (tempTextSpan) tempTextSpan.innerText = resultText;
+                };
+
+                recognition.onerror = (e) => {
+                    console.warn("听写服务轻微卡壳:", e);
+                };
+
+                recognition.start();
+            } else {
+                appendTempUserBubbleToFeed();
+                const tempTextSpan = document.getElementById('temp-recording-text');
+                if (tempTextSpan) tempTextSpan.innerText = "正在轻声述说心事 (浏览器不支持实时听写)...";
+            }
+        }
+
+        // 键盘输入触发
+        function handleTextReplySubmit() {
+            const textInput = document.getElementById('text-reply-input');
+            const content = textInput.value.trim();
+            if (!content) return;
+
+            textInput.value = '';
+            triggerConversationNextTurn(content);
+        }
+
+        // ==========================================
+        // 声音车票存档 & 往期浏览
+        // ==========================================
+        function saveDiaryToTicket() {
+            if (state.chatHistory.length < 2) return;
+
+            const ticketId = 'TICKET-' + Math.floor(100000 + Math.random() * 900000);
+            const now = new Date();
+            const timeStr = `${now.getMonth() + 1}月${now.getDate()}日 ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+            // 打包整场心语，而不仅仅是最后一轮
+            const conversationLog = state.chatHistory.map(turn => {
+                // 剔除包含 inlineData 的大文本，只留心声文本
+                const txtPart = turn.parts.find(p => p.text);
+                return {
+                    role: turn.role,
+                    text: txtPart ? txtPart.text : '分享了窗外的风景'
+                };
+            });
+
+            const newTicket = {
+                id: ticketId,
+                date: timeStr,
+                history: conversationLog,
+                audioUrl: state.audioUrl || null,
+                imageSrc: document.getElementById('window-scenery').style.backgroundImage
+            };
+
+            state.diaries.unshift(newTicket);
+            saveLocalDiaries();
+            renderDiaries();
+
+            // 缓和恢复列车匀速风景
+            const windowScenery = document.getElementById('window-scenery');
+            windowScenery.style.animationDuration = '45s';
+
+            showNotification("今晚的深夜记忆已打包编织进你的车票！");
+            resetToIdleState();
+        }
+
+        function renderDiaries() {
+            const listContainer = document.getElementById('tickets-list');
+            const ticketCount = document.getElementById('ticket-count');
+            
+            ticketCount.innerText = state.diaries.length;
+
+            if (state.diaries.length === 0) {
+                listContainer.innerHTML = `
+                    <div id="empty-tickets-view" class="h-full flex flex-col items-center justify-center text-center p-4">
+                        <i data-lucide="ticket" class="w-12 h-12 text-slate-700 mb-2"></i>
+                        <p class="text-xs text-slate-500">旅人，你还没有录制任何日记车票</p>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            listContainer.innerHTML = state.diaries.map((ticket, index) => {
+                // 找出对话中的第一句 AI 广播和最后一句倾听
+                const firstAi = ticket.history.find(h => h.role === 'model')?.text || '列车上的轻声呢喃';
+                const lastUser = [...ticket.history].reverse().find(h => h.role === 'user')?.text || '静静赶路的人';
+
+                return `
+                <div class="relative bg-gradient-to-br from-amber-500/10 to-amber-950/20 border border-amber-500/20 rounded-xl p-4 overflow-hidden shadow-md">
+                    <div class="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-[#070913] border-r border-amber-500/20"></div>
+                    <div class="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-[#070913] border-l border-amber-500/20"></div>
+                    
+                    <div class="flex justify-between items-start mb-3 border-b border-amber-500/10 pb-2">
+                        <div class="pl-2">
+                            <span class="text-[10px] font-mono text-amber-500 font-bold">${ticket.id}</span>
+                            <h5 class="text-xs font-serif text-slate-300">${ticket.date}</h5>
+                        </div>
+                        <div class="w-10 h-6 rounded bg-cover bg-center border border-amber-500/30" style="background-image: ${ticket.imageSrc}"></div>
+                    </div>
+
+                    <div class="space-y-2 mb-3 pl-2 pr-2">
+                        <p class="text-[11px] text-slate-400 line-clamp-1 italic">广播：“${firstAi}”</p>
+                        <p class="text-xs text-amber-100 line-clamp-1">倾诉：“${lastUser}”</p>
+                    </div>
+
+                    <div class="flex items-center gap-2 pl-2 pr-2">
+                        <button onclick="viewTicketDetail(${index})" class="flex-1 py-1.5 rounded bg-white/5 hover:bg-white/10 text-slate-300 text-[10px] transition">
+                            查看对话原卷
+                        </button>
+                        ${ticket.audioUrl ? `
+                            <button onclick="playTicketAudio('${ticket.audioUrl}', this)" class="p-2 rounded bg-amber-500 text-slate-900 hover:bg-amber-400 transition flex items-center justify-center">
+                                <i data-lucide="play" class="w-3 h-3 fill-current"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `}).join('');
+
+            lucide.createIcons();
+        }
+
+        window.viewTicketDetail = function(index) {
+            const ticket = state.diaries[index];
+            if (!ticket) return;
+
+            document.getElementById('modal-ticket-id').innerText = ticket.id;
+            document.getElementById('modal-ticket-date').innerText = ticket.date + " 记忆存档";
+            
+            const chatLogContainer = document.getElementById('modal-chat-history');
+            chatLogContainer.innerHTML = ticket.history.map(turn => {
+                if (turn.role === 'user') {
+                    return `
+                        <div class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 text-right ml-8">
+                            <span class="text-[9px] text-amber-400 font-bold block mb-1">倾诉人</span>
+                            <p class="text-amber-100/90 leading-relaxed font-serif">${turn.text}</p>
+                        </div>
+                    `;
+                } else {
+                    return `
+                        <div class="bg-white/5 border border-white/10 rounded-xl p-3 text-left mr-8">
+                            <span class="text-[9px] text-slate-400 font-bold block mb-1">深夜列车广播</span>
+                            <p class="text-slate-300 leading-relaxed font-serif">${turn.text}</p>
+                        </div>
+                    `;
+                }
+            }).join('');
+
+            document.getElementById('ticket-detail-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        window.closeTicketModal = function() {
+            document.getElementById('ticket-detail-modal').classList.add('hidden');
+        }
+
+        // ==========================================
+        // UI 对话流渲染与滚动辅助
+        // ==========================================
+        function appendAiBubbleToFeed(text) {
+            const feed = document.getElementById('chat-feed');
+            const id = 'ai-' + Math.random().toString(36).substring(2, 9);
+            
+            const container = document.createElement('div');
+            container.id = id;
+            container.className = "bg-white/5 border border-white/10 rounded-2xl p-4 transform translate-y-2 opacity-0 transition-all duration-500 max-w-[90%] mr-auto";
+            container.innerHTML = `
+                <div class="flex items-center gap-2 mb-1 text-[10px] text-amber-500">
+                    <i data-lucide="sparkles" class="w-3 h-3"></i>
+                    <span>深夜广播</span>
+                </div>
+                <p class="text-sm text-slate-200 leading-relaxed font-serif whitespace-pre-line">${text}</p>
+            `;
+            feed.appendChild(container);
+            
+            // 缓动呈现
+            setTimeout(() => {
+                container.classList.remove('translate-y-2', 'opacity-0');
+                scrollToBottom();
+            }, 50);
+
+            lucide.createIcons();
+            return id;
+        }
+
+        function appendUserBubbleToFeed(text) {
+            const feed = document.getElementById('chat-feed');
+            const container = document.createElement('div');
+            container.className = "bg-amber-500/5 border border-amber-500/10 rounded-2xl p-4 transform translate-y-2 opacity-0 transition-all duration-500 max-w-[90%] ml-auto text-right";
+            container.innerHTML = `
+                <div class="flex items-center gap-2 mb-1 text-[10px] text-amber-400 justify-end">
+                    <span>旅人心声</span>
+                    <i data-lucide="user" class="w-3 h-3"></i>
+                </div>
+                <p class="text-sm text-amber-100/90 leading-relaxed italic font-serif">${text}</p>
+            `;
+            feed.appendChild(container);
+
+            setTimeout(() => {
+                container.classList.remove('translate-y-2', 'opacity-0');
+                scrollToBottom();
+            }, 50);
+
+            lucide.createIcons();
+        }
+
+        function appendTempUserBubbleToFeed() {
+            const feed = document.getElementById('chat-feed');
+            const container = document.createElement('div');
+            container.id = 'temp-user-bubble';
+            container.className = "bg-amber-500/5 border border-dashed border-amber-500/30 rounded-2xl p-4 max-w-[90%] ml-auto text-right";
+            container.innerHTML = `
+                <div class="flex items-center gap-2 mb-1 text-[10px] text-amber-400 justify-end">
+                    <span class="animate-pulse">实时接收心声中...</span>
+                    <i data-lucide="mic" class="w-3 h-3 text-amber-500 animate-ping"></i>
+                </div>
+                <p id="temp-recording-text" class="text-sm text-amber-100/60 leading-relaxed italic font-serif">倾听中，请说话...</p>
+            `;
+            feed.appendChild(container);
+            scrollToBottom();
+            lucide.createIcons();
+        }
+
+        function appendImageBubbleToFeed(bgImageStyle) {
+            const feed = document.getElementById('chat-feed');
+            const container = document.createElement('div');
+            container.className = "rounded-xl overflow-hidden border border-white/5 p-1 bg-white/5 max-w-[70%] mr-auto";
+            container.innerHTML = `
+                <div class="w-full h-24 bg-cover bg-center rounded-lg" style="background-image: ${bgImageStyle}"></div>
+                <div class="p-1 text-center text-[9px] text-slate-500 font-mono">🎑 心事风景已载入轨道</div>
+            `;
+            feed.appendChild(container);
+            scrollToBottom();
+        }
+
+        function scrollToBottom() {
+            const feed = document.getElementById('chat-feed');
+            feed.scrollTo({ top: feed.scrollHeight, behavior: 'smooth' });
+        }
+
+        // ==========================================
+        // 状态机精细控制
+        // ==========================================
+        function updateAppState(newState) {
+            state.appState = newState;
+            
+            const btnAction = document.getElementById('btn-action');
+            const btnActionIcon = document.getElementById('btn-action-icon');
+            const btnActionText = document.getElementById('btn-action-text');
+            const hint = document.getElementById('interactive-hint');
+            const aiStatusPill = document.getElementById('ai-status-pill');
+            const aiStatusText = document.getElementById('ai-status-text');
+            const recordGlow = document.getElementById('record-glow');
+            
+            // 辅助控制按键
+            const btnEndChat = document.getElementById('btn-end-chat');
+            const btnKeyboardToggle = document.getElementById('btn-keyboard-toggle');
+            const keyboardArea = document.getElementById('keyboard-input-area');
+            const btnSaveDiary = document.getElementById('btn-save-diary');
+
+            switch(newState) {
+                case 'idle':
+                    btnAction.setAttribute('disabled', 'true');
+                    btnAction.className = "w-16 h-16 rounded-full bg-slate-850 border-4 border-slate-800/50 flex flex-col items-center justify-center text-slate-500 cursor-not-allowed transition transform duration-300 relative focus:outline-none overflow-hidden";
+                    btnActionIcon.setAttribute('data-lucide', 'lock');
+                    btnActionText.innerText = '锁定';
+                    hint.innerText = "请先在左侧车窗上传一张风景照片";
+                    aiStatusPill.classList.add('opacity-0', '-translate-y-4');
+                    
+                    // 收起隐藏辅键
+                    btnEndChat.classList.add('opacity-0', 'pointer-events-none', 'scale-90');
+                    btnKeyboardToggle.classList.add('opacity-0', 'pointer-events-none', 'scale-90');
+                    keyboardArea.classList.add('hidden');
+                    btnSaveDiary.classList.add('hidden');
+                    break;
+
+                case 'analyzing':
+                    btnAction.setAttribute('disabled', 'true');
+                    btnActionIcon.setAttribute('data-lucide', 'scan-eye');
+                    btnActionText.innerText = '出神中';
+                    hint.innerText = "大模型正顺着铁轨感知画意和刚才说的话...";
+                    aiStatusText.innerText = "广播电台寻思中...";
+                    aiStatusPill.classList.remove('opacity-0', '-translate-y-4');
+                    
+                    btnEndChat.classList.add('scale-90');
+                    btnKeyboardToggle.classList.add('scale-90');
+                    keyboardArea.classList.add('hidden');
+                    break;
+
+                case 'ai_speaking':
+                    btnAction.setAttribute('disabled', 'true');
+                    btnActionIcon.setAttribute('data-lucide', 'volume-2');
+                    btnActionText.innerText = '播音中';
+                    hint.innerText = "深夜列车广播温和细语中，请戴上耳机...";
+                    aiStatusText.innerText = "广播播音中...";
+                    
+                    btnEndChat.classList.add('scale-90');
+                    btnKeyboardToggle.classList.add('scale-90');
+                    keyboardArea.classList.add('hidden');
+                    break;
+
+                case 'user_ready':
+                    // 对话过程中，允许按下说话，且“结束”与“小键盘”辅键全面解锁展开
+                    btnAction.classList.remove('hidden');
+                    btnAction.removeAttribute('disabled');
+                    btnAction.className = "w-16 h-16 rounded-full bg-amber-500 hover:bg-amber-600 border-4 border-amber-400/30 flex flex-col items-center justify-center text-slate-950 cursor-pointer transition transform duration-300 hover:scale-105 active:scale-95 focus:outline-none overflow-hidden";
+                    btnActionIcon.setAttribute('data-lucide', 'mic');
+                    btnActionText.innerText = '倾诉心声';
+                    hint.innerText = "点击金色话筒诉说心事；倾诉足够后可点击红色门锁结束对谈";
+                    aiStatusPill.classList.add('opacity-0', '-translate-y-4');
+                    
+                    // 展现辅键
+                    btnEndChat.classList.remove('opacity-0', 'pointer-events-none', 'scale-90');
+                    btnKeyboardToggle.classList.remove('opacity-0', 'pointer-events-none', 'scale-90');
+                    keyboardArea.classList.add('hidden');
+                    break;
+
+                case 'user_recording':
+                    btnActionIcon.setAttribute('data-lucide', 'square');
+                    btnActionText.innerText = '正在记录';
+                    btnAction.className = "w-16 h-16 rounded-full bg-red-600 border-4 border-red-500/50 flex flex-col items-center justify-center text-white cursor-pointer transition transform duration-300 focus:outline-none overflow-hidden";
+                    recordGlow.classList.remove('opacity-0');
+                    recordGlow.classList.add('opacity-100', 'animate-ping');
+                    hint.innerText = "说完了请再次点击话筒，发送给广播";
+                    
+                    // 录音时收起结束键以防误触
+                    btnEndChat.classList.add('opacity-0', 'pointer-events-none');
+                    break;
+
+                case 'user_typing':
+                    // 小键盘文字回复状态
+                    btnAction.classList.add('hidden');
+                    keyboardArea.classList.remove('hidden');
+                    
+                    btnEndChat.classList.remove('opacity-0', 'pointer-events-none', 'scale-90');
+                    btnKeyboardToggle.classList.remove('opacity-0', 'pointer-events-none', 'scale-90');
+                    hint.innerText = "用键盘写下你的心事发给广播，或随时点击左侧木门结束对谈";
+                    break;
+
+                case 'conversation_done':
+                    // 彻底畅谈完毕，浮现精美打包按钮
+                    recordGlow.classList.add('opacity-0');
+                    recordGlow.classList.remove('opacity-100', 'animate-ping');
+                    
+                    btnAction.classList.add('hidden');
+                    keyboardArea.classList.add('hidden');
+                    btnEndChat.classList.add('opacity-0', 'pointer-events-none');
+                    btnKeyboardToggle.classList.add('opacity-0', 'pointer-events-none');
+
+                    btnSaveDiary.classList.remove('hidden');
+                    hint.innerText = "列车广播已为您妥善记录今夜对话。点击下方封存为声音车票。";
+                    break;
+            }
+            lucide.createIcons();
+        }
+
+        function handleMainActionButton() {
+            if (state.appState === 'user_ready') {
+                startUserVoiceRecording();
+            } else if (state.appState === 'user_recording') {
+                stopUserVoiceRecording();
+            }
+        }
+
+        function toggleKeyboardMode() {
+            state.isKeyboardMode = !state.isKeyboardMode;
+            if (state.isKeyboardMode) {
+                updateAppState('user_typing');
+            } else {
+                updateAppState('user_ready');
+            }
+        }
+
+        function resetToIdleState() {
+            updateAppState('idle');
+            state.uploadedImage = null;
+            state.uploadedImageFile = null;
+            state.audioBlob = null;
+            state.audioUrl = null;
+        }
+
+        // ==========================================
+        // 实时音频波形分析画布
+        // ==========================================
+        let canvasAnimFrame;
+        function setupStreamVisualizer(stream) {
+            const canvas = document.getElementById('waveform-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.style.opacity = '1';
+
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const source = audioContext.createMediaStreamSource(stream);
+            const analyser = audioContext.createAnalyser();
+            analyser.fftSize = 256;
+            source.connect(analyser);
+
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+
+            function draw() {
+                canvasAnimFrame = requestAnimationFrame(draw);
+                analyser.getByteFrequencyData(dataArray);
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = 'rgba(245, 158, 11, 0.4)';
+
+                const barWidth = (canvas.width / bufferLength) * 2.5;
+                let barHeight;
+                let x = 0;
+
+                for(let i = 0; i < bufferLength; i++) {
+                    barHeight = dataArray[i] / 2.5;
+                    ctx.fillRect(x, canvas.height - barHeight, barWidth - 2, barHeight);
+                    x += barWidth;
+                }
+            }
+            draw();
+        }
+
+        function setupSpeechVisualizer(audioElement) {
+            const canvas = document.getElementById('waveform-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.style.opacity = '1';
+
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const source = audioContext.createMediaElementSource(audioElement);
+            const analyser = audioContext.createAnalyser();
+            analyser.fftSize = 256;
+            source.connect(analyser);
+            analyser.connect(audioContext.destination);
+
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+
+            function draw() {
+                canvasAnimFrame = requestAnimationFrame(draw);
+                analyser.getByteFrequencyData(dataArray);
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = 'rgba(245, 158, 11, 0.4)';
+
+                const barWidth = (canvas.width / bufferLength) * 2.5;
+                let barHeight;
+                let x = 0;
+
+                for(let i = 0; i < bufferLength; i++) {
+                    barHeight = dataArray[i] / 3;
+                    ctx.fillRect(x, canvas.height - barHeight, barWidth - 2, barHeight);
+                    x += barWidth;
+                }
+            }
+            draw();
+
+            audioElement.addEventListener('ended', () => {
+                cancelAnimationFrame(canvasAnimFrame);
+                canvas.style.opacity = '0';
+            });
+        }
+
+        // ==========================================
+        // 编解码器 & 网络重试辅助工具
+        // ==========================================
+        function pcmToWav(pcmBase64, sampleRate = 24000) {
+            const binaryString = atob(pcmBase64);
+            const len = binaryString.length;
+            const buffer = new ArrayBuffer(len);
+            const view = new Uint8Array(buffer);
+            for (let i = 0; i < len; i++) {
+                view[i] = binaryString.charCodeAt(i);
+            }
+            
+            const wavHeader = new ArrayBuffer(44);
+            const headerView = new DataView(wavHeader);
+            
+            headerView.setUint8(0, 0x52); // "R"
+            headerView.setUint8(1, 0x49); // "I"
+            headerView.setUint8(2, 0x46); // "F"
+            headerView.setUint8(3, 0x46); // "F"
+            headerView.setUint32(4, 36 + len, true);
+            headerView.setUint8(8, 0x57); // "W"
+            headerView.setUint8(9, 0x41); // "A"
+            headerView.setUint8(10, 0x56); // "V"
+            headerView.setUint8(11, 0x45); // "E"
+            
+            headerView.setUint8(12, 0x66); // "f"
+            headerView.setUint8(13, 0x6d); // "m"
+            headerView.setUint8(14, 0x74); // "t"
+            headerView.setUint8(15, 0x20); // " "
+            headerView.setUint32(16, 16, true);
+            headerView.setUint16(20, 1, true);
+            headerView.setUint16(22, 1, true);
+            headerView.setUint32(24, sampleRate, true);
+            headerView.setUint32(28, sampleRate * 2, true);
+            headerView.setUint16(32, 2, true);
+            headerView.setUint16(34, 16, true);
+            
+            headerView.setUint8(36, 0x64); // "d"
+            headerView.setUint8(37, 0x61); // "a"
+            headerView.setUint8(38, 0x74); // "t"
+            headerView.setUint8(39, 0x61); // "a"
+            headerView.setUint32(40, len, true);
+            
+            const blob = new Blob([wavHeader, buffer], { type: 'audio/wav' });
+            return URL.createObjectURL(blob);
+        }
+
+        async function fetchWithRetry(url, options, retries = 5, delay = 1000) {
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) throw new Error(`HTTP 异常错误: ${response.status}`);
+                return response;
+            } catch (err) {
+                if (retries > 0) {
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    return fetchWithRetry(url, options, retries - 1, delay * 2);
+                }
+                throw err;
+            }
+        }
+
+        function getRandomElement(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function showNotification(msg) {
+            const toast = document.createElement('div');
+            toast.className = "fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-amber-500 text-slate-900 font-bold px-6 py-3 rounded-full text-xs shadow-2xl z-50 transition-opacity duration-300 opacity-0 pointer-events-none tracking-wider";
+            toast.innerText = msg;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.classList.remove('opacity-0'), 100);
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
