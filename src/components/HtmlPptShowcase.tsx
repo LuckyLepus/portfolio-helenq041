@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Monitor, Smartphone, Maximize, Code2 } from 'lucide-react';
 
-const CLOUD_MEDIA_BASE_URL = 'https://helenq-assets-1317600743.cos-website.ap-hongkong.myqcloud.com/portfolio-helenq0414';
+const CLOUD_MEDIA_BASE_URL = 'https://assets.helenq.top/portfolio-helenq0414';
 
 // Reusable browser frame component
 function IosBrowserFrame({ title, url, iframeSrc }: { title: string, url: string, iframeSrc: string }) {
