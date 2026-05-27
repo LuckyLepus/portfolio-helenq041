@@ -34,32 +34,46 @@ export const FaceTrackingProvider = ({ children }: { children: React.ReactNode }
     async function init() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        if (!active) {
+          stream.getTracks().forEach(t => t.stop());
+          return;
+        }
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
+          videoRef.current.play().catch(() => {});
         }
         
         const filesetResolver = await FilesetResolver.forVisionTasks(
           "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm"
         );
+        if (!active) return;
         
-        landmarkerRef.current = await FaceLandmarker.createFromOptions(filesetResolver, {
+        const faceLandmarker = await FaceLandmarker.createFromOptions(filesetResolver, {
           baseOptions: {
             modelAssetPath: "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
-            delegate: "GPU"
           },
           outputFaceBlendshapes: false,
           runningMode: "VIDEO",
           numFaces: 1
         });
+        if (!active) {
+          faceLandmarker.close();
+          return;
+        }
+        landmarkerRef.current = faceLandmarker;
 
-        handLandmarkerRef.current = await HandLandmarker.createFromOptions(filesetResolver, {
+        const handLandmarker = await HandLandmarker.createFromOptions(filesetResolver, {
           baseOptions: {
             modelAssetPath: "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
-            delegate: "GPU"
           },
           runningMode: "VIDEO",
           numHands: 1
         });
+        if (!active) {
+          handLandmarker.close();
+          return;
+        }
+        handLandmarkerRef.current = handLandmarker;
         
         setIsTracking(true);
       } catch (err: any) {
@@ -95,6 +109,10 @@ export const FaceTrackingProvider = ({ children }: { children: React.ReactNode }
       const handLandmarker = handLandmarkerRef.current;
       
       if (!video || !landmarker || !handLandmarker) return;
+      if (video.videoWidth === 0 || video.videoHeight === 0) {
+        animationFrameRef.current = requestAnimationFrame(predictWebcam);
+        return;
+      }
 
       if (video.currentTime !== lastVideoTimeRef.current) {
         lastVideoTimeRef.current = video.currentTime;

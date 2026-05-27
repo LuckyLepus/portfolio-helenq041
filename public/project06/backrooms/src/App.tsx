@@ -35,12 +35,20 @@ const TrackingOverlay = () => {
       {error && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm pointer-events-auto">
           <div className="border border-red-500/50 bg-red-950/40 p-8 max-w-lg text-center flex flex-col gap-4 shadow-[0_0_50px_rgba(255,0,0,0.1)]">
-            <div className="text-red-500 text-2xl font-bold tracking-widest animate-pulse">SYS_ERR: PERMISSION_DENIED</div>
+            <div className="text-red-500 text-2xl font-bold tracking-widest animate-pulse">SYS_ERR: TRACKING_FAILED</div>
             <p className="text-[#e0e0e0]/80 text-sm leading-relaxed font-mono">
               The observation window requires camera access to calculate off-axis parallax depth.<br/><br/>
-              Please click the <strong className="text-white">Camera Icon</strong> in your browser's address bar to Allow access, then <strong>Refresh the entire page (F5)</strong>.
+              1. Look for the <strong className="text-white">Camera or Lock Icon</strong> near your browser's address bar.<br/>
+              2. Change the Camera setting to <strong>Allow</strong>.<br/>
+              3. Click the Reload button below.
             </p>
             <div className="text-xs text-red-500/50 uppercase mt-4">RAW_ERROR: {error}</div>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="mt-4 px-6 py-2 bg-red-900/40 hover:bg-red-800/60 border border-red-500/50 text-red-100 transition-colors uppercase tracking-widest text-xs"
+            >
+              Reload Interface
+            </button>
           </div>
         </div>
       )}
