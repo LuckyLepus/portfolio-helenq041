@@ -12,7 +12,7 @@ import MetaPlayMakerShowcase from '../components/MetaPlayMakerShowcase';
 // 配置 GitHub 托管媒体文件的根路径 (如果用户想使用 GitHub 托管)
 // 例如: 'https://raw.githubusercontent.com/[Username]/[Repo]/[Branch]/public/cases'
 // 留空则默认读取本地项目 `public/cases` 目录下的素材
-const GITHUB_MEDIA_BASE_URL: string = 'https://assets.helenq.top/portfolio-helenq0414';
+const GITHUB_MEDIA_BASE_URL: string = 'https://helenq-assets-1317600743.cos.ap-hongkong.myqcloud.com/portfolio-helenq0414';
 
 interface TimelineItem {
   id: string;
