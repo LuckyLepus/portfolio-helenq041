@@ -1036,80 +1036,21 @@ interface PdfViewerModalProps {
   pdfSrc: string;
 }
 
-function PdfViewerModal({ isOpen, onClose, pdfSrc }: PdfViewerModalProps) {
+function PdfViewerModal({ isOpen, onClose }: PdfViewerModalProps) {
   const [isLoading, setIsLoading] = useState(true);
-  const [loadingProgress, setLoadingProgress] = useState(0);
-  const [numPages, setNumPages] = useState<number>(0);
-  const [pdfDoc, setPdfDoc] = useState<any>(null);
+  const numPages = 15;
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // 1. Dynamic load PDF.js from Cloudflare CDN
+  // Smooth visual loading skeleton screen transition
   useEffect(() => {
-    if (!isOpen) return;
-
-    let isMounted = true;
-    setIsLoading(true);
-    setLoadingProgress(15);
-
-    const loadAndRenderPdf = async () => {
-      try {
-        // Load PDF.js main library if not present
-        if (!(window as any).pdfjsLib) {
-          const script = document.createElement('script');
-          script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js';
-          script.async = true;
-          document.body.appendChild(script);
-
-          await new Promise((resolve) => {
-            script.onload = resolve;
-          });
-        }
-
-        if (!isMounted) return;
-
-        // Configure workers for PDF.js background processing
-        if ((window as any).pdfjsLib && !(window as any).pdfjsLib.GlobalWorkerOptions.workerSrc) {
-          (window as any).pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
-        }
-
-        setLoadingProgress(40);
-
-        // Load the PDF file from the local同源 relative path (bypasses COS download headers)
-        const cleanPdfUrl = pdfSrc.replace('#toolbar=0', '');
-        const loadingTask = (window as any).pdfjsLib.getDocument(cleanPdfUrl);
-
-        loadingTask.onProgress = (progressData: { loaded: number, total: number }) => {
-          if (progressData.total > 0 && isMounted) {
-            const percent = Math.round((progressData.loaded / progressData.total) * 100);
-            setLoadingProgress(40 + Math.round(percent * 0.45)); // Map 0-100% progress to 40%-85%
-          }
-        };
-
-        const pdf = await loadingTask.promise;
-        if (!isMounted) return;
-
-        setPdfDoc(pdf);
-        setNumPages(pdf.numPages);
-        setLoadingProgress(95);
-        
-        // Brief delay for transition smoothness
-        setTimeout(() => {
-          if (isMounted) setIsLoading(false);
-        }, 300);
-
-      } catch (err) {
-        console.error('Failed to render secure PDF via PDF.js:', err);
-        // Fallback fallback: if cdn fails, just finish loading (will display empty or error state gracefully)
-        if (isMounted) setIsLoading(false);
-      }
-    };
-
-    loadAndRenderPdf();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [isOpen, pdfSrc]);
+    if (isOpen) {
+      setIsLoading(true);
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 400); // 400ms premium skeletal pulse
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
 
   // Close on Escape key press
   useEffect(() => {
@@ -1185,7 +1126,7 @@ function PdfViewerModal({ isOpen, onClose, pdfSrc }: PdfViewerModalProps) {
             <div className="bg-[#FF3E6C]/10 border-b border-[#FF3E6C]/20 px-6 py-2 flex items-center gap-2 select-none">
               <span className="w-1.5 h-1.5 rounded-full bg-[#FF3E6C] animate-ping" />
               <span className="text-[10px] md:text-xs font-light text-[#FF3E6C]/90 tracking-wide">
-                🔒 安全隔离：系统已对当前文档启用 Canvas 级安全沙箱重绘。物理阻断了任何 PDF 原始数据流，禁止另存及导出。
+                🔒 安全隔离：系统已对当前文档启用数字图像加密重绘。物理阻断了任何 PDF 原始数据流，禁止另存及导出。
               </span>
             </div>
 
@@ -1205,131 +1146,57 @@ function PdfViewerModal({ isOpen, onClose, pdfSrc }: PdfViewerModalProps) {
 
               {/* High-Tech Loading Skeleton Screen */}
               {isLoading && (
-                <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-[#070415] gap-4">
+                <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-[#070415] gap-4 animate-fade-in">
                   <div className="relative w-16 h-16 flex items-center justify-center">
                     <Loader2 className="w-8 h-8 text-[#00FF85]/80 animate-spin" />
                     <Shield className="w-4 h-4 text-[#00FF85] absolute" />
                   </div>
-                  <div className="flex flex-col items-center gap-2 text-center px-4 max-w-xs">
+                  <div className="flex flex-col items-center gap-1.5 text-center px-4 max-w-xs select-none">
                     <span className="text-xs font-mono tracking-widest text-[#00FF85] uppercase">Encrypting secure link...</span>
-                    {/* Visual Progress Bar */}
-                    <div className="w-40 h-1 bg-white/5 rounded-full overflow-hidden mt-1 border border-white/5">
-                      <div 
-                        className="h-full bg-[#00FF85] transition-all duration-300 ease-out shadow-[0_0_8px_#00FF85]"
-                        style={{ width: `${loadingProgress}%` }}
-                      />
-                    </div>
                     <span className="text-[9px] text-white/30 tracking-wider">
-                      Decrypting & rendering Canvas layers ({loadingProgress}%)
+                      Decrypting & rendering encrypted image layers
                     </span>
                   </div>
                 </div>
               )}
 
-              {/* Rendered Canvas list */}
-              {!isLoading && numPages > 0 && Array.from({ length: numPages }).map((_, i) => (
-                <div 
-                  key={i} 
-                  className="relative rounded-lg border border-white/10 bg-[#080516] shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden w-full max-w-3xl transition-all duration-300"
-                >
-                  <PageCanvas pdfDoc={pdfDoc} pageNum={i + 1} />
-                  {/* Page index tag */}
-                  <div className="absolute bottom-3 right-3 px-2.5 py-1 rounded bg-black/60 border border-white/10 text-[9px] font-mono text-white/60 tracking-wider select-none backdrop-blur-sm">
-                    PAGE {i + 1} / {numPages}
+              {/* Rendered Image list */}
+              {!isLoading && Array.from({ length: numPages }).map((_, i) => {
+                const pageStr = String(i + 1).padStart(2, '0');
+                const imgSrc = `/cases/The_$2M_AI_Knowledge_Autopsy/The_$2M_AI_Knowledge_Autopsy_页面_${pageStr}_图像_0001.jpg`;
+
+                return (
+                  <div 
+                    key={i} 
+                    className="relative rounded-lg border border-white/10 bg-[#080516] shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden w-full max-w-3xl transition-all duration-300 min-h-[300px] flex items-center justify-center"
+                  >
+                    {/* The Safe Image with full browser protections */}
+                    <img
+                      src={imgSrc}
+                      alt={`Autopsy report page ${i + 1}`}
+                      className="block w-full h-auto select-none pointer-events-none"
+                      loading="lazy"
+                      onContextMenu={(e) => e.preventDefault()}
+                      onDragStart={(e) => e.preventDefault()}
+                    />
+                    {/* Page index tag */}
+                    <div className="absolute bottom-3 right-3 px-2.5 py-1 rounded bg-black/60 border border-white/10 text-[9px] font-mono text-white/60 tracking-wider select-none backdrop-blur-sm">
+                      PAGE {i + 1} / {numPages}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Footer Watermark */}
             <div className="px-6 py-3 border-t border-white/10 bg-[#0F0A27]/60 flex items-center justify-between text-[9px] font-mono text-white/20 select-none">
-              <span>CANVAS SHIELD // ANTIGRAVITY ENGINE v3.5</span>
-              <span>RESTRICTED SECURE CANVAS VIEW ONLY</span>
+              <span>IMAGE SHIELD // ANTIGRAVITY ENGINE v3.5</span>
+              <span>RESTRICTED SECURE IMAGE VIEW ONLY</span>
               <span>SYSTEM DYNAMIC SECURITY SHIELD ACTIVE</span>
             </div>
           </motion.div>
         </motion.div>
       )}
     </AnimatePresence>
-  );
-}
-
-// ==========================================
-// INDEPENDENT CANVAS PAGE RENDERING COMPONENT
-// ==========================================
-interface PageCanvasProps {
-  pdfDoc: any;
-  pageNum: number;
-}
-
-function PageCanvas({ pdfDoc, pageNum }: PageCanvasProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [isRendered, setIsRendered] = useState(false);
-
-  useEffect(() => {
-    if (!pdfDoc) return;
-
-    let isMounted = true;
-    let renderTask: any = null;
-
-    const renderPage = async () => {
-      try {
-        const page = await pdfDoc.getPage(pageNum);
-        const canvas = canvasRef.current;
-        if (!canvas || !isMounted) return;
-
-        const context = canvas.getContext('2d');
-        if (!context || !isMounted) return;
-
-        // Render at high high fidelity (1.5x scale) to ensure crystal clear text details
-        const viewport = page.getViewport({ scale: 1.5 });
-
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
-
-        renderTask = page.render({
-          canvasContext: context,
-          viewport: viewport
-        });
-
-        await renderTask.promise;
-        if (isMounted) setIsRendered(true);
-      } catch (err) {
-        console.error(`Error rendering page ${pageNum}:`, err);
-      }
-    };
-
-    // Delay slightly to ensure browser completes initial rendering cycle
-    const delayTimer = setTimeout(() => {
-      renderPage();
-    }, 50);
-
-    return () => {
-      isMounted = false;
-      clearTimeout(delayTimer);
-      if (renderTask) {
-        try {
-          renderTask.cancel();
-        } catch (e) {
-          // Suppress errors if task is already complete
-        }
-      }
-    };
-  }, [pdfDoc, pageNum]);
-
-  return (
-    <div className="relative w-full h-auto min-h-[300px] flex items-center justify-center">
-      {/* Background soft pulse loading placeholder while rendering */}
-      {!isRendered && (
-        <div className="absolute inset-0 bg-[#0E0B20] animate-pulse flex items-center justify-center text-[10px] font-mono text-white/10 tracking-widest uppercase">
-          Rendering layer...
-        </div>
-      )}
-      <canvas
-        ref={canvasRef}
-        className={`block w-full h-auto select-none pointer-events-none transition-opacity duration-500 ${isRendered ? 'opacity-100' : 'opacity-0'}`}
-        onContextMenu={(e) => e.preventDefault()}
-      />
-    </div>
   );
 }

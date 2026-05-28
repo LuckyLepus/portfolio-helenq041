@@ -25,5 +25,5 @@ dist-ssr
 
 # Local large media assets
 public/cases/*
-!public/cases/The_$2M_AI_Knowledge_Autopsy.pdf
+!public/cases/The_$2M_AI_Knowledge_Autopsy/
 
