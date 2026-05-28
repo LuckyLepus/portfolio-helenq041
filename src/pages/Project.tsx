@@ -1021,11 +1021,7 @@ export default function Project() {
       <PdfViewerModal 
         isOpen={isPdfOpen} 
         onClose={() => setIsPdfOpen(false)} 
-        pdfSrc={
-          GITHUB_MEDIA_BASE_URL
-            ? `${GITHUB_MEDIA_BASE_URL.replace(/\/$/, '')}/The_$2M_AI_Knowledge_Autopsy.pdf#toolbar=0`
-            : '/cases/The_$2M_AI_Knowledge_Autopsy.pdf#toolbar=0'
-        } 
+        pdfSrc="/cases/The_$2M_AI_Knowledge_Autopsy.pdf#toolbar=0" 
       />
     </div>
   );
