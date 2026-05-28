@@ -1280,13 +1280,13 @@ function PdfViewerModal({ isOpen, onClose, pdfSrc }: PdfViewerModalProps) {
               {!isLoading && numPages > 0 && Array.from({ length: numPages }).map((_, i) => (
                 <div 
                   key={i} 
-                  className="relative rounded-lg border border-white/10 bg-[#080516] shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden max-w-full transition-all duration-300"
+                  className="relative rounded-lg border border-white/10 bg-[#080516] shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden w-full max-w-3xl transition-all duration-300"
                 >
                   <canvas
                     ref={(el) => {
                       if (el) canvasRefs.current[i] = el;
                     }}
-                    className="block max-w-full h-auto select-none pointer-events-none"
+                    className="block w-full h-auto select-none pointer-events-none"
                     onContextMenu={(e) => e.preventDefault()}
                   />
                   {/* Page index tag */}
