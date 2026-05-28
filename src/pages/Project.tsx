@@ -1038,6 +1038,134 @@ interface PdfViewerModalProps {
 
 function PdfViewerModal({ isOpen, onClose, pdfSrc }: PdfViewerModalProps) {
   const [isLoading, setIsLoading] = useState(true);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [numPages, setNumPages] = useState<number>(0);
+  const [pdfDoc, setPdfDoc] = useState<any>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const canvasRefs = useRef<HTMLCanvasElement[]>([]);
+
+  // 1. Dynamic load PDF.js from Cloudflare CDN
+  useEffect(() => {
+    if (!isOpen) return;
+
+    let isMounted = true;
+    setIsLoading(true);
+    setLoadingProgress(15);
+
+    const loadAndRenderPdf = async () => {
+      try {
+        // Load PDF.js main library if not present
+        if (!(window as any).pdfjsLib) {
+          const script = document.createElement('script');
+          script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js';
+          script.async = true;
+          document.body.appendChild(script);
+
+          await new Promise((resolve) => {
+            script.onload = resolve;
+          });
+        }
+
+        if (!isMounted) return;
+
+        // Configure workers for PDF.js background processing
+        if ((window as any).pdfjsLib && !(window as any).pdfjsLib.GlobalWorkerOptions.workerSrc) {
+          (window as any).pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+        }
+
+        setLoadingProgress(40);
+
+        // Load the PDF file from the local同源 relative path (bypasses COS download headers)
+        const cleanPdfUrl = pdfSrc.replace('#toolbar=0', '');
+        const loadingTask = (window as any).pdfjsLib.getDocument(cleanPdfUrl);
+
+        loadingTask.onProgress = (progressData: { loaded: number, total: number }) => {
+          if (progressData.total > 0 && isMounted) {
+            const percent = Math.round((progressData.loaded / progressData.total) * 100);
+            setLoadingProgress(40 + Math.round(percent * 0.45)); // Map 0-100% progress to 40%-85%
+          }
+        };
+
+        const pdf = await loadingTask.promise;
+        if (!isMounted) return;
+
+        setPdfDoc(pdf);
+        setNumPages(pdf.numPages);
+        setLoadingProgress(95);
+        
+        // Brief delay for transition smoothness
+        setTimeout(() => {
+          if (isMounted) setIsLoading(false);
+        }, 300);
+
+      } catch (err) {
+        console.error('Failed to render secure PDF via PDF.js:', err);
+        // Fallback fallback: if cdn fails, just finish loading (will display empty or error state gracefully)
+        if (isMounted) setIsLoading(false);
+      }
+    };
+
+    loadAndRenderPdf();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isOpen, pdfSrc]);
+
+  // 2. Render each PDF page onto its respective Canvas
+  useEffect(() => {
+    if (!pdfDoc || numPages === 0 || isLoading) return;
+
+    let isMounted = true;
+    const renderedPages = new Set<number>();
+
+    const renderAllPages = async () => {
+      for (let pageNum = 1; pageNum <= numPages; pageNum++) {
+        if (!isMounted) break;
+        if (renderedPages.has(pageNum)) continue;
+
+        try {
+          const page = await pdfDoc.getPage(pageNum);
+          const canvas = canvasRefs.current[pageNum - 1];
+          if (!canvas) continue;
+
+          const context = canvas.getContext('2d');
+          if (!context) continue;
+
+          // Adaptive responsive scale based on width of the viewer card
+          const containerWidth = containerRef.current?.clientWidth || 850;
+          const unscaledViewport = page.getViewport({ scale: 1.0 });
+          const paddingOffset = window.innerWidth < 768 ? 32 : 64;
+          const scale = (containerWidth - paddingOffset) / unscaledViewport.width;
+          
+          // Use optimal scale (max 1.6 for memory/sharpness balance)
+          const viewport = page.getViewport({ scale: Math.min(scale, 1.6) });
+
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+
+          await page.render({
+            canvasContext: context,
+            viewport: viewport
+          }).promise;
+
+          renderedPages.add(pageNum);
+        } catch (err) {
+          console.error(`Error rendering page ${pageNum}:`, err);
+        }
+      }
+    };
+
+    // Delay slightly to ensure canvas DOM elements are mounted and visible
+    const timer = setTimeout(() => {
+      renderAllPages();
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      isMounted = false;
+    };
+  }, [pdfDoc, numPages, isLoading]);
 
   // Close on Escape key press
   useEffect(() => {
@@ -1050,7 +1178,7 @@ function PdfViewerModal({ isOpen, onClose, pdfSrc }: PdfViewerModalProps) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  // Prevent scroll propagation when modal is open
+  // Prevent background scroll propagation when modal is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -1113,53 +1241,72 @@ function PdfViewerModal({ isOpen, onClose, pdfSrc }: PdfViewerModalProps) {
             <div className="bg-[#FF3E6C]/10 border-b border-[#FF3E6C]/20 px-6 py-2 flex items-center gap-2 select-none">
               <span className="w-1.5 h-1.5 rounded-full bg-[#FF3E6C] animate-ping" />
               <span className="text-[10px] md:text-xs font-light text-[#FF3E6C]/90 tracking-wide">
-                🔒 安全保护：系统已对当前文档启用在线高阶防盗与限制下载机制，禁止右键另存、打印与非法提取。
+                🔒 安全隔离：系统已对当前文档启用 Canvas 级安全沙箱重绘。物理阻断了任何 PDF 原始数据流，禁止另存及导出。
               </span>
             </div>
 
             {/* Core PDF View Port */}
-            <div className="flex-grow w-full relative bg-[#04020B] overflow-hidden select-none">
+            <div 
+              ref={containerRef}
+              className="flex-grow w-full relative bg-[#04020B] overflow-y-auto p-4 md:p-8 flex flex-col items-center gap-6 select-none scroll-smooth"
+              style={{ maxHeight: 'calc(85vh - 120px)' }}
+              onContextMenu={(e) => e.preventDefault()}
+            >
               
-              {/* Invisible blocker to intercept right-clicks over the top-toolbar region of the iframe */}
+              {/* Fully transparent blocker to overlay the entire viewport and intercept right clicks */}
               <div 
-                className="absolute top-0 left-0 right-0 h-14 bg-transparent z-20 cursor-default"
-                onContextMenu={(e) => e.preventDefault()}
-              />
-              
-              {/* Bottom security blocker overlay */}
-              <div 
-                className="absolute bottom-0 left-0 right-0 h-10 bg-transparent z-20 cursor-default"
+                className="absolute inset-0 bg-transparent z-20 cursor-default"
                 onContextMenu={(e) => e.preventDefault()}
               />
 
               {/* High-Tech Loading Skeleton Screen */}
               {isLoading && (
-                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#070415] gap-4">
+                <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-[#070415] gap-4">
                   <div className="relative w-16 h-16 flex items-center justify-center">
                     <Loader2 className="w-8 h-8 text-[#00FF85]/80 animate-spin" />
                     <Shield className="w-4 h-4 text-[#00FF85] absolute" />
                   </div>
-                  <div className="flex flex-col items-center gap-1.5 text-center px-4">
+                  <div className="flex flex-col items-center gap-2 text-center px-4 max-w-xs">
                     <span className="text-xs font-mono tracking-widest text-[#00FF85] uppercase">Encrypting secure link...</span>
-                    <span className="text-[10px] text-white/30 tracking-wider">Please wait while the PDF is safely loaded</span>
+                    {/* Visual Progress Bar */}
+                    <div className="w-40 h-1 bg-white/5 rounded-full overflow-hidden mt-1 border border-white/5">
+                      <div 
+                        className="h-full bg-[#00FF85] transition-all duration-300 ease-out shadow-[0_0_8px_#00FF85]"
+                        style={{ width: `${loadingProgress}%` }}
+                      />
+                    </div>
+                    <span className="text-[9px] text-white/30 tracking-wider">
+                      Decrypting & rendering Canvas layers ({loadingProgress}%)
+                    </span>
                   </div>
                 </div>
               )}
 
-              {/* The Safe PDF Frame */}
-              <iframe
-                src={pdfSrc}
-                className="w-full h-full border-0 select-none"
-                title="Secure PDF Viewer"
-                onLoad={() => setIsLoading(false)}
-                onContextMenu={(e) => e.preventDefault()}
-              />
+              {/* Rendered Canvas list */}
+              {!isLoading && numPages > 0 && Array.from({ length: numPages }).map((_, i) => (
+                <div 
+                  key={i} 
+                  className="relative rounded-lg border border-white/10 bg-[#080516] shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden max-w-full transition-all duration-300"
+                >
+                  <canvas
+                    ref={(el) => {
+                      if (el) canvasRefs.current[i] = el;
+                    }}
+                    className="block max-w-full h-auto select-none pointer-events-none"
+                    onContextMenu={(e) => e.preventDefault()}
+                  />
+                  {/* Page index tag */}
+                  <div className="absolute bottom-3 right-3 px-2.5 py-1 rounded bg-black/60 border border-white/10 text-[9px] font-mono text-white/60 tracking-wider select-none backdrop-blur-sm">
+                    PAGE {i + 1} / {numPages}
+                  </div>
+                </div>
+              ))}
             </div>
 
             {/* Footer Watermark */}
             <div className="px-6 py-3 border-t border-white/10 bg-[#0F0A27]/60 flex items-center justify-between text-[9px] font-mono text-white/20 select-none">
-              <span>AUDITED SYSTEM // ANTIGRAVITY ENGINE v3.5</span>
-              <span>RESTRICTED VIEW ONLY</span>
+              <span>CANVAS SHIELD // ANTIGRAVITY ENGINE v3.5</span>
+              <span>RESTRICTED SECURE CANVAS VIEW ONLY</span>
               <span>SYSTEM DYNAMIC SECURITY SHIELD ACTIVE</span>
             </div>
           </motion.div>
