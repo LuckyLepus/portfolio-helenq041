@@ -1,7 +1,7 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { FileText, ExternalLink, FileDown, ChevronDown } from 'lucide-react';
+import { FileText, ExternalLink, FileDown, ChevronDown, Shield, X, Loader2 } from 'lucide-react';
 import ContactPopup from '../components/ContactPopup';
 import InteractiveMindMap from '../components/InteractiveMindMap';
 import HtmlPptShowcase from '../components/HtmlPptShowcase';
@@ -687,6 +687,7 @@ export default function Project() {
   const project = id ? projectsData[id] : null;
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const [isPdfOpen, setIsPdfOpen] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const { scrollY } = useScroll({ container: scrollRef });
@@ -911,15 +912,13 @@ export default function Project() {
                     <p className="text-sm text-white/50 mb-8 max-w-md mx-auto leading-relaxed">
                       获取包含 15 页详细分析与系统性解法的完整复盘文档，深入了解如何重构进化型组织大脑。
                     </p>
-                    <a
-                      href="/cases/The_$2M_AI_Knowledge_Autopsy.pdf"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-3 bg-[#00FF85]/10 hover:bg-[#00FF85]/20 text-[#00FF85] border border-[#00FF85]/30 hover:border-[#00FF85]/60 px-8 py-3 rounded-full transition-all duration-300 font-mono text-sm tracking-widest hover:shadow-[0_0_15px_rgba(0,255,133,0.3)]"
+                    <button
+                      onClick={() => setIsPdfOpen(true)}
+                      className="inline-flex items-center gap-3 bg-[#00FF85]/10 hover:bg-[#00FF85]/20 text-[#00FF85] border border-[#00FF85]/30 hover:border-[#00FF85]/60 px-8 py-3 rounded-full transition-all duration-300 font-mono text-sm tracking-widest hover:shadow-[0_0_15px_rgba(0,255,133,0.3)] cursor-pointer"
                     >
                       <FileText className="w-4 h-4" />
                       VIEW FULL REPORT
-                    </a>
+                    </button>
                   </div>
                 </div>
               ) : isProject04 ? (
@@ -1019,6 +1018,157 @@ export default function Project() {
       </div>
 
       <ContactPopup isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
+      <PdfViewerModal 
+        isOpen={isPdfOpen} 
+        onClose={() => setIsPdfOpen(false)} 
+        pdfSrc={
+          GITHUB_MEDIA_BASE_URL
+            ? `${GITHUB_MEDIA_BASE_URL.replace(/\/$/, '')}/The_$2M_AI_Knowledge_Autopsy.pdf#toolbar=0`
+            : '/cases/The_$2M_AI_Knowledge_Autopsy.pdf#toolbar=0'
+        } 
+      />
     </div>
+  );
+}
+
+// ==========================================
+// SECURE PDF PREVIEW MODAL COMPONENT (ANTI-DOWNLOAD)
+// ==========================================
+interface PdfViewerModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  pdfSrc: string;
+}
+
+function PdfViewerModal({ isOpen, onClose, pdfSrc }: PdfViewerModalProps) {
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Close on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    if (isOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  // Prevent scroll propagation when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 md:p-6"
+          onClick={onClose}
+        >
+          {/* Modal Card Container */}
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.95, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            className="relative w-full max-w-5xl h-[85vh] bg-[#0A061C]/95 border border-white/10 rounded-2xl flex flex-col overflow-hidden shadow-[0_0_50px_rgba(0,255,133,0.15)]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header Area */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-[#0F0A27]/90 select-none">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-[#00FF85]/10 flex items-center justify-center text-[#00FF85] border border-[#00FF85]/20 animate-pulse">
+                  <Shield className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-normal text-white tracking-wide flex items-center gap-2">
+                    <span>在线安全阅读器</span>
+                    <span className="text-[9px] font-mono font-bold text-[#00FF85]/80 bg-[#00FF85]/10 px-1.5 py-0.5 rounded border border-[#00FF85]/20 tracking-wider">
+                      SECURE PREVIEW
+                    </span>
+                  </h3>
+                  <p className="text-[10px] text-white/40 mt-0.5 tracking-wider uppercase font-mono">
+                    THE $2M AI KNOWLEDGE AUTOPSY REPORT
+                  </p>
+                </div>
+              </div>
+
+              {/* Exit Button */}
+              <button
+                onClick={onClose}
+                className="w-8 h-8 rounded-full bg-white/5 border border-white/10 text-white/60 hover:text-white hover:bg-white/10 flex items-center justify-center transition-all duration-300 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Red Alert Banner */}
+            <div className="bg-[#FF3E6C]/10 border-b border-[#FF3E6C]/20 px-6 py-2 flex items-center gap-2 select-none">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#FF3E6C] animate-ping" />
+              <span className="text-[10px] md:text-xs font-light text-[#FF3E6C]/90 tracking-wide">
+                🔒 安全保护：系统已对当前文档启用在线高阶防盗与限制下载机制，禁止右键另存、打印与非法提取。
+              </span>
+            </div>
+
+            {/* Core PDF View Port */}
+            <div className="flex-grow w-full relative bg-[#04020B] overflow-hidden select-none">
+              
+              {/* Invisible blocker to intercept right-clicks over the top-toolbar region of the iframe */}
+              <div 
+                className="absolute top-0 left-0 right-0 h-14 bg-transparent z-20 cursor-default"
+                onContextMenu={(e) => e.preventDefault()}
+              />
+              
+              {/* Bottom security blocker overlay */}
+              <div 
+                className="absolute bottom-0 left-0 right-0 h-10 bg-transparent z-20 cursor-default"
+                onContextMenu={(e) => e.preventDefault()}
+              />
+
+              {/* High-Tech Loading Skeleton Screen */}
+              {isLoading && (
+                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#070415] gap-4">
+                  <div className="relative w-16 h-16 flex items-center justify-center">
+                    <Loader2 className="w-8 h-8 text-[#00FF85]/80 animate-spin" />
+                    <Shield className="w-4 h-4 text-[#00FF85] absolute" />
+                  </div>
+                  <div className="flex flex-col items-center gap-1.5 text-center px-4">
+                    <span className="text-xs font-mono tracking-widest text-[#00FF85] uppercase">Encrypting secure link...</span>
+                    <span className="text-[10px] text-white/30 tracking-wider">Please wait while the PDF is safely loaded</span>
+                  </div>
+                </div>
+              )}
+
+              {/* The Safe PDF Frame */}
+              <iframe
+                src={pdfSrc}
+                className="w-full h-full border-0 select-none"
+                title="Secure PDF Viewer"
+                onLoad={() => setIsLoading(false)}
+                onContextMenu={(e) => e.preventDefault()}
+              />
+            </div>
+
+            {/* Footer Watermark */}
+            <div className="px-6 py-3 border-t border-white/10 bg-[#0F0A27]/60 flex items-center justify-between text-[9px] font-mono text-white/20 select-none">
+              <span>AUDITED SYSTEM // ANTIGRAVITY ENGINE v3.5</span>
+              <span>RESTRICTED VIEW ONLY</span>
+              <span>SYSTEM DYNAMIC SECURITY SHIELD ACTIVE</span>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
