@@ -903,21 +903,21 @@ export default function Project() {
                   
                   <InteractiveMindMap />
                   
-                  {/* PDF Download Section */}
+                  {/* Secure PDF Online Viewer Section */}
                   <div className="w-full bg-white/[0.02] border border-white/[0.06] rounded-xl p-8 flex flex-col items-center text-center">
                     <div className="w-16 h-16 rounded-full bg-[#00FF85]/10 flex items-center justify-center text-[#00FF85] mb-6 shadow-[0_0_20px_rgba(0,255,133,0.1)]">
-                      <FileDown className="w-8 h-8" />
+                      <Shield className="w-8 h-8 animate-pulse" />
                     </div>
-                    <h3 className="text-xl text-white font-medium mb-3">完整的《价值200万的AI知识库坠机复盘》报告</h3>
+                    <h3 className="text-xl text-white font-medium mb-3">《价值200万的AI知识库坠机复盘》安全阅览室</h3>
                     <p className="text-sm text-white/50 mb-8 max-w-md mx-auto leading-relaxed">
-                      获取包含 15 页详细分析与系统性解法的完整复盘文档，深入了解如何重构进化型组织大脑。
+                      系统已启用数字防盗加密沙箱，您可在此直接畅读包含 15 页详细解构与进化型组织重构方案的完整复盘报告。
                     </p>
                     <button
                       onClick={() => setIsPdfOpen(true)}
                       className="inline-flex items-center gap-3 bg-[#00FF85]/10 hover:bg-[#00FF85]/20 text-[#00FF85] border border-[#00FF85]/30 hover:border-[#00FF85]/60 px-8 py-3 rounded-full transition-all duration-300 font-mono text-sm tracking-widest hover:shadow-[0_0_15px_rgba(0,255,133,0.3)] cursor-pointer"
                     >
                       <FileText className="w-4 h-4" />
-                      VIEW FULL REPORT
+                      READ FULL REPORT
                     </button>
                   </div>
                 </div>
