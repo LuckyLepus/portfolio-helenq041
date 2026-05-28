@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Monitor, Smartphone, Maximize, Code2 } from 'lucide-react';
 
-const CLOUD_MEDIA_BASE_URL = 'https://assets.helenq.top/portfolio-helenq0414';
+const CLOUD_MEDIA_BASE_URL = 'https://helenq-html-ppts.vercel.app';
 
 // Reusable browser frame component
 function IosBrowserFrame({ title, url, iframeSrc }: { title: string, url: string, iframeSrc: string }) {
@@ -125,7 +125,7 @@ export default function HtmlPptShowcase() {
         <IosBrowserFrame 
           title="Fosun Tourism Group 2026"
           url="fosun-tourism.helenq.dev/2026-proposal"
-          iframeSrc={`${CLOUD_MEDIA_BASE_URL}/html-ppts/fosun/fosun_2026.html`}
+          iframeSrc={`${CLOUD_MEDIA_BASE_URL}/fosun/fosun_2026.html`}
         />
       </div>
 
@@ -141,7 +141,7 @@ export default function HtmlPptShowcase() {
         <IosBrowserFrame 
           title="Audi Traveler 2022"
           url="audi-traveler.helenq.dev/campaign-2022"
-          iframeSrc={`${CLOUD_MEDIA_BASE_URL}/html-ppts/portfolio/audi_traveler_2022_v2.html`}
+          iframeSrc={`${CLOUD_MEDIA_BASE_URL}/portfolio/audi_traveler_2022_v2.html`}
         />
       </div>
 
@@ -157,7 +157,7 @@ export default function HtmlPptShowcase() {
         <IosBrowserFrame 
           title="Bytedance Gongyi 2023"
           url="bytedance-gongyi.helenq.dev/annual-report-2023"
-          iframeSrc={`${CLOUD_MEDIA_BASE_URL}/html-ppts/portfolio/bytedance_gongyi_2023.html`}
+          iframeSrc={`${CLOUD_MEDIA_BASE_URL}/portfolio/bytedance_gongyi_2023.html`}
         />
       </div>
 
