@@ -1132,14 +1132,8 @@ function PdfViewerModal({ isOpen, onClose, pdfSrc }: PdfViewerModalProps) {
           const context = canvas.getContext('2d');
           if (!context) continue;
 
-          // Adaptive responsive scale based on width of the viewer card
-          const containerWidth = containerRef.current?.clientWidth || 850;
-          const unscaledViewport = page.getViewport({ scale: 1.0 });
-          const paddingOffset = window.innerWidth < 768 ? 32 : 64;
-          const scale = (containerWidth - paddingOffset) / unscaledViewport.width;
-          
-          // Use optimal scale (max 1.6 for memory/sharpness balance)
-          const viewport = page.getViewport({ scale: Math.min(scale, 1.6) });
+          // Render at high high fidelity (1.5x scale) to ensure crystal clear text details
+          const viewport = page.getViewport({ scale: 1.5 });
 
           canvas.height = viewport.height;
           canvas.width = viewport.width;
