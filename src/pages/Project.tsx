@@ -1042,7 +1042,6 @@ function PdfViewerModal({ isOpen, onClose, pdfSrc }: PdfViewerModalProps) {
   const [numPages, setNumPages] = useState<number>(0);
   const [pdfDoc, setPdfDoc] = useState<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const canvasRefs = useRef<HTMLCanvasElement[]>([]);
 
   // 1. Dynamic load PDF.js from Cloudflare CDN
   useEffect(() => {
@@ -1111,55 +1110,6 @@ function PdfViewerModal({ isOpen, onClose, pdfSrc }: PdfViewerModalProps) {
       isMounted = false;
     };
   }, [isOpen, pdfSrc]);
-
-  // 2. Render each PDF page onto its respective Canvas
-  useEffect(() => {
-    if (!pdfDoc || numPages === 0 || isLoading) return;
-
-    let isMounted = true;
-    const renderedPages = new Set<number>();
-
-    const renderAllPages = async () => {
-      for (let pageNum = 1; pageNum <= numPages; pageNum++) {
-        if (!isMounted) break;
-        if (renderedPages.has(pageNum)) continue;
-
-        try {
-          const page = await pdfDoc.getPage(pageNum);
-          const canvas = canvasRefs.current[pageNum - 1];
-          if (!canvas) continue;
-
-          const context = canvas.getContext('2d');
-          if (!context) continue;
-
-          // Render at high high fidelity (1.5x scale) to ensure crystal clear text details
-          const viewport = page.getViewport({ scale: 1.5 });
-
-          canvas.height = viewport.height;
-          canvas.width = viewport.width;
-
-          await page.render({
-            canvasContext: context,
-            viewport: viewport
-          }).promise;
-
-          renderedPages.add(pageNum);
-        } catch (err) {
-          console.error(`Error rendering page ${pageNum}:`, err);
-        }
-      }
-    };
-
-    // Delay slightly to ensure canvas DOM elements are mounted and visible
-    const timer = setTimeout(() => {
-      renderAllPages();
-    }, 100);
-
-    return () => {
-      clearTimeout(timer);
-      isMounted = false;
-    };
-  }, [pdfDoc, numPages, isLoading]);
 
   // Close on Escape key press
   useEffect(() => {
@@ -1282,13 +1232,7 @@ function PdfViewerModal({ isOpen, onClose, pdfSrc }: PdfViewerModalProps) {
                   key={i} 
                   className="relative rounded-lg border border-white/10 bg-[#080516] shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden w-full max-w-3xl transition-all duration-300"
                 >
-                  <canvas
-                    ref={(el) => {
-                      if (el) canvasRefs.current[i] = el;
-                    }}
-                    className="block w-full h-auto select-none pointer-events-none"
-                    onContextMenu={(e) => e.preventDefault()}
-                  />
+                  <PageCanvas pdfDoc={pdfDoc} pageNum={i + 1} />
                   {/* Page index tag */}
                   <div className="absolute bottom-3 right-3 px-2.5 py-1 rounded bg-black/60 border border-white/10 text-[9px] font-mono text-white/60 tracking-wider select-none backdrop-blur-sm">
                     PAGE {i + 1} / {numPages}
@@ -1307,5 +1251,85 @@ function PdfViewerModal({ isOpen, onClose, pdfSrc }: PdfViewerModalProps) {
         </motion.div>
       )}
     </AnimatePresence>
+  );
+}
+
+// ==========================================
+// INDEPENDENT CANVAS PAGE RENDERING COMPONENT
+// ==========================================
+interface PageCanvasProps {
+  pdfDoc: any;
+  pageNum: number;
+}
+
+function PageCanvas({ pdfDoc, pageNum }: PageCanvasProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isRendered, setIsRendered] = useState(false);
+
+  useEffect(() => {
+    if (!pdfDoc) return;
+
+    let isMounted = true;
+    let renderTask: any = null;
+
+    const renderPage = async () => {
+      try {
+        const page = await pdfDoc.getPage(pageNum);
+        const canvas = canvasRef.current;
+        if (!canvas || !isMounted) return;
+
+        const context = canvas.getContext('2d');
+        if (!context || !isMounted) return;
+
+        // Render at high high fidelity (1.5x scale) to ensure crystal clear text details
+        const viewport = page.getViewport({ scale: 1.5 });
+
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        renderTask = page.render({
+          canvasContext: context,
+          viewport: viewport
+        });
+
+        await renderTask.promise;
+        if (isMounted) setIsRendered(true);
+      } catch (err) {
+        console.error(`Error rendering page ${pageNum}:`, err);
+      }
+    };
+
+    // Delay slightly to ensure browser completes initial rendering cycle
+    const delayTimer = setTimeout(() => {
+      renderPage();
+    }, 50);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(delayTimer);
+      if (renderTask) {
+        try {
+          renderTask.cancel();
+        } catch (e) {
+          // Suppress errors if task is already complete
+        }
+      }
+    };
+  }, [pdfDoc, pageNum]);
+
+  return (
+    <div className="relative w-full h-auto min-h-[300px] flex items-center justify-center">
+      {/* Background soft pulse loading placeholder while rendering */}
+      {!isRendered && (
+        <div className="absolute inset-0 bg-[#0E0B20] animate-pulse flex items-center justify-center text-[10px] font-mono text-white/10 tracking-widest uppercase">
+          Rendering layer...
+        </div>
+      )}
+      <canvas
+        ref={canvasRef}
+        className={`block w-full h-auto select-none pointer-events-none transition-opacity duration-500 ${isRendered ? 'opacity-100' : 'opacity-0'}`}
+        onContextMenu={(e) => e.preventDefault()}
+      />
+    </div>
   );
 }
