@@ -83,7 +83,7 @@ const projects = [
     subtitleZh: '无边界探索ING-游戏与低多边形艺术实验',
     path: '/project/06',
     image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=800&auto=format&fit=crop', // Open book
-    modelUrl: '/model.glb', // Use 3D model for this project
+    modelUrl: 'https://helenq-assets-1317600743.cos.ap-hongkong.myqcloud.com/portfolio-helenq0414/model.glb', // Use COS hosted 3D model to bypass Vercel size limits
     pos: { top: '15%', left: '55%', width: '20vw', height: '25vw' },
     labelPos: { top: '-24px', left: '0' },
     animationClass: 'anim-float-1',

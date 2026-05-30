@@ -33,7 +33,7 @@ interface ModelViewerProps {
   className?: string;
 }
 
-export default function ModelViewer({ url = '/model.glb', className = '' }: ModelViewerProps) {
+export default function ModelViewer({ url = 'https://helenq-assets-1317600743.cos.ap-hongkong.myqcloud.com/portfolio-helenq0414/model.glb', className = '' }: ModelViewerProps) {
   return (
     <div className={`w-full h-full pointer-events-none flex items-center justify-center ${className}`}>
       <Canvas camera={{ position: [0, 0, 8], fov: 45 }} style={{ pointerEvents: 'none' }}>
@@ -53,4 +53,4 @@ export default function ModelViewer({ url = '/model.glb', className = '' }: Mode
 }
 
 // Preload the default model so it loads instantly
-useGLTF.preload('/model.glb');
+useGLTF.preload('https://helenq-assets-1317600743.cos.ap-hongkong.myqcloud.com/portfolio-helenq0414/model.glb');

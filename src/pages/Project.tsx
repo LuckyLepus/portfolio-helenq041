@@ -817,6 +817,9 @@ export default function Project() {
                                 return item.mediaUrl;
                               })()}
                               controls
+                              controlsList="nodownload"
+                              disablePictureInPicture
+                              onContextMenu={(e) => e.preventDefault()}
                               preload="metadata"
                               className="w-full h-full object-contain"
                               playsInline

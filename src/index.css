@@ -83,3 +83,14 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* 禁用并隐藏 HTML5 视频自带的下载按钮和三个点选项菜单 */
+video::-webkit-media-controls-download-button {
+  display: none !important;
+}
+video::-webkit-media-controls-overflow-button {
+  display: none !important;
+}
+video::-internal-media-controls-download-button {
+  display: none !important;
+}
