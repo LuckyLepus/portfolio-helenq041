@@ -1,11 +1,22 @@
 import { useState } from 'react';
-import { Monitor, Smartphone, Maximize, Code2 } from 'lucide-react';
+import { Monitor, Smartphone, Maximize, Code2, Play } from 'lucide-react';
 
 const CLOUD_MEDIA_BASE_URL = 'https://helenq-html-ppts.vercel.app';
 
 // Reusable browser frame component
-function IosBrowserFrame({ title, url, iframeSrc }: { title: string, url: string, iframeSrc: string }) {
+function IosBrowserFrame({ 
+  title, 
+  url, 
+  iframeSrc, 
+  previewImage 
+}: { 
+  title: string; 
+  url: string; 
+  iframeSrc: string; 
+  previewImage: string; 
+}) {
   const [deviceMode, setDeviceMode] = useState<'desktop' | 'mobile'>('desktop');
+  const [isLoaded, setIsLoaded] = useState(false);
 
   return (
     <div className={`relative w-full rounded-2xl overflow-hidden border border-[#00FF85]/60 shadow-[0_0_25px_rgba(0,255,133,0.15)] transition-all duration-500 flex flex-col bg-black ${deviceMode === 'desktop' ? 'aspect-[16/9]' : 'h-[850px]'}`}>
@@ -52,17 +63,52 @@ function IosBrowserFrame({ title, url, iframeSrc }: { title: string, url: string
         </div>
       </div>
       
-      {/* Iframe Container */}
-      <div className="flex-1 w-full bg-[#030303] flex items-center justify-center transition-all duration-500 overflow-hidden">
-        <div className={`relative transition-all duration-500 ease-in-out ${deviceMode === 'mobile' ? 'w-[375px] h-[812px] max-h-[90%] border border-white/20 rounded-3xl overflow-hidden shadow-2xl' : 'w-full h-full'}`}>
-          <iframe 
-            src={iframeSrc}
-            className="w-full h-full border-0"
-            title={title}
-            loading="lazy"
-            allow="fullscreen"
-          ></iframe>
-        </div>
+      {/* Iframe Container / Placeholder */}
+      <div className="flex-1 w-full bg-[#030303] flex items-center justify-center transition-all duration-500 overflow-hidden relative">
+        {!isLoaded ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center select-none overflow-hidden group">
+            {/* Background Preview Image with Zoom & Blur */}
+            <div 
+              className="absolute inset-0 bg-cover bg-center filter blur-sm opacity-35 scale-105 group-hover:scale-110 transition-transform duration-1000 ease-out" 
+              style={{ backgroundImage: `url(${previewImage})` }}
+            />
+            {/* Dark Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/85 to-transparent" />
+            
+            {/* Content Container */}
+            <div className="relative z-10 flex flex-col items-center max-w-md px-4">
+              <button
+                onClick={() => setIsLoaded(true)}
+                className="w-16 h-16 rounded-full bg-[#00FF85]/10 hover:bg-[#00FF85]/20 flex items-center justify-center text-[#00FF85] mb-6 border border-[#00FF85]/30 hover:border-[#00FF85]/60 transition-all duration-300 shadow-[0_0_15px_rgba(0,255,133,0.15)] hover:shadow-[0_0_25px_rgba(0,255,133,0.35)] scale-100 hover:scale-105 cursor-pointer"
+              >
+                <Play className="w-6 h-6 fill-current translate-x-0.5" />
+              </button>
+              <h4 className="text-white text-base md:text-lg font-medium tracking-wider mb-2 uppercase">
+                {title} Live Preview
+              </h4>
+              <p className="text-white/40 text-[10px] md:text-xs font-mono mb-8 tracking-wider">
+                [ 包含大流量 3D 模型与视频动效 // 建议在宽带环境加载 ]
+              </p>
+              
+              <button
+                onClick={() => setIsLoaded(true)}
+                className="inline-flex items-center gap-3 bg-[#00FF85]/10 hover:bg-[#00FF85] text-[#00FF85] hover:text-black border border-[#00FF85]/40 hover:border-[#00FF85] px-6 py-2.5 rounded-full transition-all duration-300 font-mono text-[10px] md:text-xs tracking-widest cursor-pointer shadow-[0_0_15px_rgba(0,255,133,0.1)] hover:shadow-[0_0_20px_rgba(0,255,133,0.4)]"
+              >
+                点击载入实时提案 // LOAD PRESENTATION
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className={`relative transition-all duration-500 ease-in-out ${deviceMode === 'mobile' ? 'w-[375px] h-[812px] max-h-[90%] border border-white/20 rounded-3xl overflow-hidden shadow-2xl' : 'w-full h-full'}`}>
+            <iframe 
+              src={iframeSrc}
+              className="w-full h-full border-0"
+              title={title}
+              loading="lazy"
+              allow="fullscreen"
+            ></iframe>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -126,6 +172,7 @@ export default function HtmlPptShowcase() {
           title="Fosun Tourism Group 2026"
           url="fosun-tourism.helenq.dev/2026-proposal"
           iframeSrc={`${CLOUD_MEDIA_BASE_URL}/fosun/fosun_2026.html`}
+          previewImage={`${CLOUD_MEDIA_BASE_URL}/fosun/assets/images/space_overview.jpg`}
         />
       </div>
 
@@ -142,6 +189,7 @@ export default function HtmlPptShowcase() {
           title="Audi Traveler 2022"
           url="audi-traveler.helenq.dev/campaign-2022"
           iframeSrc={`${CLOUD_MEDIA_BASE_URL}/portfolio/audi_traveler_2022_v2.html`}
+          previewImage={`${CLOUD_MEDIA_BASE_URL}/portfolio/assets/audi_images/audi_car_driving_loop_1779528521142.png`}
         />
       </div>
 
@@ -158,6 +206,7 @@ export default function HtmlPptShowcase() {
           title="Bytedance Gongyi 2023"
           url="bytedance-gongyi.helenq.dev/annual-report-2023"
           iframeSrc={`${CLOUD_MEDIA_BASE_URL}/portfolio/bytedance_gongyi_2023.html`}
+          previewImage={`${CLOUD_MEDIA_BASE_URL}/portfolio/assets/bytedance_images/bd_museum_overview_1779531311845.png`}
         />
       </div>
 

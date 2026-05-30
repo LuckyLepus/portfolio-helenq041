@@ -281,105 +281,113 @@ export default function Home() {
           />
         )}
       </AnimatePresence>
-      <div className={`h-screen w-screen overflow-hidden relative font-sans font-light ${!isUnlocked ? 'pointer-events-none' : ''}`}>
-      {/* LEFT COLUMN */}
-      <div className="absolute top-8 left-8 flex gap-4 z-50">
-        <span className="font-normal text-sm whitespace-nowrap">齐婕 HELEN.Q</span>
-        <p className="text-sm leading-tight pointer-events-none">
-          I plan, I create, I think.<br />
-          Based in Beijing.<br />
-          This is my Portfolio.
-        </p>
-      </div>
-
-      <div className="absolute left-8 bottom-8 flex flex-col gap-4 text-xs leading-tight z-50 whitespace-nowrap font-normal">
-        {/* Audio Toggle Button - Serves as explicit interaction */}
-        <button
-          onClick={handleGlobalInteraction}
-          className={`text-xs text-left w-fit border px-2 py-1 rounded transition-colors ${hasInteracted ? 'border-[#00FF85] text-[#00FF85]' : 'border-white/30 text-white/50 hover:border-white hover:text-white'}`}
-          style={{ zIndex: 9999, pointerEvents: 'auto' }}
+      
+      {isUnlocked && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="h-screen w-screen overflow-hidden relative font-sans font-light"
         >
-          {hasInteracted ? 'SOUND ON' : 'CLICK TO ENABLE SOUND'}
-        </button>
-        <p className="uppercase">
-          ROLE: CD / NARRATIVE DESIGN / AI PRACTITIONER<br />
-          TYPE: INTJ ARCHITECT<br />
-          FUTURE: Independent Contributors & Coaches
-        </p>
-      </div>
+          {/* LEFT COLUMN */}
+          <div className="absolute top-8 left-8 flex gap-4 z-50">
+            <span className="font-normal text-sm whitespace-nowrap">齐婕 HELEN.Q</span>
+            <p className="text-sm leading-tight pointer-events-none">
+              I plan, I create, I think.<br />
+              Based in Beijing.<br />
+              This is my Portfolio.
+            </p>
+          </div>
 
-      <div className="absolute left-8 top-1/2 -translate-y-1/2 z-20">
-        <h1
-          className="text-[7vw] leading-none font-display font-light tracking-wider uppercase"
-          style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
-        >
-          HELEN.Q
-        </h1>
-      </div>
+          <div className="absolute left-8 bottom-8 flex flex-col gap-4 text-xs leading-tight z-50 whitespace-nowrap font-normal">
+            {/* Audio Toggle Button - Serves as explicit interaction */}
+            <button
+              onClick={handleGlobalInteraction}
+              className={`text-xs text-left w-fit border px-2 py-1 rounded transition-colors ${hasInteracted ? 'border-[#00FF85] text-[#00FF85]' : 'border-white/30 text-white/50 hover:border-white hover:text-white'}`}
+              style={{ zIndex: 9999, pointerEvents: 'auto' }}
+            >
+              {hasInteracted ? 'SOUND ON' : 'CLICK TO ENABLE SOUND'}
+            </button>
+            <p className="uppercase">
+              ROLE: CD / NARRATIVE DESIGN / AI PRACTITIONER<br />
+              TYPE: INTJ ARCHITECT<br />
+              FUTURE: Independent Contributors & Coaches
+            </p>
+          </div>
 
-      {/* RIGHT COLUMN */}
-      <div className="absolute top-8 right-12 flex gap-12 font-normal text-sm z-20">
-        <Link to="/playground" className="hover:text-[#00FF85] transition-colors hoverable">Playground</Link>
-        <Link to="/about" className="hover:text-[#00FF85] transition-colors hoverable">About</Link>
-      </div>
+          <div className="absolute left-8 top-1/2 -translate-y-1/2 z-20">
+            <h1
+              className="text-[7vw] leading-none font-display font-light tracking-wider uppercase"
+              style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+            >
+              HELEN.Q
+            </h1>
+          </div>
 
-      <div className="absolute top-1/2 right-12 -translate-y-1/2 w-64 flex flex-col z-20">
-        <div className="w-full h-px bg-current opacity-20 mb-8"></div>
-        {projects.map((project) => (
-          <Link
-            key={project.id}
-            to={project.path}
-            className={`block mb-6 transition-all duration-300 hoverable ${hoveredId === project.id ? 'text-[#00FF85] opacity-100' : 'text-white opacity-50'
-              }`}
-            onMouseEnter={() => setHoveredId(project.id)}
-            onMouseLeave={() => setHoveredId(null)}
-          >
-            <div className="flex justify-between items-baseline">
-              <span className={`transition-all duration-300 ${hoveredId === project.id
-                ? 'font-jinshu text-[15px] tracking-wider'
-                : 'text-sm font-normal'
-                }`}>
-                {hoveredId === project.id ? project.titleZh : project.title}
-              </span>
-              <span className="text-xs font-normal">{`{${project.id}}`}</span>
+          {/* RIGHT COLUMN */}
+          <div className="absolute top-8 right-12 flex gap-12 font-normal text-sm z-20">
+            <Link to="/playground" className="hover:text-[#00FF85] transition-colors hoverable">Playground</Link>
+            <Link to="/about" className="hover:text-[#00FF85] transition-colors hoverable">About</Link>
+          </div>
+
+          <div className="absolute top-1/2 right-12 -translate-y-1/2 w-64 flex flex-col z-20">
+            <div className="w-full h-px bg-current opacity-20 mb-8"></div>
+            {projects.map((project) => (
+              <Link
+                key={project.id}
+                to={project.path}
+                className={`block mb-6 transition-all duration-300 hoverable ${hoveredId === project.id ? 'text-[#00FF85] opacity-100' : 'text-white opacity-50'
+                  }`}
+                onMouseEnter={() => setHoveredId(project.id)}
+                onMouseLeave={() => setHoveredId(null)}
+              >
+                <div className="flex justify-between items-baseline">
+                  <span className={`transition-all duration-300 ${hoveredId === project.id
+                    ? 'font-jinshu text-[15px] tracking-wider'
+                    : 'text-sm font-normal'
+                    }`}>
+                    {hoveredId === project.id ? project.titleZh : project.title}
+                  </span>
+                  <span className="text-xs font-normal">{`{${project.id}}`}</span>
+                </div>
+                <div className={`transition-all duration-300 mt-1.5 leading-relaxed ${hoveredId === project.id
+                  ? 'text-[11px] font-normal tracking-wide opacity-90'
+                  : 'text-xs mt-1'
+                  }`}>
+                  {hoveredId === project.id ? project.subtitleZh : project.subtitle}
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          <div className="absolute bottom-8 right-12 text-sm z-20">
+            <p className="mb-1 font-normal">Talk to me..</p>
+            <div className="flex gap-2 font-normal uppercase">
+              <a href="#" onClick={(e) => { e.preventDefault(); setIsContactOpen(true); }} className="underline hover:text-[#00FF85] transition-colors hoverable cursor-pointer">EMAIL /</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); setIsContactOpen(true); }} className="underline hover:text-[#00FF85] transition-colors hoverable cursor-pointer">RED /</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); setIsContactOpen(true); }} className="underline hover:text-[#00FF85] transition-colors hoverable cursor-pointer">WECHAT /</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); setIsContactOpen(true); }} className="underline hover:text-[#00FF85] transition-colors hoverable cursor-pointer">PHONE</a>
             </div>
-            <div className={`transition-all duration-300 mt-1.5 leading-relaxed ${hoveredId === project.id
-              ? 'text-[11px] font-normal tracking-wide opacity-90'
-              : 'text-xs mt-1'
-              }`}>
-              {hoveredId === project.id ? project.subtitleZh : project.subtitle}
-            </div>
-          </Link>
-        ))}
-      </div>
+          </div>
 
-      <div className="absolute bottom-8 right-12 text-sm z-20">
-        <p className="mb-1 font-normal">Talk to me..</p>
-        <div className="flex gap-2 font-normal uppercase">
-          <a href="#" onClick={(e) => { e.preventDefault(); setIsContactOpen(true); }} className="underline hover:text-[#00FF85] transition-colors hoverable cursor-pointer">EMAIL /</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); setIsContactOpen(true); }} className="underline hover:text-[#00FF85] transition-colors hoverable cursor-pointer">RED /</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); setIsContactOpen(true); }} className="underline hover:text-[#00FF85] transition-colors hoverable cursor-pointer">WECHAT /</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); setIsContactOpen(true); }} className="underline hover:text-[#00FF85] transition-colors hoverable cursor-pointer">PHONE</a>
-        </div>
-      </div>
+          {/* CENTER CANVAS (IMAGES WITH PARALLAX AND 3D ANIMATIONS) */}
+          <div className="absolute inset-0 z-10 pointer-events-none">
+            {projects.map((project) => (
+              <ProjectBlob
+                key={project.id}
+                project={project}
+                hoveredId={hoveredId}
+                setHoveredId={setHoveredId}
+                smoothX={smoothX}
+                smoothY={smoothY}
+              />
+            ))}
+          </div>
 
-      {/* CENTER CANVAS (IMAGES WITH PARALLAX AND 3D ANIMATIONS) */}
-      <div className="absolute inset-0 z-10 pointer-events-none">
-        {projects.map((project) => (
-          <ProjectBlob
-            key={project.id}
-            project={project}
-            hoveredId={hoveredId}
-            setHoveredId={setHoveredId}
-            smoothX={smoothX}
-            smoothY={smoothY}
-          />
-        ))}
-      </div>
-
-      <audio ref={audioRef} src="/bgm.mp3" loop preload="auto" />
-      <ContactPopup isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
-      </div>
+          <audio ref={audioRef} src="/bgm.mp3" loop preload="auto" />
+          <ContactPopup isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
+        </motion.div>
+      )}
     </>
   );
 }

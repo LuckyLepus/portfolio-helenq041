@@ -51,6 +51,3 @@ export default function ModelViewer({ url = 'https://helenq-assets-1317600743.co
     </div>
   );
 }
-
-// Preload the default model so it loads instantly
-useGLTF.preload('https://helenq-assets-1317600743.cos.ap-hongkong.myqcloud.com/portfolio-helenq0414/model.glb');
