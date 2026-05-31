@@ -486,9 +486,9 @@ const casesTimeline: TimelineItem[] = [
     titleEn: 'Sina Weibo Fans Carnival Campaign',
     description: '微博超级IP粉丝狂欢盛宴线下创意激活。打造多重破圈粉丝互动展位、应援打卡区与沉浸式潮流集市，以年轻态设计语言建立品牌与Z世代用户的超链接。',
     descriptionEn: 'Offline creative activation for Weibo\'s massive fan-culture IP. Designed interactive fan booths, fandom check-ins, and pop-up markets, building a direct hyperlink between brand and Gen Z.',
-    mediaUrl: '/cases/2021新浪微博粉丝嘉年华创意方案【0713】.gif',
-    mediaType: 'gif',
-    fileName: '2021新浪微博粉丝嘉年华创意方案【0713】.gif'
+    mediaUrl: '/cases/2021新浪微博粉丝嘉年华创意方案【0713】.mp4',
+    mediaType: 'video',
+    fileName: '2021新浪微博粉丝嘉年华创意方案【0713】.mp4'
   },
   {
     id: 'c07',
@@ -498,9 +498,9 @@ const casesTimeline: TimelineItem[] = [
     titleEn: 'Sina Wave-Making CITY Festival Plan',
     description: '聚焦青年先锋文化的城市级节日计划提案。融合街头潮流、潮流艺术、先锋音乐与市集文化，为城市定制专属的造浪节日，释放圈层青年力与潮流商业潜力。',
     descriptionEn: 'A city-level festival strategy focusing on youth vanguard culture. Blends street fashion, contemporary art, indie music, and curated markets to unleash local community subculture energy.',
-    mediaUrl: '/cases/2021新浪2021年度造浪CITY节日计划创意方案【1103】2.0.gif',
-    mediaType: 'gif',
-    fileName: '2021新浪2021年度造浪CITY节日计划创意方案【1103】2.0.gif'
+    mediaUrl: '/cases/2021新浪2021年度造浪CITY节日计划创意方案【1103】2.0.mp4',
+    mediaType: 'video',
+    fileName: '2021新浪2021年度造浪CITY节日计划创意方案【1103】2.0.mp4'
   },
   {
     id: 'c08',
@@ -510,9 +510,9 @@ const casesTimeline: TimelineItem[] = [
     titleEn: 'MasterGo Creativity Summit Campaign',
     description: '专为数字界面设计师打造的创造力年度峰会提案。以“协同无界，灵感共生”为视觉与叙事核心，采用大色块与极简主义流动线条，昭示国产协同设计工具时代的到来。',
     descriptionEn: 'Annual design summit pitch for MasterGo. With "Boundless Collaboration, Shared Inspiration" as the visual backbone, utilizing fluid lines and solid colors to herald a new era of collaborative UI tools.',
-    mediaUrl: '/cases/2022MasterGo创造力峰会项目方案创意部分-0125 2351.gif',
-    mediaType: 'gif',
-    fileName: '2022MasterGo创造力峰会项目方案创意部分-0125 2351.gif'
+    mediaUrl: '/cases/2022MasterGo创造力峰会项目方案创意部分-0125 2351.mp4',
+    mediaType: 'video',
+    fileName: '2022MasterGo创造力峰会项目方案创意部分-0125 2351.mp4'
   },
   {
     id: 'c09',
@@ -522,9 +522,9 @@ const casesTimeline: TimelineItem[] = [
     titleEn: 'Xigua PLAY Carnival Creative Strategy',
     description: '中视频创作者年度奥德赛之旅。以“登岛漫游”为核心概念，设计集海岛露营、颁奖盛典、共创工坊于一体的沉浸式线下狂欢，强化平台凝聚力与深度社交联结。',
     descriptionEn: 'An annual odyssey for video creators. Grounded in the "Island Roaming" concept, it designed a multi-day immersive camping, award gala, and workshops to foster platform cohesion.',
-    mediaUrl: '/cases/2022西瓜PLAY嘉年华2022项目方案Final-byUnison【0517】.gif',
-    mediaType: 'gif',
-    fileName: '2022西瓜PLAY嘉年华2022项目方案Final-byUnison【0517】.gif'
+    mediaUrl: '/cases/2022西瓜PLAY嘉年华2022项目方案Final-byUnison【0517】.mp4',
+    mediaType: 'video',
+    fileName: '2022西瓜PLAY嘉年华2022项目方案Final-byUnison【0517】.mp4'
   },
   {
     id: 'c10',
@@ -583,9 +583,9 @@ const casesTimeline: TimelineItem[] = [
     titleEn: 'PROYA Anti-Oxidant & Anti-Aging Essence 4.0 Launch',
     description: '国货美妆巨头旗舰爆款迭代发布的创意全案。以“科研抗衰，光芒无惧”为视听主轴，利用高科技环幕投影与流光溢彩的科技美学，诠释护肤新纪元的极致科研能量。',
     descriptionEn: 'The global product launch campaign for PROYA\'s blockbuster essence. Fusing scientific rigors with dazzling digital art, featuring panoramic projections to express ultimate beauty biotech.',
-    mediaUrl: '/cases/2025珀莱雅双抗精华4.0发布会-0320.gif',
-    mediaType: 'gif',
-    fileName: '2025珀莱雅双抗精华4.0发布会-0320.gif'
+    mediaUrl: '/cases/2025珀莱雅双抗精华4.0发布会-0320.mp4',
+    mediaType: 'video',
+    fileName: '2025珀莱雅双抗精华4.0发布会-0320.mp4'
   },
   {
     id: 'c14',
