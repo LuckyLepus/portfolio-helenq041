@@ -72,38 +72,38 @@ foreach ($file in $files) {
     $startTime = Get-Date
     
     # Build ffmpeg arguments
-    $args = @()
+    $ffmpegArgs = @()
     if ($ext -eq '.gif') {
         # GIF conversion settings: H.264, YUV420p color format, CRF 23, Muted, Slow preset, Faststart, Divisible by 2 filter
-        $args += "-i", $file.FullName
-        $args += "-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2"
-        $args += "-vcodec", "libx264"
-        $args += "-pix_fmt", "yuv420p"
-        $args += "-preset", "slow"
-        $args += "-crf", "23"
-        $args += "-an" # No audio
-        $args += "-movflags", "+faststart"
-        $args += "-y"
-        $args += $outputFile
+        $ffmpegArgs += "-i", $file.FullName
+        $ffmpegArgs += "-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2"
+        $ffmpegArgs += "-vcodec", "libx264"
+        $ffmpegArgs += "-pix_fmt", "yuv420p"
+        $ffmpegArgs += "-preset", "slow"
+        $ffmpegArgs += "-crf", "23"
+        $ffmpegArgs += "-an" # No audio
+        $ffmpegArgs += "-movflags", "+faststart"
+        $ffmpegArgs += "-y"
+        $ffmpegArgs += $outputFile
     } else {
         # MP4 compression settings: H.264, CRF 23, Slow preset, AAC audio 128k, Faststart, Divisible by 2 filter
-        $args += "-i", $file.FullName
-        $args += "-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2"
-        $args += "-vcodec", "libx264"
-        $args += "-preset", "slow"
-        $args += "-crf", "23"
-        $args += "-acodec", "aac"
-        $args += "-b:a", "128k"
-        $args += "-movflags", "+faststart"
-        $args += "-y"
-        $args += $outputFile
+        $ffmpegArgs += "-i", $file.FullName
+        $ffmpegArgs += "-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2"
+        $ffmpegArgs += "-vcodec", "libx264"
+        $ffmpegArgs += "-preset", "slow"
+        $ffmpegArgs += "-crf", "23"
+        $ffmpegArgs += "-acodec", "aac"
+        $ffmpegArgs += "-b:a", "128k"
+        $ffmpegArgs += "-movflags", "+faststart"
+        $ffmpegArgs += "-y"
+        $ffmpegArgs += $outputFile
     }
     
     # Run ffmpeg and redirect stderr to logFile (since ffmpeg outputs progress to stderr)
     if (Test-Path -LiteralPath $logFile) { Remove-Item -LiteralPath $logFile }
     
     # Start ffmpeg
-    & ffmpeg $args 2>$logFile
+    & ffmpeg $ffmpegArgs 2>$logFile
     
     if ($LASTEXITCODE -eq 0 -and (Test-Path -LiteralPath $outputFile)) {
         $endTime = Get-Date

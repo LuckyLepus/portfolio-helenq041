@@ -212,8 +212,22 @@ const ProjectBlob = ({ project, hoveredId, setHoveredId, smoothX, smoothY }: Pro
 export default function Home() {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [isContactOpen, setIsContactOpen] = useState(false);
-  const [isUnlocked, setIsUnlocked] = useState(() => localStorage.getItem('site_unlocked') === 'true');
-  const [hasInteracted, setHasInteracted] = useState(() => sessionStorage.getItem('audioUnlocked') === 'true');
+  const [isUnlocked, setIsUnlocked] = useState(() => {
+    try {
+      return localStorage.getItem('site_unlocked') === 'true';
+    } catch (e) {
+      console.warn('Unable to access localStorage:', e);
+      return false;
+    }
+  });
+  const [hasInteracted, setHasInteracted] = useState(() => {
+    try {
+      return sessionStorage.getItem('audioUnlocked') === 'true';
+    } catch (e) {
+      console.warn('Unable to access sessionStorage:', e);
+      return false;
+    }
+  });
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Handle audio playback based on hover
@@ -229,7 +243,11 @@ export default function Home() {
   const handleGlobalInteraction = () => {
     if (!hasInteracted) {
       setHasInteracted(true);
-      sessionStorage.setItem('audioUnlocked', 'true');
+      try {
+        sessionStorage.setItem('audioUnlocked', 'true');
+      } catch (e) {
+        console.warn('Unable to write to sessionStorage:', e);
+      }
       if (audioRef.current) {
         audioRef.current.play().then(() => {
           if (hoveredId !== '05') {
@@ -275,7 +293,11 @@ export default function Home() {
         {!isUnlocked && (
           <PasswordScreen 
             onUnlock={() => {
-              localStorage.setItem('site_unlocked', 'true');
+              try {
+                localStorage.setItem('site_unlocked', 'true');
+              } catch (e) {
+                console.warn('Unable to write to localStorage:', e);
+              }
               setIsUnlocked(true);
             }} 
           />
