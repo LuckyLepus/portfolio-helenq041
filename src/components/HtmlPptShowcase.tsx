@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Monitor, Smartphone, Maximize, Code2, Play } from 'lucide-react';
 
-const CLOUD_MEDIA_BASE_URL = '/cases/html-ppts';
+const CLOUD_MEDIA_BASE_URL = 'https://portfolio-html-ppts.vercel.app';
 
 // Reusable browser frame component
 function IosBrowserFrame({ 
