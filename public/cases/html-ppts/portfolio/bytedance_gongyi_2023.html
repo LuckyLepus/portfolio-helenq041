@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ByteForGood | 字节跳动公益峰会 2023</title>
+  
+  <!-- Fonts -->
+  <style>
+    @font-face {
+      font-family: 'SpaceType';
+      src: url('assets/fonts/SpaceType-Regular.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'SpaceType';
+      src: url('assets/fonts/SpaceType-Expanded.otf') format('opentype');
+      font-weight: bold;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'FangZhengZhongQian';
+      src: url('assets/fonts/方正中倩简体.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'FangZhengCuQian';
+      src: url('assets/fonts/方正粗倩简体.ttf') format('truetype');
+      font-weight: bold;
+      font-style: normal;
+    }
+  </style>
+  
+  <!-- GSAP & Lenis -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+  
+  <style>
+    :root {
+      --bg-dark: #0a0a0a;
+      --text-main: #f5f5f5;
+      --byte-blue: #436BC3;
+      --byte-cyan: #89F7ED;
+      --byte-yellow: #FFCC00;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'SpaceType', 'FangZhengZhongQian', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    h1, h2, h3, .stretch {
+      font-family: 'SpaceType', 'FangZhengCuQian', sans-serif;
+      text-transform: uppercase;
+    }
+    
+    .cyan-text { color: var(--byte-cyan); }
+    .blue-text { color: var(--byte-blue); }
+    .yellow-text { color: var(--byte-yellow); }
+    
+    /* SECTION 1: HERO & STRATEGY */
+    .hero-section {
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+    }
+    
+    .hero-bg {
+      position: absolute;
+      top: -10%; left: -10%; width: 120%; height: 120%;
+      object-fit: cover;
+      z-index: 0;
+      opacity: 0.6;
+    }
+    
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+    
+    .hero-title {
+      font-size: 6vw;
+      font-weight: 900;
+      letter-spacing: 0.5vw;
+      margin-bottom: 2vh;
+      background: linear-gradient(90deg, #fff, var(--byte-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .hero-subtitle {
+      font-size: 1.5vw;
+      letter-spacing: 0.8vw;
+      font-weight: 300;
+      color: #ccc;
+    }
+    
+    .strategy-section {
+      padding: 20vh 10vw;
+      background: var(--bg-dark);
+      position: relative;
+      z-index: 2;
+    }
+    
+    .strategy-text {
+      font-size: 3vw;
+      font-weight: 700;
+      line-height: 1.6;
+      max-width: 80vw;
+      margin: 0 auto 10vh;
+      opacity: 0;
+      transform: translateY(50px);
+      text-align: center;
+    }
+    
+    .strategy-highlight {
+      font-size: 5vw;
+      font-weight: 900;
+      text-align: center;
+      background: linear-gradient(90deg, var(--byte-cyan), var(--byte-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      opacity: 0;
+      transform: scale(0.9);
+    }
+
+    /* SECTION 2: GRAPHIC DESIGN */
+    .visual-section {
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      background: #111;
+      position: relative;
+    }
+    .visual-container {
+      display: flex;
+      width: 300vw; 
+      height: 100%;
+    }
+    .visual-panel {
+      width: 100vw;
+      height: 100%;
+      padding: 10vh 10vw;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .v-panel-1 { background: radial-gradient(circle at top left, #1a2a4a, #111); }
+    .v-panel-2 { background: radial-gradient(circle at center, #1a3a3a, #111); }
+    .v-panel-3 { background: radial-gradient(circle at bottom right, #3a3a1a, #111); }
+    
+    .v-title {
+      font-size: 4vw;
+      margin-bottom: 5vh;
+      color: #fff;
+    }
+    
+    .color-palette { display: flex; gap: 2vw; }
+    .color-circle {
+      width: 10vw; height: 10vw; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: normal; color: #000;
+      font-size: 0.9vw;
+      font-family: 'SpaceType', sans-serif;
+      letter-spacing: 1px;
+    }
+    .c-blue { background: var(--byte-blue); color: #fff;}
+    .c-cyan { background: var(--byte-cyan); }
+    .c-yellow { background: var(--byte-yellow); }
+    
+    .poster-grid {
+      display: flex;
+      gap: 20px;
+    }
+    .poster-card {
+      width: 250px; height: 350px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* SECTION 3: EXPERIENCE DESIGN */
+    .experience-section {
+      padding: 15vh 10vw;
+      background: var(--bg-dark);
+      position: relative;
+    }
+    .exp-title {
+      font-size: 3.5vw;
+      text-align: center;
+      margin-bottom: 10vh;
+    }
+    .exp-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3vw;
+    }
+    .exp-card {
+      background: #1a1a1a;
+      border-radius: 20px;
+      padding: 40px;
+      text-align: center;
+      transition: transform 0.4s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .exp-card:hover {
+      transform: translateY(-15px);
+    }
+    .exp-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      color: var(--byte-yellow);
+    }
+    .exp-card h3 { font-size: 1.5rem; margin-bottom: 15px; }
+    .exp-card p { color: #888; font-size: 0.9rem; line-height: 1.6; }
+
+    /* SECTION 4: 3D ENVIRONMENT SCROLLYTELLING */
+    .env-section {
+      height: 100vh;
+      width: 100vw;
+      background: #000;
+      position: relative;
+    }
+    .env-panel-wrapper {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      overflow: hidden;
+      will-change: transform, opacity;
+    }
+    .env-bg {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background-size: cover;
+      background-position: center;
+      transform-origin: center center;
+      will-change: transform, filter;
+    }
+    .env-overlay {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.6) 100%);
+    }
+    .env-content {
+      position: absolute;
+      bottom: 10%;
+      left: 10%;
+      width: 80%;
+      color: #fff;
+    }
+    .env-tag {
+      font-family: 'Syncopate', sans-serif;
+      font-size: 1rem;
+      color: var(--byte-cyan);
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
+    .env-title {
+      font-size: 4rem;
+      font-weight: 900;
+      margin-bottom: 20px;
+    }
+    .env-desc {
+      font-size: 1.2rem;
+      color: #ddd;
+      max-width: 600px;
+      line-height: 1.6;
+    }
+    
+    #env-1 .env-bg { background-image: url('assets/bytedance_images/bd_env1_new.jpg'); }
+    #env-2 .env-bg { background-image: url('assets/bytedance_images/bd_env2_new.jpg'); }
+    #env-3 .env-bg { background-image: url('assets/bytedance_images/bd_env3_new.jpg'); }
+    #env-4 .env-bg { background-image: url('assets/bytedance_images/bd_env4_new1.jpg'); }
+    #env-5 .env-bg { background-image: url('assets/bytedance_images/bd_env4_new2.jpg'); }
+
+    /* SECTION 5: FLOW */
+    .flow-section {
+      padding: 15vh 10vw;
+      background: var(--bg-dark);
+      position: relative;
+    }
+    .flow-timeline {
+      border-left: 2px solid rgba(255,255,255,0.1);
+      padding-left: 4vw;
+      margin-top: 10vh;
+    }
+    .flow-item {
+      position: relative;
+      margin-bottom: 10vh;
+    }
+    .flow-item::before {
+      content: '';
+      position: absolute;
+      left: -4vw;
+      top: 10px;
+      transform: translateX(-50%);
+      width: 20px; height: 20px;
+      background: var(--byte-cyan);
+      border-radius: 50%;
+      box-shadow: 0 0 15px var(--byte-cyan);
+    }
+    .flow-chapter {
+      font-size: 1.2rem; color: var(--byte-yellow); margin-bottom: 10px; font-weight: 700;
+    }
+    .flow-item h3 { font-size: 2.5rem; margin-bottom: 20px; }
+    .flow-item p { color: #aaa; font-size: 1.1rem; line-height: 1.8; max-width: 800px; }
+  </style>
+</head>
+<body>
+
+  <!-- 1: HERO & STRATEGY -->
+  <section class="hero-section">
+    <video class="hero-bg" id="hero-bg" src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260518_003132_8b7edcb6-c64d-4a52-a9ca-879942e122ad.mp4" autoplay loop muted playsinline></video>
+    <div class="hero-content">
+      <h1 class="hero-title stretch">ByteForGood</h1>
+      <p class="hero-subtitle">字节跳动公益峰会 2023</p>
+    </div>
+  </section>
+
+  <section class="strategy-section">
+    <p class="strategy-text st-1">在为大会创造概念之前，我们先要讨论，</p>
+    <p class="strategy-text st-2">“公益”的定义到底是什么？</p>
+    <p class="strategy-text st-3">不仅是用爱发电，更是对人类命运共同体的善意。</p>
+    <h2 class="strategy-highlight">没有善意被辜负<br>没有问题不能被发现<br>没有人不能得到帮助的美好世界</h2>
+  </section>
+
+  <!-- 2: GRAPHIC DESIGN -->
+  <section class="visual-section" id="visual-section">
+    <div class="visual-container" id="visual-container">
+      <div class="visual-panel v-panel-1">
+        <h2 class="v-title stretch">01 / Visual Identity</h2>
+        <p style="font-size:1.5rem; color:#aaa; margin-bottom:40px;">开放且充满想象力的几何图形，结合“跳动的符号”</p>
+        <img src="assets/bytedance_images/media__1779532023713.jpg" alt="3D Icon" style="max-height: 40vh; object-fit: contain; border-radius: 12px; align-self: flex-start;">
+      </div>
+      <div class="visual-panel v-panel-2">
+        <h2 class="v-title stretch">02 / Color System</h2>
+        <div class="color-palette">
+          <div class="color-circle c-cyan">$89F7ED</div>
+          <div class="color-circle c-blue">$436BC3</div>
+          <div class="color-circle c-yellow">$GGE111</div>
+        </div>
+      </div>
+      <div class="visual-panel v-panel-3">
+        <h2 class="v-title stretch">03 / 100 kinds of BFG</h2>
+        <p style="font-size:1.2rem; color:#aaa; margin-bottom:40px;">点亮美好善意的100种方式。用BFG作为光的介质点亮那些公益新发现。</p>
+        <div class="poster-grid">
+          <div class="poster-card" style="background-image: url('assets/bytedance_images/media__1779532023717.jpg'); background-size: cover; background-position: center; padding:0; border:none; overflow: hidden;">
+            <div style="padding: 20px; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); height: 100%;">
+              <h3 class="cyan-text">点亮文化</h3>
+            </div>
+          </div>
+          <div class="poster-card" style="background-image: url('assets/bytedance_images/media__1779532023719.jpg'); background-size: cover; background-position: center; padding:0; border:none; overflow: hidden;">
+            <div style="padding: 20px; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); height: 100%;">
+              <h3 class="yellow-text">点亮艺术</h3>
+            </div>
+          </div>
+          <div class="poster-card" style="background-image: url('assets/bytedance_images/bd_transparent_logo.jpg'); background-size: cover; background-position: center; padding:0; border:none; overflow: hidden;">
+            <div style="padding: 20px; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); height: 100%;">
+              <h3 class="blue-text">点亮乡村</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3: EXPERIENCE DESIGN -->
+  <section class="experience-section">
+    <h2 class="exp-title stretch">Igniting ByteSpark <br><span style="font-size: 2rem; font-weight:400; color:#888;">为每一个嘉宾打造独一无二的体验</span></h2>
+    <div class="exp-grid">
+      <div class="exp-card" style="background-image: url('assets/bytedance_images/media__1779532023721.jpg'); background-size: cover; background-position: center; padding: 0; min-height: 350px;">
+        <div style="position: absolute; bottom: 0; left: 0; width: 100%; padding: 20px; background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.7), transparent); text-align: left;">
+          <h3 class="cyan-text" style="margin-bottom: 5px;">盲盒香薰蜡烛邀请函</h3>
+          <p style="color: #ccc;">点亮 SUN 形状的香薰蜡烛，通过变温二维码扫码观看公益行动视频，种下心的光，点亮更多美好。</p>
+        </div>
+      </div>
+      <div class="exp-card" style="background-image: url('assets/bytedance_images/bd_calendar.jpg'); background-size: cover; background-position: center; padding: 0; min-height: 350px;">
+        <div style="position: absolute; bottom: 0; left: 0; width: 100%; padding: 20px; background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.7), transparent); text-align: left;">
+          <h3 class="yellow-text" style="margin-bottom: 5px;">Lighting 日历伴手礼</h3>
+          <p style="color: #ccc;">每一张卡片背后都有一个公益项目二维码，扫码直观看到抖音视频，并联动到字节公益官网项目介绍。</p>
+        </div>
+      </div>
+      <div class="exp-card" style="background-image: url('assets/bytedance_images/bd_hoodie.jpg'); background-size: cover; background-position: center; padding: 0; min-height: 350px;">
+        <div style="position: absolute; bottom: 0; left: 0; width: 100%; padding: 20px; background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.7), transparent); text-align: left;">
+          <h3 class="blue-text" style="margin-bottom: 5px;">回收时尚大会卫衣</h3>
+          <p style="color: #ccc;">受邀来宾携带自己的旧衣服签到换取。BFG 大会身份卫衣材质正是由回收旧衣制作，参与签到即是参与环保公益。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4: 3D ENVIRONMENT SCROLLYTELLING -->
+  <section class="env-section" id="env-section">
+    <div class="env-panel-wrapper" id="env-1" style="z-index: 1;">
+      <div class="env-bg"></div>
+      <div class="env-overlay"></div>
+      <div class="env-content">
+        <div class="env-tag">OVERVIEW</div>
+        <div class="env-title">Lighting 博物馆</div>
+        <div class="env-desc">这是一个呈现字节“看见公益新可能”、用环保材料做载体、体现“点亮”每一份善意的博物馆环境。会议+展示=博物馆空间整体。</div>
+        <br><p style="color:#888; font-size: 0.9rem;">[占位替换提示：请在此容器背景中替换为设计师生成的 3D 全景原图]</p>
+      </div>
+    </div>
+    
+    <div class="env-panel-wrapper" id="env-2" style="z-index: 2; transform: translateY(100%);">
+      <div class="env-bg"></div>
+      <div class="env-overlay"></div>
+      <div class="env-content">
+        <div class="env-tag">SIGN-IN AREA</div>
+        <div class="env-title">回收木箱签到区</div>
+        <div class="env-desc">灵活拆解组装，环保可持续材质。用循环使用木箱搭建的签到区，每个箱子都将成为现场公益行动的储物空间。</div>
+        <br><p style="color:#888; font-size: 0.9rem;">[占位替换提示：请替换为签到区域 3D 原图]</p>
+      </div>
+    </div>
+    
+    <div class="env-panel-wrapper" id="env-3" style="z-index: 3; transform: translateY(100%);">
+      <div class="env-bg"></div>
+      <div class="env-overlay"></div>
+      <div class="env-content">
+        <div class="env-tag">MAIN STAGE</div>
+        <div class="env-title">主会场 200人空间</div>
+        <div class="env-desc">开放、轻盈、沉浸、场景化。巨大的发光装置和错落有致的观众席，让每一位分享者的善意在这里被最大化聚焦。</div>
+        <br><p style="color:#888; font-size: 0.9rem;">[占位替换提示：请替换为主舞台 3D 原图]</p>
+      </div>
+    </div>
+    
+    <div class="env-panel-wrapper" id="env-4" style="z-index: 4; transform: translateY(100%);">
+      <div class="env-bg"></div>
+      <div class="env-overlay"></div>
+      <div class="env-content">
+        <div class="env-tag">EXHIBITION 1</div>
+        <div class="env-title">LIGHTING 故事中心</div>
+        <div class="env-desc">静态展示行业与机构在公益中合作的动人小故事。通过多媒体展示每一位创作者的公益行动视频。</div>
+      </div>
+    </div>
+    
+    <div class="env-panel-wrapper" id="env-5" style="z-index: 5; transform: translateY(100%);">
+      <div class="env-bg"></div>
+      <div class="env-overlay"></div>
+      <div class="env-content">
+        <div class="env-tag">EXHIBITION 2</div>
+        <div class="env-title">Byte For Good 公益成果</div>
+        <div class="env-desc">增进社会福祉，推动数字包容。在此感受科技与善意交织出的巨大社会价值。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5: OPERATIONS & FLOW -->
+  <section class="flow-section">
+    <h2 class="exp-title stretch" style="text-align: left;">Conference Flow <br><span style="font-size: 2rem; font-weight:400; color:#888;">在点亮善意的公益博物馆里找到共鸣</span></h2>
+    <div class="flow-timeline">
+      <div class="flow-item">
+        <div class="flow-chapter">篇章一 / Lighting</div>
+        <h3 class="cyan-text">使命愿景：看见公益新可能</h3>
+        <p>演讲主题：TA的新发现 / 新方式 <br>主要环节：开场动画小片演绎、平台价值主题演讲。用抽象的 3D 动画展现被光芒照亮的黑暗，引出公益的社会连接价值。</p>
+      </div>
+      <div class="flow-item">
+        <div class="flow-chapter">篇章二 / Possibility</div>
+        <h3 class="blue-text">践行成果：连结每一种不同的善意</h3>
+        <p>演讲主题：TA的信发现 / 信视角 <br>主要环节：科学决策与可能性分析、机构代表最佳实践演讲。讲述从乡村振兴到应对气候变化的四大方向成果。</p>
+      </div>
+      <div class="flow-item">
+        <div class="flow-chapter">篇章三 / Good</div>
+        <h3 class="yellow-text">未来可能：点亮那些没有被点亮的善意</h3>
+        <p>演讲主题：TA的心发现 / 心角色 <br>主要环节：圆桌对话、全场公益倡议 ENDING。集结雷明、刘德文、骞小白等跨界公益先锋，探讨让更多善意被看见的可能性。</p>
+      </div>
+    </div>
+  </section>
+  
+  <footer>
+    <div style="text-align: center; padding: 50px; border-top: 1px solid #333; color: #666; margin-top: 10vh; font-family: 'SpaceType', 'Syncopate', sans-serif;">
+      BYTE FOR GOOD SUMMIT 2023 &copy; CREATED BY HelenQ & Gemini3.5
+    </div>
+  </footer>
+
+  <script>
+    // Smooth Scroll
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smooth: true,
+    });
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Hero Parallax
+    gsap.to('#hero-bg', {
+      yPercent: 30,
+      ease: 'none',
+      scrollTrigger: { trigger: '.hero-section', start: 'top top', end: 'bottom top', scrub: true }
+    });
+
+    // Strategy
+    gsap.utils.toArray('.strategy-text').forEach((text, i) => {
+      gsap.to(text, {
+        opacity: 1, y: 0,
+        scrollTrigger: { trigger: text, start: 'top 80%', end: 'bottom 60%', scrub: 1 }
+      });
+    });
+    gsap.to('.strategy-highlight', {
+      opacity: 1, scale: 1,
+      scrollTrigger: { trigger: '.strategy-highlight', start: 'top 85%', end: 'bottom 50%', scrub: 1 }
+    });
+
+    // Horizontal Scroll
+    const visualContainer = document.getElementById('visual-container');
+    gsap.to(visualContainer, {
+      x: () => -(visualContainer.scrollWidth - window.innerWidth) + "px",
+      ease: "none",
+      scrollTrigger: {
+        trigger: "#visual-section", pin: true, scrub: 1, end: () => "+=" + visualContainer.scrollWidth
+      }
+    });
+
+    // 3D ENVIRONMENT SCROLLYTELLING
+    const envTimeline = gsap.timeline({
+      scrollTrigger: { trigger: '#env-section', start: 'top top', end: '+=500%', pin: true, scrub: 1 }
+    });
+
+    envTimeline.to('#env-1 .env-bg', { scale: 1.2, filter: 'brightness(0.3)', duration: 1 })
+               .to('#env-1 .env-content', { y: -50, opacity: 0, duration: 0.5 }, "-=1")
+               .to('#env-2', { y: '0%', duration: 1, ease: 'power2.inOut' }, "-=0.8")
+               .from('#env-2 .env-bg', { scale: 1.3, duration: 1 }, "-=1")
+               
+               .to('#env-2 .env-bg', { scale: 1.2, filter: 'brightness(0.3)', duration: 1 })
+               .to('#env-2 .env-content', { y: -50, opacity: 0, duration: 0.5 }, "-=1")
+               .to('#env-3', { y: '0%', duration: 1, ease: 'power2.inOut' }, "-=0.8")
+               .from('#env-3 .env-bg', { scale: 1.3, duration: 1 }, "-=1")
+               
+               .to('#env-3 .env-bg', { scale: 1.2, filter: 'brightness(0.3)', duration: 1 })
+               .to('#env-3 .env-content', { y: -50, opacity: 0, duration: 0.5 }, "-=1")
+               .to('#env-4', { y: '0%', duration: 1, ease: 'power2.inOut' }, "-=0.8")
+               .from('#env-4 .env-bg', { scale: 1.3, duration: 1 }, "-=1")
+               
+               .to('#env-4 .env-bg', { scale: 1.2, filter: 'brightness(0.3)', duration: 1 })
+               .to('#env-4 .env-content', { y: -50, opacity: 0, duration: 0.5 }, "-=1")
+               .to('#env-5', { y: '0%', duration: 1, ease: 'power2.inOut' }, "-=0.8")
+               .from('#env-5 .env-bg', { scale: 1.3, duration: 1 }, "-=1")
+               
+               .to('#env-5 .env-bg', { scale: 1.05, duration: 0.5 });
+  </script>
+</body>
+</html>

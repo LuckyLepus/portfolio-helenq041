@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>奥迪旅行车家族 2022 | 活出生命的辽阔</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;300;400;600&family=Inter:wght@100;200;300;400;600&display=swap" rel="stylesheet">
+  
+  <!-- GSAP & Lenis for Smooth Scrolling -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+  
+  <style>
+    :root {
+      --bg-color: #030303;
+      --text-main: #f1f1f1;
+      --text-muted: #888888;
+      --accent-red: #D5001C;
+      --glass-bg: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.06);
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Inter', 'PingFang SC', sans-serif;
+      font-weight: 200;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    h1, h2, h3, .serif {
+      font-family: 'Noto Serif SC', serif;
+      font-weight: 200;
+    }
+    
+    /* Navbar */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 24px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+      mix-blend-mode: difference;
+    }
+    
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      font-size: 14px;
+    }
+    
+    .nav-logo img {
+      height: 20px;
+      filter: invert(1);
+    }
+    
+    /* Hero Section (Aetheris Voyage Style) */
+    .hero {
+      height: 100vh;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .hero-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+    
+    .hero-video-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, rgba(3,3,3,0.2) 0%, rgba(3,3,3,0.5) 60%, var(--bg-color) 100%);
+      z-index: 1;
+      /* Dynamic mask for premium vignette effect */
+      mask-image: radial-gradient(circle at center, rgba(0,0,0,1) 40%, rgba(0,0,0,0.8) 100%);
+      -webkit-mask-image: radial-gradient(circle at center, rgba(0,0,0,1) 40%, rgba(0,0,0,0.8) 100%);
+    }
+    
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+    }
+    
+    .hero-title {
+      font-size: 6vw;
+      font-weight: 200;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      background: linear-gradient(180deg, #fff, #888);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .hero-subtitle {
+      font-size: 16px;
+      letter-spacing: 6px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    
+    /* Strategy Intro (Prisma Style) */
+    @keyframes slowZoomPan {
+      0% { transform: scale(1) translate(0, 0); }
+      50% { transform: scale(1.1) translate(-2%, 2%); }
+      100% { transform: scale(1) translate(0, 0); }
+    }
+    
+    .strategy-bg {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image: url('assets/audi_images/audi_car_driving_loop_1779528521142.png');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.4;
+      animation: slowZoomPan 20s infinite ease-in-out;
+      z-index: 0;
+      /* User can replace this with a real <video autoplay loop muted playsinline> element if they have the mp4 */
+    }
+    .strategy-bg::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(to bottom, var(--bg-color) 0%, transparent 20%, transparent 80%, var(--bg-color) 100%);
+    }
+
+    .strategy-intro {
+      padding: 150px 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background-color: var(--bg-color);
+      position: relative;
+      z-index: 2;
+    }
+    
+    .strategy-text-container {
+      max-width: 800px;
+      padding: 0 24px;
+    }
+    
+    .st-line {
+      font-size: 32px;
+      font-family: 'Noto Serif SC', serif;
+      color: var(--text-muted);
+      line-height: 1.8;
+      margin-bottom: 16px;
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    
+    .st-highlight {
+      color: #fff;
+    }
+    
+    /* Immersive Film Section */
+    .films-container {
+      position: relative;
+    }
+    
+    .film-panel {
+      height: 100vh;
+      width: 100%;
+      position: relative;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+    
+    .film-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-size: cover;
+      background-position: center;
+      z-index: 0;
+      transform: scale(1.1); /* For parallax zoom out */
+      filter: brightness(0.6);
+    }
+    
+    .film-bg::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0) 100%);
+    }
+    
+    .film-content {
+      position: relative;
+      z-index: 1;
+      width: 50%;
+      padding-left: 10vw;
+      color: #fff;
+    }
+    
+    .film-chapter {
+      font-size: 14px;
+      letter-spacing: 4px;
+      color: var(--accent-red);
+      margin-bottom: 16px;
+      text-transform: uppercase;
+    }
+    
+    .film-title {
+      font-size: 4vw;
+      font-weight: 300;
+      margin-bottom: 30px;
+      line-height: 1.2;
+    }
+    
+    .film-desc {
+      font-size: 18px;
+      color: #ccc;
+      line-height: 1.8;
+      max-width: 400px;
+      margin-bottom: 40px;
+    }
+    
+    .car-placeholder {
+      display: inline-block;
+      width: 100%;
+      max-width: 400px;
+      height: 120px;
+      border: 1px dashed rgba(255,255,255,0.3);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.02);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666;
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+    
+    /* KOL Section */
+    .kol-section {
+      padding: 150px 10vw;
+      background-color: var(--bg-color);
+      position: relative;
+    }
+    
+    .section-header {
+      margin-bottom: 80px;
+    }
+    
+    .section-header h2 {
+      font-size: 48px;
+      font-weight: 300;
+      margin-bottom: 16px;
+    }
+    
+    .section-header p {
+      color: var(--text-muted);
+      font-size: 18px;
+    }
+    
+    .kol-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+    }
+    
+    .kol-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 40px;
+      backdrop-filter: blur(20px);
+      transition: transform 0.4s ease, border-color 0.4s ease;
+    }
+    
+    .kol-card:hover {
+      transform: translateY(-10px);
+      border-color: rgba(255,255,255,0.2);
+    }
+    
+    .kol-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: #222;
+      margin-bottom: 24px;
+    }
+    
+    .kol-name {
+      font-size: 24px;
+      font-family: 'Noto Serif SC', serif;
+      margin-bottom: 8px;
+    }
+    
+    .kol-tags {
+      font-size: 12px;
+      color: var(--accent-red);
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+    }
+    
+    .kol-quote {
+      font-size: 14px;
+      color: #999;
+      line-height: 1.6;
+    }
+    
+    /* Footer */
+    footer {
+      padding: 60px 10vw;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      justify-content: space-between;
+      color: #666;
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-logo">
+      <svg width="60" height="20" viewBox="0 0 100 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 1.5C7.44 1.5 0.5 8.44 0.5 17C0.5 25.56 7.44 32.5 16 32.5C21.64 32.5 26.54 29.5 29.35 24.96C27.91 22.56 27 19.88 27 17C27 14.12 27.91 11.44 29.35 9.04C26.54 4.5 21.64 1.5 16 1.5ZM38 1.5C32.36 1.5 27.46 4.5 24.65 9.04C26.09 11.44 27 14.12 27 17C27 19.88 26.09 22.56 24.65 24.96C27.46 29.5 32.36 32.5 38 32.5C43.64 32.5 48.54 29.5 51.35 24.96C49.91 22.56 49 19.88 49 17C49 14.12 49.91 11.44 51.35 9.04C48.54 4.5 43.64 1.5 38 1.5ZM60 1.5C54.36 1.5 49.46 4.5 46.65 9.04C47.91 11.44 49 14.12 49 17C49 19.88 47.91 22.56 46.65 24.96C49.46 29.5 54.36 32.5 60 32.5C65.64 32.5 70.54 29.5 73.35 24.96C71.91 22.56 71 19.88 71 17C71 14.12 71.91 11.44 73.35 9.04C70.54 4.5 65.64 1.5 60 1.5ZM82 1.5C76.36 1.5 71.46 4.5 68.65 9.04C70.09 11.44 71 14.12 71 17C71 19.88 70.09 22.56 68.65 24.96C71.46 29.5 76.36 32.5 82 32.5C90.56 32.5 97.5 25.56 97.5 17C97.5 8.44 90.56 1.5 82 1.5ZM16 5.5C22.35 5.5 27.5 10.65 27.5 17C27.5 23.35 22.35 28.5 16 28.5C9.65 28.5 4.5 23.35 4.5 17C4.5 10.65 9.65 5.5 16 5.5ZM38 5.5C42.84 5.5 47 8.52 48.71 12.82C46.85 10.05 44.02 8 40.7 7.02C39.84 6.77 38.93 6.64 38 6.64C37.07 6.64 36.16 6.77 35.3 7.02C31.98 8 29.15 10.05 27.29 12.82C29 8.52 33.16 5.5 38 5.5ZM60 5.5C64.84 5.5 69 8.52 70.71 12.82C68.85 10.05 66.02 8 62.7 7.02C61.84 6.77 60.93 6.64 60 6.64C59.07 6.64 58.16 6.77 57.3 7.02C53.98 8 51.15 10.05 49.29 12.82C51 8.52 55.16 5.5 60 5.5ZM82 5.5C88.35 5.5 93.5 10.65 93.5 17C93.5 23.35 88.35 28.5 82 28.5C75.65 28.5 70.5 23.35 70.5 17C70.5 16.62 70.52 16.24 70.56 15.86C72.26 18.57 74.93 20.73 78.11 21.84C79.35 22.28 80.65 22.5 82 22.5C83.35 22.5 84.65 22.28 85.89 21.84C89.07 20.73 91.74 18.57 93.44 15.86C93.48 16.24 93.5 16.62 93.5 17ZM38 28.5C33.16 28.5 29 25.48 27.29 21.18C29.15 23.95 31.98 26 35.3 26.98C36.16 27.23 37.07 27.36 38 27.36C38.93 27.36 39.84 27.23 40.7 26.98C44.02 26 46.85 23.95 48.71 21.18C47 25.48 42.84 28.5 38 28.5ZM60 28.5C55.16 28.5 51 25.48 49.29 21.18C51.15 23.95 53.98 26 57.3 26.98C58.16 27.23 59.07 27.36 60 27.36C60.93 27.36 61.84 27.23 62.7 26.98C66.02 26 68.85 23.95 70.71 21.18C69 25.48 64.84 28.5 60 28.5Z" fill="#ffffff"/>
+      </svg>
+      <span>旅行车家族</span>
+    </div>
+    <div>2022 CAMPAIGN</div>
+  </nav>
+
+  <section class="hero">
+    <video class="hero-video" src="assets/audi_images/Push_car_door_see_mountains_202605231741.mp4" autoplay loop muted playsinline></video>
+    <div class="hero-video-overlay"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">活出生命的辽阔</h1>
+      <p class="hero-subtitle">穿山越海 耀目而来</p>
+    </div>
+  </section>
+
+  <section class="strategy-intro" id="strategy">
+    <div class="strategy-bg"></div>
+    <div class="strategy-text-container">
+      <div class="st-line">如果说生命的辽阔取决于视野，</div>
+      <div class="st-line">那今天的我们，视野足够辽阔。</div>
+      <div class="st-line">在不断下滑的短视频里，</div>
+      <div class="st-line">我们看到有人从平流层一跃而下，</div>
+      <div class="st-line">有人纵身潜入深海...</div>
+      <br>
+      <div class="st-line">这个世界总在被我们反复认识，</div>
+      <div class="st-line">是因为<span class="st-highlight">总有人潜入远方</span>。</div>
+      <div class="st-line">在更深的地方，带我们见识辽阔的世界。</div>
+    </div>
+  </section>
+
+  <section class="films-container">
+    
+    <!-- Film 1 -->
+    <div class="film-panel">
+      <div class="film-bg" style="background-image: url('assets/audi_images/audi_forest_transition_1779527766300.png');"></div>
+      <div class="film-content">
+        <div class="film-chapter">Chapter 01</div>
+        <h2 class="film-title serif">听见鸟鸣的<br>那一刻</h2>
+        <p class="film-desc">上一秒，在办公室煮咖啡；下一秒，在森林里被鸟鸣唤醒。<br><br>带走一片丛林，打破城市与自然的边界。</p>
+        <!-- User Placeholder -->
+        <div class="car-placeholder">
+          [替换位：请在此插入 A6 Avant quattro 大探险家特别版 原图]
+        </div>
+      </div>
+    </div>
+
+    <!-- Film 2 -->
+    <div class="film-panel">
+      <div class="film-bg" style="background-image: url('assets/audi_images/audi_ocean_sailing_1779527779074.png');"></div>
+      <div class="film-content">
+        <div class="film-chapter">Chapter 02</div>
+        <h2 class="film-title serif">尝到大海味道的<br>那一刻</h2>
+        <p class="film-desc">私人party上的海鱼，下一秒是你亲自在海上钓起的战利品。<br><br>去品尝大海的味道，让身体和灵魂重获新生。</p>
+        <div class="car-placeholder">
+          [替换位：请在此插入 A4 Avant 大探险家特别版 原图]
+        </div>
+      </div>
+    </div>
+
+    <!-- Film 3 -->
+    <div class="film-panel">
+      <div class="film-bg" style="background-image: url('assets/audi_images/audi_starry_fireflies_1779527795063.png');"></div>
+      <div class="film-content">
+        <div class="film-chapter">Chapter 03</div>
+        <h2 class="film-title serif">看见萤火虫的<br>那一刻</h2>
+        <p class="film-desc">暗房里冲洗出的星空，不如亲自驾驶穿出山谷停在湖畔。<br><br>沉浸在浩瀚星海，将一片宇宙随身携带。</p>
+        <div class="car-placeholder">
+          [替换位：请在此插入 A4 allroad quattro 耀夜绿 原图]
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <section class="kol-section">
+    <div class="section-header">
+      <h2 class="serif">史上最难 Lifestyle 系列</h2>
+      <p>玩到深处见辽阔。真难得的生活方式，才配得上瓦罐车主自由的灵魂。</p>
+    </div>
+    <div class="kol-grid">
+      <div class="kol-card">
+        <div class="kol-avatar" style="background-image: url('assets/audi_images/audi_avatar_1_1779528538053.png'); background-size: cover; background-position: center;"></div>
+        <h3 class="kol-name">骨灰级瓦罐露营玩家</h3>
+        <div class="kol-tags">#王生鲜 #纵贯17个纬度</div>
+        <p class="kol-quote">“露营是成年人的童话。与其说选择的是露营，不如说选择的是去往不一样的路。”</p>
+      </div>
+      <div class="kol-card">
+        <div class="kol-avatar" style="background-image: url('assets/audi_images/audi_avatar_2_1779528552177.png'); background-size: cover; background-position: center;"></div>
+        <h3 class="kol-name">独立胶片摄影师</h3>
+        <div class="kol-tags">#爱妻狂魔 #星海篇</div>
+        <p class="kol-quote">“没有见过内心世界的辽阔，看到的世界也就谈不上辽阔。”</p>
+      </div>
+      <div class="kol-card">
+        <div class="kol-avatar" style="background-image: url('assets/audi_images/audi_avatar_3_1779528567573.png'); background-size: cover; background-position: center;"></div>
+        <h3 class="kol-name">吉尼斯纪录骑车手</h3>
+        <div class="kol-tags">#张京坤 #挑战极限</div>
+        <p class="kol-quote">“最难的不是买到碳纤维材质，而是在车上，坚持骑行。”</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div>一汽奥迪 / AUDI STATION WAGON FAMILY 2022</div>
+    <div>DESIGNED BY AI</div>
+  </footer>
+
+  <script>
+    // Initialize Lenis Smooth Scroll
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      direction: 'vertical',
+      gestureDirection: 'vertical',
+      smooth: true,
+      mouseMultiplier: 1,
+      smoothTouch: false,
+      touchMultiplier: 2,
+      infinite: false,
+    });
+
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    // GSAP Animations
+    gsap.registerPlugin(ScrollTrigger);
+
+    gsap.to('.hero-content', {
+      yPercent: 30,
+      opacity: 0,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: '.hero',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: true
+      }
+    });
+
+    // Strategy Text Fade In
+    const stLines = document.querySelectorAll('.st-line');
+    stLines.forEach((line, i) => {
+      gsap.to(line, {
+        opacity: 1,
+        y: 0,
+        scrollTrigger: {
+          trigger: line,
+          start: 'top 85%',
+          end: 'bottom 60%',
+          scrub: 1
+        }
+      });
+    });
+
+    // Films Parallax Pinning
+    const panels = document.querySelectorAll('.film-panel');
+    panels.forEach((panel, i) => {
+      const bg = panel.querySelector('.film-bg');
+      const content = panel.querySelector('.film-content');
+      
+      // Pin the panel
+      ScrollTrigger.create({
+        trigger: panel,
+        start: 'top top',
+        end: '+=100%',
+        pin: true,
+        pinSpacing: false
+      });
+
+      // Background zoom effect
+      gsap.fromTo(bg, 
+        { scale: 1.1, filter: 'brightness(0.3)' },
+        { 
+          scale: 1, 
+          filter: 'brightness(0.8)',
+          ease: 'none',
+          scrollTrigger: {
+            trigger: panel,
+            start: 'top bottom',
+            end: 'top top',
+            scrub: true
+          }
+        }
+      );
+
+      // Content fade in
+      gsap.fromTo(content,
+        { opacity: 0, y: 50 },
+        {
+          opacity: 1, y: 0,
+          scrollTrigger: {
+            trigger: panel,
+            start: 'top 30%',
+            end: 'top top',
+            scrub: 1
+          }
+        }
+      );
+    });
+
+    // KOL Cards Stagger
+    gsap.from('.kol-card', {
+      opacity: 0,
+      y: 50,
+      stagger: 0.2,
+      duration: 1,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: '.kol-section',
+        start: 'top 70%'
+      }
+    });
+
+  </script>
+</body>
+</html>

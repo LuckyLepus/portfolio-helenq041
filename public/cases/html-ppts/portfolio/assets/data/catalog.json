@@ -1,0 +1,47 @@
+[
+  {
+    "id": "audi_traveler_2022",
+    "title": "2022奥迪旅行车家族内容营销方案",
+    "accentColor": "#dd191d",
+    "totalPages": 88,
+    "slideThumbnail": "assets/slides/audi_traveler_2022/page-1.png",
+    "videoCount": 0,
+    "hasVideo": false
+  },
+  {
+    "id": "audi_q4_c4d",
+    "title": "奥迪Q4季度技术传播内容营销方案",
+    "accentColor": "#00a3e0",
+    "totalPages": 40,
+    "slideThumbnail": "assets/slides/audi_q4_c4d/page-1.png",
+    "videoCount": 1,
+    "hasVideo": true
+  },
+  {
+    "id": "huawei_honor_teller",
+    "title": "2020年华为荣耀Teller项目创意方案",
+    "accentColor": "#8a2be2",
+    "totalPages": 132,
+    "slideThumbnail": "assets/slides/huawei_honor_teller/page-1.png",
+    "videoCount": 14,
+    "hasVideo": true
+  },
+  {
+    "id": "schneider_2020",
+    "title": "2020施耐德项目活动方案建议提案",
+    "accentColor": "#3dcd58",
+    "totalPages": 160,
+    "slideThumbnail": "assets/slides/schneider_2020/page-1.png",
+    "videoCount": 12,
+    "hasVideo": true
+  },
+  {
+    "id": "bytedance_gongyi_2023",
+    "title": "2023字节跳动公益峰会创意提案",
+    "accentColor": "#ff7a38",
+    "totalPages": 89,
+    "slideThumbnail": "assets/slides/bytedance_gongyi_2023/page-1.png",
+    "videoCount": 0,
+    "hasVideo": false
+  }
+]
