@@ -1,8 +1,58 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+/* Cormorant Garamond + Outfit - 通过 Bunny Fonts 加载（欧洲镜像，国内可访问）*/
+/* @import 必须在最前面，CSS 规范要求 */
 @import "tailwindcss";
+@import url('https://fonts.bunny.net/css?family=cormorant-garamond:300,300i,400,400i,500,600,700|outfit:300,400,500,600&display=swap');
 
+/* ============================================
+   自托管字体 - 跨浏览器/平台完全一致
+   字体已子集化：57.9MB → 1.1MB，随网站一起部署
+   ============================================ */
+
+/* Glow Sans SC - 正文主字体 (font-sans) */
+@font-face {
+  font-family: 'Glow Sans SC';
+  src: url('/fonts/GlowSansSC-Light.woff2') format('woff2'),
+       url('/fonts/GlowSansSC-Normal-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Glow Sans SC';
+  src: url('/fonts/GlowSansSC-Regular.woff2') format('woff2'),
+       url('/fonts/GlowSansSC-Normal-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Glow Sans SC';
+  src: url('/fonts/GlowSansSC-Medium.woff2') format('woff2'),
+       url('/fonts/GlowSansSC-Normal-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Glow Sans SC';
+  src: url('/fonts/GlowSansSC-Bold.woff2') format('woff2'),
+       url('/fonts/GlowSansSC-Normal-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 寒蝉锦书宋 - 中文衬线装饰字体 (font-jinshu) */
+@font-face {
+  font-family: 'Chill Jinshu Song Compact ExtraBold';
+  src: url('/fonts/ChillJinshuSong.woff2') format('woff2'),
+       url('/fonts/ChillJinshuSong.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Glow Sans SC', ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {

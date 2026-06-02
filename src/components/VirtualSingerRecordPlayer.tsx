@@ -1,14 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ALYONA_SONGS } from '../config/mediaAssets';
 
-// Data for the 5 songs
-const songs = [
-  { id: 1, title: 'Как же хорошо, когда есть деньги', titleZh: '有钱真好', file: '/alyona/song1.mp3', cover: '/alyona/cover1.png' },
-  { id: 2, title: 'Я просто люблю деньги', titleZh: '我只是喜欢钱', file: '/alyona/song2.mp3', cover: '/alyona/cover2.png' },
-  { id: 3, title: 'Почему деньги труднее любви?', titleZh: '为什么金钱比爱情更难追寻？', file: '/alyona/song3.mp3', cover: '/alyona/cover3.png' },
-  { id: 4, title: 'За стеклом', titleZh: '在橱窗之外', file: '/alyona/song4.mp3', cover: '/alyona/cover4.png' },
-  { id: 5, title: 'ДУЛО', titleZh: '枪口', file: '/alyona/song5.mp3', cover: '/alyona/cover5.png' },
-];
+// Song data is now in src/config/mediaAssets.ts (GitHub Releases hosted)
+const songs = ALYONA_SONGS;
 
 export default function VirtualSingerRecordPlayer() {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);

@@ -2,6 +2,7 @@ import { Suspense, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF, Environment, ContactShadows, Center, Float } from '@react-three/drei';
 import * as THREE from 'three';
+import { MODEL_GLB_URL } from '../config/mediaAssets';
 
 function Model({ url }: { url: string }) {
   const { scene } = useGLTF(url);
@@ -33,7 +34,7 @@ interface ModelViewerProps {
   className?: string;
 }
 
-export default function ModelViewer({ url = 'https://helenq-assets-1317600743.cos.ap-hongkong.myqcloud.com/portfolio-helenq0414/model.glb', className = '' }: ModelViewerProps) {
+export default function ModelViewer({ url = MODEL_GLB_URL, className = '' }: ModelViewerProps) {
   return (
     <div className={`w-full h-full pointer-events-none flex items-center justify-center ${className}`}>
       <Canvas camera={{ position: [0, 0, 8], fov: 45 }} style={{ pointerEvents: 'none' }}>

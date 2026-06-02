@@ -5,6 +5,7 @@ import ContactPopup from '../components/ContactPopup';
 import ModelViewer from '../components/ModelViewer';
 import ParticleImage from '../components/ParticleImage';
 import PasswordScreen from '../components/PasswordScreen';
+import { MODEL_GLB_URL } from '../config/mediaAssets';
 
 const projects = [
   {
@@ -83,7 +84,7 @@ const projects = [
     subtitleZh: '无边界探索ING-游戏与低多边形艺术实验',
     path: '/project/06',
     image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=800&auto=format&fit=crop', // Open book
-    modelUrl: 'https://helenq-assets-1317600743.cos.ap-hongkong.myqcloud.com/portfolio-helenq0414/model.glb', // Use COS hosted 3D model to bypass Vercel size limits
+    modelUrl: MODEL_GLB_URL, // GitHub Releases 托管，绕过 Vercel 大小限制
     pos: { top: '15%', left: '55%', width: '20vw', height: '25vw' },
     labelPos: { top: '-24px', left: '0' },
     animationClass: 'anim-float-1',

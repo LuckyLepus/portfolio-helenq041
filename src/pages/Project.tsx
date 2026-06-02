@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { FileText, ExternalLink, FileDown, ChevronDown, Shield, X, Loader2 } from 'lucide-react';
+import { FileText, ExternalLink, ChevronDown, Shield, X, Loader2 } from 'lucide-react';
 import ContactPopup from '../components/ContactPopup';
 import InteractiveMindMap from '../components/InteractiveMindMap';
 import HtmlPptShowcase from '../components/HtmlPptShowcase';
@@ -9,10 +9,10 @@ import CyberSpiderPet from '../components/CyberSpiderPet';
 import VirtualSingerRecordPlayer from '../components/VirtualSingerRecordPlayer';
 import MetaPlayMakerShowcase from '../components/MetaPlayMakerShowcase';
 
-// 配置 GitHub 托管媒体文件的根路径 (如果用户想使用 GitHub 托管)
-// 例如: 'https://raw.githubusercontent.com/[Username]/[Repo]/[Branch]/public/cases'
-// 留空则默认读取本地项目 `public/cases` 目录下的素材
-const GITHUB_MEDIA_BASE_URL: string = 'https://helenq-assets-1317600743.cos.ap-hongkong.myqcloud.com/portfolio-helenq0414';
+// 媒体文件根路径 - cases 目录下的文件通过本地 public/ 提供
+// 大文件（视频/GIF）需通过 B站嵌入播放器加载，此路径仅用于图片
+// 详见 src/config/mediaAssets.ts
+const GITHUB_MEDIA_BASE_URL: string = '';
 
 interface TimelineItem {
   id: string;
