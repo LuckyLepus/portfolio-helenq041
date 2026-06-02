@@ -13,8 +13,8 @@
  */
 
 // ─── GitHub 仓库信息（替换成你的仓库地址）─────────────────
-const GITHUB_USER = 'helenq0414';           // ← 改成你的 GitHub 用户名
-const GITHUB_REPO = 'portfolio-helenq0414'; // ← 改成你的仓库名
+const GITHUB_USER = 'LuckyLepus';           // ← 你的 GitHub 用户名
+const GITHUB_REPO = 'portfolio-helenq041'; // ← 你的仓库名
 const RELEASE_TAG = 'v1.0-assets';          // ← Release 的 tag 名称
 
 function ghRelease(filename: string): string {

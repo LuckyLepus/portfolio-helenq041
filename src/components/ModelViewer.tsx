@@ -34,21 +34,25 @@ interface ModelViewerProps {
   className?: string;
 }
 
+import ErrorBoundary from './ErrorBoundary';
+
 export default function ModelViewer({ url = MODEL_GLB_URL, className = '' }: ModelViewerProps) {
   return (
     <div className={`w-full h-full pointer-events-none flex items-center justify-center ${className}`}>
-      <Canvas camera={{ position: [0, 0, 8], fov: 45 }} style={{ pointerEvents: 'none' }}>
-        <ambientLight intensity={0.8} />
-        <directionalLight position={[10, 10, 10]} intensity={2} />
-        
-        <Suspense fallback={null}>
-          <Center>
-            <Model url={url} />
-          </Center>
-          <Environment preset="city" />
-          <ContactShadows position={[0, -2, 0]} opacity={0.4} scale={20} blur={2} far={4} />
-        </Suspense>
-      </Canvas>
+      <ErrorBoundary>
+        <Canvas camera={{ position: [0, 0, 8], fov: 45 }} style={{ pointerEvents: 'none' }}>
+          <ambientLight intensity={0.8} />
+          <directionalLight position={[10, 10, 10]} intensity={2} />
+          
+          <Suspense fallback={null}>
+            <Center>
+              <Model url={url} />
+            </Center>
+            <Environment preset="city" />
+            <ContactShadows position={[0, -2, 0]} opacity={0.4} scale={20} blur={2} far={4} />
+          </Suspense>
+        </Canvas>
+      </ErrorBoundary>
     </div>
   );
 }
