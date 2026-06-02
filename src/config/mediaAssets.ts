@@ -12,13 +12,15 @@
  *    格式：https://github.com/[用户名]/[仓库名]/releases/download/[tag]/[文件名]
  */
 
-// ─── GitHub 仓库信息（替换成你的仓库地址）─────────────────
-const GITHUB_USER = 'LuckyLepus';           // ← 你的 GitHub 用户名
-const GITHUB_REPO = 'portfolio-helenq041'; // ← 你的仓库名
-const RELEASE_TAG = 'v1.0-assets';          // ← Release 的 tag 名称
+// ─── 腾讯云 COS 资源配置 ─────────────────────────────────────
+export const COS_BASE = 'https://helenq-assets-1317600743.cos.ap-hongkong.myqcloud.com/portfolio-helenq0414';
 
-function ghRelease(filename: string): string {
-  return `https://github.com/${GITHUB_USER}/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/${filename}`;
+export function cosUrl(filename: string): string {
+  // 如果已经是绝对路径或带 /cases/ 等前缀，根据实际情况拼接
+  if (filename.startsWith('/')) {
+    return `${COS_BASE}${filename}`;
+  }
+  return `${COS_BASE}/${filename}`;
 }
 
 // ─── 3D 模型 ──────────────────────────────────────────────
@@ -26,56 +28,53 @@ export const MODEL_GLB_URL = '/model.glb';
 export const ALYONA_MODEL_URL = '/alyona/model.glb';
 
 // ─── Alyona 虚拟歌手专辑曲目 ─────────────────────────────
-// 音乐文件托管在 GitHub Releases（每首 1-4MB，可接受大小）
-// 封面图片保留在 public/alyona/（已压缩后约 10MB 可接受）
+// 音乐文件托管在 COS
 export const ALYONA_SONGS = [
   {
     id: 1,
     title: 'Как же хорошо, когда есть деньги',
     titleZh: '有钱真好',
-    file: ghRelease('alyona_song1.mp3'),
+    file: cosUrl('alyona_song1.mp3'),
     cover: '/alyona/cover1.png',
   },
   {
     id: 2,
     title: 'Я просто люблю деньги',
     titleZh: '我只是喜欢钱',
-    file: ghRelease('alyona_song2.mp3'),
+    file: cosUrl('alyona_song2.mp3'),
     cover: '/alyona/cover2.png',
   },
   {
     id: 3,
     title: 'Почему деньги труднее любви?',
     titleZh: '为什么金钱比爱情更难追寻？',
-    file: ghRelease('alyona_song3.mp3'),
+    file: cosUrl('alyona_song3.mp3'),
     cover: '/alyona/cover3.png',
   },
   {
     id: 4,
     title: 'За стеклом',
     titleZh: '在橱窗之外',
-    file: ghRelease('alyona_song4.mp3'),
+    file: cosUrl('alyona_song4.mp3'),
     cover: '/alyona/cover4.png',
   },
   {
     id: 5,
     title: 'ДУЛО',
     titleZh: '枪口',
-    file: ghRelease('alyona_song5.mp3'),
+    file: cosUrl('alyona_song5.mp3'),
     cover: '/alyona/cover5.png',
   },
 ] as const;
 
 // ─── 播客音频 ─────────────────────────────────────────────
-// 注意：podcast/index.html 是独立编译的静态文件，
-// 其音频路径在 public/podcast/index.html 中硬编码。
-// 上传到 GitHub Releases 后，需要同时更新 public/podcast/index.html 中的路径。
+// 音频文件托管在 COS
 export const PODCAST_AUDIO = {
-  ep01: ghRelease('podcast_web-tech-ending-ppt.m4a'),
-  ep02: ghRelease('podcast_employee-fast-company-dumb-trap.m4a'),
-  ep03: ghRelease('podcast_intention-over-ten-years.m4a'),
-  ep04: ghRelease('podcast_who_is_betraying_female_gamers.m4a'),
-  ep05: ghRelease('podcast_from_virtual_betrayal_to_financial_independence.m4a'),
-  ep06: ghRelease('podcast_ai_gives_soul_to_virtual_characters.m4a'),
-  ep07: ghRelease('podcast_game-algorithm-pua.m4a'),
+  ep01: cosUrl('podcast_web-tech-ending-ppt.m4a'),
+  ep02: cosUrl('podcast_employee-fast-company-dumb-trap.m4a'),
+  ep03: cosUrl('podcast_intention-over-ten-years.m4a'),
+  ep04: cosUrl('podcast_who_is_betraying_female_gamers.m4a'),
+  ep05: cosUrl('podcast_from_virtual_betrayal_to_financial_independence.m4a'),
+  ep06: cosUrl('podcast_ai_gives_soul_to_virtual_characters.m4a'),
+  ep07: cosUrl('podcast_game-algorithm-pua.m4a'),
 };
