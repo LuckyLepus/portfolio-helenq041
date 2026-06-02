@@ -28,53 +28,53 @@ export const MODEL_GLB_URL = '/model.glb';
 export const ALYONA_MODEL_URL = '/alyona/model.glb';
 
 // ─── Alyona 虚拟歌手专辑曲目 ─────────────────────────────
-// 音乐文件托管在 COS
+// 音乐文件在本地 public/alyona 目录下
 export const ALYONA_SONGS = [
   {
     id: 1,
     title: 'Как же хорошо, когда есть деньги',
     titleZh: '有钱真好',
-    file: cosUrl('alyona_song1.mp3'),
+    file: '/alyona/song1.mp3',
     cover: '/alyona/cover1.png',
   },
   {
     id: 2,
     title: 'Я просто люблю деньги',
     titleZh: '我只是喜欢钱',
-    file: cosUrl('alyona_song2.mp3'),
+    file: '/alyona/song2.mp3',
     cover: '/alyona/cover2.png',
   },
   {
     id: 3,
     title: 'Почему деньги труднее любви?',
     titleZh: '为什么金钱比爱情更难追寻？',
-    file: cosUrl('alyona_song3.mp3'),
+    file: '/alyona/song3.mp3',
     cover: '/alyona/cover3.png',
   },
   {
     id: 4,
     title: 'За стеклом',
     titleZh: '在橱窗之外',
-    file: cosUrl('alyona_song4.mp3'),
+    file: '/alyona/song4.mp3',
     cover: '/alyona/cover4.png',
   },
   {
     id: 5,
     title: 'ДУЛО',
     titleZh: '枪口',
-    file: cosUrl('alyona_song5.mp3'),
+    file: '/alyona/song5.mp3',
     cover: '/alyona/cover5.png',
   },
 ] as const;
 
 // ─── 播客音频 ─────────────────────────────────────────────
-// 音频文件托管在 COS
+// 音频文件在本地 public/podcast/audio 目录下
 export const PODCAST_AUDIO = {
-  ep01: cosUrl('podcast_web-tech-ending-ppt.m4a'),
-  ep02: cosUrl('podcast_employee-fast-company-dumb-trap.m4a'),
-  ep03: cosUrl('podcast_intention-over-ten-years.m4a'),
-  ep04: cosUrl('podcast_who_is_betraying_female_gamers.m4a'),
-  ep05: cosUrl('podcast_from_virtual_betrayal_to_financial_independence.m4a'),
-  ep06: cosUrl('podcast_ai_gives_soul_to_virtual_characters.m4a'),
-  ep07: cosUrl('podcast_game-algorithm-pua.m4a'),
+  ep01: '/podcast/audio/web-tech-ending-ppt.m4a',
+  ep02: '/podcast/audio/employee-fast-company-dumb-trap.m4a',
+  ep03: '/podcast/audio/intention-over-ten-years.m4a',
+  ep04: '/podcast/audio/who_is_betraying_female_gamers.m4a',
+  ep05: '/podcast/audio/from_virtual_betrayal_to_financial_independence.m4a',
+  ep06: '/podcast/audio/ai_gives_soul_to_virtual_characters.m4a',
+  ep07: '/podcast/audio/别被游戏算法PUA了.m4a',
 };
