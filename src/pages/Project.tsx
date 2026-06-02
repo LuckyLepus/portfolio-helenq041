@@ -23,9 +23,10 @@ interface TimelineItem {
   description: string;
   descriptionEn: string;
   mediaUrl: string;
-  mediaType: 'video' | 'gif' | 'pdf' | 'images';
+  mediaType: 'video' | 'loop-video' | 'pdf' | 'images' | 'bilibili';
   fileName: string;
   images?: string[];
+  bvid?: string;
 }
 
 interface ProjectItem {
@@ -417,7 +418,8 @@ const casesTimeline: TimelineItem[] = [
     description: '面向新锐科技精英的年度思想碰撞盛宴。以极简极客美学为骨架，打造无界灵感实验室，策划高品质圆桌对话与黑科技交互展区，定制独一无二的科技漫游指南。',
     descriptionEn: 'An intellectual feast for cutting-edge tech elites. Built upon minimalist hacker aesthetics, creating boundless inspiration labs, roundtables, and high-tech experiential zones.',
     mediaUrl: '/cases/2020IF2019极客公园大事件活动创造指南NO.01.mp4',
-    mediaType: 'video',
+    mediaType: 'bilibili',
+    bvid: 'BV1zeVB66ETD',
     fileName: '2020IF2019极客公园大事件活动创造指南NO.01.mp4'
   },
   {
@@ -429,7 +431,8 @@ const casesTimeline: TimelineItem[] = [
     description: '针对后疫情时代汽车消费信心的重塑，策划“中国汽车新消费论坛暨展览”，线上线下双驱融合，以全景式数字化展厅及领袖级峰会为行业注入强心剂。',
     descriptionEn: 'Designed a dual-drive online-offline integration for the post-pandemic automotive market, establishing a panoramic digital exhibition hall and a top-tier summit to rebuild market confidence.',
     mediaUrl: '/cases/2020汽车之家818中国汽车新消费论坛暨展览0605【未压缩原版】.mp4',
-    mediaType: 'video',
+    mediaType: 'bilibili',
+    bvid: 'BV1hSVB68E4D',
     fileName: '2020汽车之家818中国汽车新消费论坛暨展览0605【未压缩原版】.mp4'
   },
   {
@@ -441,7 +444,8 @@ const casesTimeline: TimelineItem[] = [
     description: '京东年度核心科技盛会线上全案策划。突破传统论坛桎梏，设计多维沉浸式虚拟会场，融合AI/Web3前沿视听，实现亿级声量曝光与科技叙事沉浸式感知。',
     descriptionEn: 'Full strategic planning for JD\'s annual flagship tech conference. Broke the boundaries of traditional forums by designing multi-dimensional immersive virtual venues with cutting-edge AV technology.',
     mediaUrl: '/cases/2020年京东全球科技探索者大会线上整合项目方案【0812】未压缩.mp4',
-    mediaType: 'video',
+    mediaType: 'bilibili',
+    bvid: 'BV13SVB6hEtt',
     fileName: '2020年京东全球科技探索者大会线上整合项目方案【0812】未压缩.mp4'
   },
   {
@@ -453,7 +457,8 @@ const casesTimeline: TimelineItem[] = [
     description: '大众点评年度旗舰项目创意提案。以城市生活温度为核心底色，融合潮流地标打卡与线上年终大数据盘点，构建专属于当代都市青年的“烟火气”荣誉圣殿。',
     descriptionEn: 'A creative pitch for Dianping\'s flagship annual campaign. Highlighting urban lifestyle warmth, it fused physical landmark check-ins with digital year-end reviews to build a sanctuary of urban life.',
     mediaUrl: '/cases/2020大众点评年终盛典2020创意建议方案【0914】完全版.mp4',
-    mediaType: 'video',
+    mediaType: 'bilibili',
+    bvid: 'BV13SVB6hEtt',
     fileName: '2020大众点评年终盛典2020创意建议方案【0914】完全版.mp4'
   },
   {
@@ -486,9 +491,10 @@ const casesTimeline: TimelineItem[] = [
     titleEn: 'Sina Weibo Fans Carnival Campaign',
     description: '微博超级IP粉丝狂欢盛宴线下创意激活。打造多重破圈粉丝互动展位、应援打卡区与沉浸式潮流集市，以年轻态设计语言建立品牌与Z世代用户的超链接。',
     descriptionEn: 'Offline creative activation for Weibo\'s massive fan-culture IP. Designed interactive fan booths, fandom check-ins, and pop-up markets, building a direct hyperlink between brand and Gen Z.',
-    mediaUrl: '/cases/2021新浪微博粉丝嘉年华创意方案【0713】.gif',
-    mediaType: 'gif',
-    fileName: '2021新浪微博粉丝嘉年华创意方案【0713】.gif'
+    mediaUrl: '/cases/2021新浪微博粉丝嘉年华创意方案【0713】.mp4',
+    mediaType: 'bilibili',
+    bvid: 'BV1QSVB68EJy',
+    fileName: '2021新浪微博粉丝嘉年华创意方案【0713】.mp4'
   },
   {
     id: 'c07',
@@ -498,9 +504,10 @@ const casesTimeline: TimelineItem[] = [
     titleEn: 'Sina Wave-Making CITY Festival Plan',
     description: '聚焦青年先锋文化的城市级节日计划提案。融合街头潮流、潮流艺术、先锋音乐与市集文化，为城市定制专属的造浪节日，释放圈层青年力与潮流商业潜力。',
     descriptionEn: 'A city-level festival strategy focusing on youth vanguard culture. Blends street fashion, contemporary art, indie music, and curated markets to unleash local community subculture energy.',
-    mediaUrl: '/cases/2021新浪2021年度造浪CITY节日计划创意方案【1103】2.0.gif',
-    mediaType: 'gif',
-    fileName: '2021新浪2021年度造浪CITY节日计划创意方案【1103】2.0.gif'
+    mediaUrl: '/cases/2021新浪2021年度造浪CITY节日计划创意方案【1103】2.0.mp4',
+    mediaType: 'bilibili',
+    bvid: 'BV13SVB6hEzg',
+    fileName: '2021新浪2021年度造浪CITY节日计划创意方案【1103】2.0.mp4'
   },
   {
     id: 'c08',
@@ -510,9 +517,10 @@ const casesTimeline: TimelineItem[] = [
     titleEn: 'MasterGo Creativity Summit Campaign',
     description: '专为数字界面设计师打造的创造力年度峰会提案。以“协同无界，灵感共生”为视觉与叙事核心，采用大色块与极简主义流动线条，昭示国产协同设计工具时代的到来。',
     descriptionEn: 'Annual design summit pitch for MasterGo. With "Boundless Collaboration, Shared Inspiration" as the visual backbone, utilizing fluid lines and solid colors to herald a new era of collaborative UI tools.',
-    mediaUrl: '/cases/2022MasterGo创造力峰会项目方案创意部分-0125 2351.gif',
-    mediaType: 'gif',
-    fileName: '2022MasterGo创造力峰会项目方案创意部分-0125 2351.gif'
+    mediaUrl: '/cases/2022MasterGo创造力峰会项目方案创意部分-0125 2351.mp4',
+    mediaType: 'bilibili',
+    bvid: 'BV1zYVB63Ebs',
+    fileName: '2022MasterGo创造力峰会项目方案创意部分-0125 2351.mp4'
   },
   {
     id: 'c09',
@@ -522,9 +530,10 @@ const casesTimeline: TimelineItem[] = [
     titleEn: 'Xigua PLAY Carnival Creative Strategy',
     description: '中视频创作者年度奥德赛之旅。以“登岛漫游”为核心概念，设计集海岛露营、颁奖盛典、共创工坊于一体的沉浸式线下狂欢，强化平台凝聚力与深度社交联结。',
     descriptionEn: 'An annual odyssey for video creators. Grounded in the "Island Roaming" concept, it designed a multi-day immersive camping, award gala, and workshops to foster platform cohesion.',
-    mediaUrl: '/cases/2022西瓜PLAY嘉年华2022项目方案Final-byUnison【0517】.gif',
-    mediaType: 'gif',
-    fileName: '2022西瓜PLAY嘉年华2022项目方案Final-byUnison【0517】.gif'
+    mediaUrl: '/cases/2022西瓜PLAY嘉年华2022项目方案Final-byUnison【0517】.mp4',
+    mediaType: 'bilibili',
+    bvid: 'BV1JYVB6GELU',
+    fileName: '2022西瓜PLAY嘉年华2022项目方案Final-byUnison【0517】.mp4'
   },
   {
     id: 'c10',
@@ -535,7 +544,8 @@ const casesTimeline: TimelineItem[] = [
     description: '字节跳动巨量引擎年度核心商业大会创意方案。以数字化商业增长引擎为灵感，构建金属感与流动粒子融合的光影空间，演绎数据、流量与创意协同爆发的商业艺术。',
     descriptionEn: 'OceanEngine\'s annual premier business summit. Inspired by digital growth engines, we crafted a high-tech metallic aesthetic with particle-driven visuals showing the power of data.',
     mediaUrl: '/cases/2022引擎大会2022项目建议方案【1015】.mp4',
-    mediaType: 'video',
+    mediaType: 'bilibili',
+    bvid: 'BV1zYVB63EDW',
     fileName: '2022引擎大会2022项目建议方案【1015】.mp4'
   },
   {
@@ -572,7 +582,8 @@ const casesTimeline: TimelineItem[] = [
     description: '抖音高奢餐饮盛会创意方案。聚焦精致餐饮美学，以“烟火与诗意”为设计核心，打造光影流转的品鉴艺术长廊，彰显高端品质生活格调与内容生态势能。',
     descriptionEn: 'An ultra-luxury culinary awards gala for Douyin. Blending "poetic vibes and local flavors", it introduced dynamic projection galleries showcasing gastronomy culture and platform prestige.',
     mediaUrl: '/cases/2025抖音甄选餐厅榜单发布会创意方案-by thinkpark【0116】.mp4',
-    mediaType: 'video',
+    mediaType: 'bilibili',
+    bvid: 'BV1zYVB63EGF',
     fileName: '2025抖音甄选餐厅榜单发布会创意方案-by thinkpark【0116】.mp4'
   },
   {
@@ -583,9 +594,10 @@ const casesTimeline: TimelineItem[] = [
     titleEn: 'PROYA Anti-Oxidant & Anti-Aging Essence 4.0 Launch',
     description: '国货美妆巨头旗舰爆款迭代发布的创意全案。以“科研抗衰，光芒无惧”为视听主轴，利用高科技环幕投影与流光溢彩的科技美学，诠释护肤新纪元的极致科研能量。',
     descriptionEn: 'The global product launch campaign for PROYA\'s blockbuster essence. Fusing scientific rigors with dazzling digital art, featuring panoramic projections to express ultimate beauty biotech.',
-    mediaUrl: '/cases/2025珀莱雅双抗精华4.0发布会-0320.gif',
-    mediaType: 'gif',
-    fileName: '2025珀莱雅双抗精华4.0发布会-0320.gif'
+    mediaUrl: '/cases/2025珀莱雅双抗精华4.0发布会-0320.mp4',
+    mediaType: 'bilibili',
+    bvid: 'BV1FYVB6GEGj',
+    fileName: '2025珀莱雅双抗精华4.0发布会-0320.mp4'
   },
   {
     id: 'c14',
@@ -596,7 +608,8 @@ const casesTimeline: TimelineItem[] = [
     description: '结合AI前沿工具辅助产出的复星品牌战略创意规划。深入洞察大健康与家庭消费场景，重塑造品牌与消费者的生命情感联结，融合数字分身与多维场景共鸣。',
     descriptionEn: 'An AI-augmented strategic proposal for Fosun\'s brand identity. Fused digital humans with household scenes, creating deep emotional resonances across healthcare and retail portfolios.',
     mediaUrl: '/cases/2025复星2025创意规划方案【1024】FORZHUO-AI.mp4',
-    mediaType: 'video',
+    mediaType: 'bilibili',
+    bvid: 'BV1JYVB6GE3N',
     fileName: '2025复星2025创意规划方案【1024】FORZHUO-AI.mp4'
   }
 ];
@@ -825,7 +838,17 @@ export default function Project() {
                               playsInline
                             />
                           </div>
-                        ) : item.mediaType === 'gif' ? (
+                        ) : item.mediaType === 'bilibili' ? (
+                          <div className="w-full aspect-video rounded overflow-hidden bg-black/60 border border-white/5 group-hover:border-[#00FF85]/20 transition-colors duration-300">
+                            <iframe 
+                              src={`//player.bilibili.com/player.html?bvid=${item.bvid}&page=1&high_quality=1&danmaku=0`} 
+                              scrolling="no" 
+                              frameBorder="0" 
+                              allowFullScreen={true}
+                              className="w-full h-full"
+                            ></iframe>
+                          </div>
+                        ) : item.mediaType === 'loop-video' ? (
                           <div className="w-full rounded overflow-hidden bg-black/40 border border-white/5 group-hover:border-[#00FF85]/20 transition-colors duration-300">
                             <img
                               src={(() => {
