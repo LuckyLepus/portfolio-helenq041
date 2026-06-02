@@ -971,7 +971,7 @@ export default function Project() {
                     className="w-full relative flex flex-col"
                   >
                     <div className="flex-grow">
-                      <img src={baseUrl ? `${baseUrl.replace(/\/$/, '')}/${img.split('/').slice(-2).join('/')}` : img} alt={`${project.title} detail ${idx + 1}`} 
+                      <img src={img.startsWith('http') ? img : `${GITHUB_MEDIA_BASE_URL.replace(/\\/$/, '')}/${img.split('/').slice(-2).join('/')}`} alt={`${project.title} detail ${idx + 1}`} 
                         className="w-full h-auto object-cover rounded-sm"
                         referrerPolicy="no-referrer"
                       />
