@@ -35,10 +35,6 @@ public/cases/*
 # 主页 Project02 演示视频（41MB）→ 托管到 B站
 public/project2.mp4
 
-# 3D 模型文件（大文件）→ GitHub Releases
-public/model.glb
-public/alyona/model.glb
-
 # 播客音频文件（每集30-80MB）→ GitHub Releases
 public/podcast/audio/*.m4a
 public/podcast/audio/*.mp3

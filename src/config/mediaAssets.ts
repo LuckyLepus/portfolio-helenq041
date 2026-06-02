@@ -22,8 +22,8 @@ function ghRelease(filename: string): string {
 }
 
 // ─── 3D 模型 ──────────────────────────────────────────────
-export const MODEL_GLB_URL = ghRelease('model.glb');
-export const ALYONA_MODEL_URL = ghRelease('alyona_model.glb');
+export const MODEL_GLB_URL = '/model.glb';
+export const ALYONA_MODEL_URL = '/alyona/model.glb';
 
 // ─── Alyona 虚拟歌手专辑曲目 ─────────────────────────────
 // 音乐文件托管在 GitHub Releases（每首 1-4MB，可接受大小）
