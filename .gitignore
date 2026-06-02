@@ -24,20 +24,12 @@ dist-ssr
 *.sw?
 
 # ============================================================
-# 大文件媒体资产 - 统一托管在 GitHub Releases
-# 请在 GitHub 仓库 Releases 页面上传这些文件
+# 大文件媒体资源 - 视频案例走 COS
 # ============================================================
 
-# cases 目录（大视频/GIF，走腾讯云COS/B站）
+# cases 目录（大视频/GIF，走腾讯云COS）
 public/cases/*
 !public/cases/The_$2M_AI_Knowledge_Autopsy/
 
-# 主页 Project02 演示视频（41MB）→ 托管到 B站
-public/project2.mp4
-
-# 播客音频文件（每集30-80MB）→ GitHub Releases
-public/podcast/audio/*.m4a
-public/podcast/audio/*.mp3
-
-# 字体：只提交子集化后的 woff2（1.1MB），忽略原始大体积 OTF（57MB）
+# 字体：只提交子集化后的 woff2（.1MB），忽略原始大体积 OTF（7MB）
 public/fonts/*.otf
