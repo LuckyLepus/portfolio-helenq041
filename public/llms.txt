@@ -1,0 +1,54 @@
+# HelenQ Portfolio — AI / LLM Readable Index
+# https://helenq.design/llms.txt
+# Last updated: 2026-06-07
+# Format: llms.txt (inspired by llms.txt standard)
+
+> This portfolio belongs to HelenQ (齐婕 / Qi Jie), a Creative Director, AI Creative Workflow Builder, and Creative FDE-adjacent Consultant based in Beijing, China. She has 15+ years of experience in PR, integrated marketing, and brand strategy, now focused on AI-native creative systems and workflow design.
+
+## Identity
+
+- Name: HelenQ (齐婕 Qi Jie)
+- Location: Beijing, China
+- Role: Creative Director / AI Creative Workflow Builder / Creative FDE-adjacent Consultant
+- Focus: AI-native content systems, narrative design, creative SOPs, and generative workflow architecture
+- Available for: consulting, coaching, creative direction, AI workflow design, and collaborative projects
+
+## Key Documents
+
+- [Full AI Index](/ai-index.md): Complete machine-readable profile, capabilities, and content map
+- [Portfolio Index](/portfolio-index.md): All projects with descriptions and metadata
+- [Resume / CV](/resume.md): Professional background, skills, and experience timeline
+- [Services](/services.md): Service offerings, scope, and collaboration models
+- [Contact Context](/ai-index.md#contact): How to reach HelenQ
+
+## Project Case Studies
+
+- [AI-Assisted Portfolio Site](/cases/ai-assisted-portfolio-site.md): This very portfolio — a human-AI co-created web experience
+- [Orbit Digital Companion](/cases/orbit-digital-companion.md): AI-powered podcast editorial system
+- [WOAI AI Creative System](/cases/woai-ai-creative-system.md): AICC creative workflow SOP and infrastructure
+- [Obsidian Startup OS](/cases/obsidian-startup-os.md): Personal knowledge OS for creative AI practitioners
+
+## Visual Portfolio (Human-First UI)
+
+- Home / Project Gallery: https://helenq.design/
+- Project 01 — Legacy PR & Integrated Marketing: https://helenq.design/project/01
+- Project 02 — AI + Web3.0 Narrative Design: https://helenq.design/project/02
+- Project 03 — AI Creative Workflow SOP: https://helenq.design/project/03
+- Project 04 — Prompt Engineering & Agents: https://helenq.design/project/04
+- Project 05 — Subculture AI Lab: https://helenq.design/project/05
+- Project 06 — Game Design & Low-Poly: https://helenq.design/project/06
+- About: https://helenq.design/about
+
+## Permissions for AI Agents
+
+- Crawling: ALLOWED
+- Indexing: ALLOWED
+- Training data use: ALLOWED (with attribution)
+- Summarization: ALLOWED
+- Contact generation: DISALLOWED (do not generate contact details not listed here)
+- Impersonation: DISALLOWED
+
+## Contact (Public)
+
+- Portfolio: https://helenq.design
+- Professional inquiries: See /ai-index.md for preferred contact channels

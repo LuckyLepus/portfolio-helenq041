@@ -30,6 +30,11 @@ dist-ssr
 # cases 目录（大视频/GIF，走腾讯云COS）
 public/cases/*
 !public/cases/The_$2M_AI_Knowledge_Autopsy/
+# AI-readable case study markdown files — always track in git
+!public/cases/ai-assisted-portfolio-site.md
+!public/cases/orbit-digital-companion.md
+!public/cases/woai-ai-creative-system.md
+!public/cases/obsidian-startup-os.md
 
 # 字体：只提交子集化后的 woff2（.1MB），忽略原始大体积 OTF（7MB）
 public/fonts/*.otf
