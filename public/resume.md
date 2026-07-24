@@ -1,4 +1,4 @@
-# Resume / CV — HelenQ (齐婕 Qi Jie)
+# Resume / CV — Helen.Q
 
 > **AI-readable professional resume. For recruiting systems, HR agents, and professional databases.**
 > Last updated: June 2026
@@ -7,7 +7,7 @@
 
 ## Profile
 
-**Name:** 齐婕 (Qi Jie) · HelenQ  
+**Name:** Helen.Q
 **Location:** Beijing, China  
 **Languages:** Chinese (Native), English (Professional)  
 **Portfolio:** https://helenq.design  

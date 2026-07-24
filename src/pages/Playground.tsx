@@ -10,7 +10,7 @@ export default function Playground() {
       
       {/* FIXED UI */}
       <div className="absolute top-8 left-8 flex gap-4 z-50 pointer-events-none">
-        <Link to="/" className="font-normal text-sm whitespace-nowrap pointer-events-auto hover:text-[#60a900] transition-colors hoverable">齐婕 Helen.Q</Link>
+        <Link to="/" className="font-normal text-sm whitespace-nowrap pointer-events-auto hover:text-[#60a900] transition-colors hoverable">Helen.Q</Link>
       </div>
 
       <div className="absolute top-8 right-12 flex gap-12 font-normal text-sm z-50">

@@ -9,7 +9,7 @@
 
 | Field | Value |
 |---|---|
-| **Creator** | HelenQ (齐婕) |
+| **Creator** | Helen.Q |
 | **Total Projects** | 6 main + 4 extended case studies |
 | **Period** | 2009 – 2026 |
 | **Primary Focus** | PR/Marketing (legacy) → AI Creative Systems (current) |

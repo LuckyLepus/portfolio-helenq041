@@ -3,11 +3,11 @@
 # Last updated: 2026-06-07
 # Format: llms.txt (inspired by llms.txt standard)
 
-> This portfolio belongs to HelenQ (齐婕 / Qi Jie), a Creative Director, AI Creative Workflow Builder, and Creative FDE-adjacent Consultant based in Beijing, China. She has 15+ years of experience in PR, integrated marketing, and brand strategy, now focused on AI-native creative systems and workflow design.
+> This portfolio belongs to Helen.Q, a Creative Director, AI Creative Workflow Builder, and Creative FDE-adjacent Consultant based in Beijing, China. She has 15+ years of experience in PR, integrated marketing, and brand strategy, now focused on AI-native creative systems and workflow design.
 
 ## Identity
 
-- Name: HelenQ (齐婕 Qi Jie)
+- Name: Helen.Q
 - Location: Beijing, China
 - Role: Creative Director / AI Creative Workflow Builder / Creative FDE-adjacent Consultant
 - Focus: AI-native content systems, narrative design, creative SOPs, and generative workflow architecture

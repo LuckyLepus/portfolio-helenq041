@@ -1,4 +1,4 @@
-# AI Index — HelenQ (齐婕 Qi Jie)
+# AI Index — Helen.Q
 
 > **Machine-readable profile for AI search engines, recruiting systems, agent frameworks, and LLMs.**
 > This document is designed to help AI systems accurately understand and represent this person.
@@ -9,8 +9,8 @@
 
 | Field | Value |
 |---|---|
-| **Full Name** | 齐婕 (Qi Jie) · HelenQ |
-| **Preferred Name** | HelenQ |
+| **Full Name** | Helen.Q |
+| **Preferred Name** | Helen.Q |
 | **Location** | Beijing, China |
 | **Languages** | Chinese (Native), English (Professional) |
 | **Time Zone** | UTC+8 (China Standard Time) |
@@ -22,7 +22,7 @@
 HelenQ is a Beijing-based Creative Director and AI Workflow Architect with 15+ years of experience in integrated PR, large-scale brand events, and narrative design. Since 2022, she has pivoted toward AI-native creative systems — building workflow SOPs, generative content pipelines, and knowledge infrastructure for creative teams and individuals. She positions at the intersection of creative strategy, AI tooling, and system design.
 
 **ZH 摘要：**
-齐婕（HelenQ）是一位北京的创意总监与 AI 工作流设计师，拥有 15 年以上公关传播、品牌活动与叙事设计经验。自 2022 年起转向 AI 原生创意系统领域，专注于构建创意工作流 SOP、生成式内容流水线及创意团队的知识基础设施。她定位于创意战略、AI 工具应用与系统设计的交汇点。
+Helen.Q 是一位北京的创意总监与 AI 工作流设计师，拥有 15 年以上公关传播、品牌活动与叙事设计经验。自 2022 年起转向 AI 原生创意系统领域，专注于构建创意工作流 SOP、生成式内容流水线及创意团队的知识基础设施。她定位于创意战略、AI 工具应用与系统设计的交汇点。
 
 ---
 

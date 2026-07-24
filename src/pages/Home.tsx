@@ -314,7 +314,7 @@ export default function Home() {
         >
           {/* LEFT COLUMN */}
           <div className="absolute top-8 left-8 flex gap-4 z-50">
-            <span className="font-normal text-sm whitespace-nowrap">齐婕 HELEN.Q</span>
+            <span className="font-normal text-sm whitespace-nowrap">Helen.Q</span>
             <p className="text-sm leading-tight pointer-events-none">
               I plan, I create, I think.<br />
               Based in Beijing.<br />

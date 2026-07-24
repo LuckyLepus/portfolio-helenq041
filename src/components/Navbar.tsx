@@ -9,7 +9,7 @@ export default function Navbar() {
     <>
       <nav className="fixed top-0 left-0 w-full p-6 flex justify-between items-start z-40 text-white">
         <Link to="/" className="text-lg md:text-xl font-medium tracking-tight hoverable font-sans">
-          齐婕 Helen.Q
+          Helen.Q
         </Link>
         
         <div className="flex flex-col items-end space-y-1 text-sm font-medium">

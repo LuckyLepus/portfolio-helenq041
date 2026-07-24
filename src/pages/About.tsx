@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import helenImg from '../assets/helen.png';
+import helenImg from '../assets/helen-q-avatar.jpg';
 
 const englishText = `An AI optimist.
 
@@ -141,7 +141,7 @@ export default function About() {
           className="mb-12 border-b border-white/20 pb-8"
         >
           <h1 className="text-xl md:text-2xl font-medium leading-relaxed tracking-wide font-sans mb-4">
-            我是齐婕 (HelenQ) ·<br />
+            我是 Helen.Q ·<br />
             一名创意总监、叙事设计师，以及 AI 实践者。
           </h1>
           <h2 className="text-lg md:text-xl opacity-90 leading-relaxed font-serif">

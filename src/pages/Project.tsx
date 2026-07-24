@@ -732,7 +732,7 @@ export default function Project() {
       {/* LEFT COLUMN (FIXED) */}
       <div className="w-80 h-full flex-shrink-0 flex flex-col justify-between p-8 z-20 relative">
         <div className="flex gap-4">
-          <Link to="/" className="font-normal text-sm whitespace-nowrap hoverable hover:text-[#00FF85] transition-colors">齐婕 Helen.Q</Link>
+          <Link to="/" className="font-normal text-sm whitespace-nowrap hoverable hover:text-[#00FF85] transition-colors">Helen.Q</Link>
           <p className="text-sm leading-tight">
             I plan, I create, I think.<br />
             Based in Beijing.<br />
