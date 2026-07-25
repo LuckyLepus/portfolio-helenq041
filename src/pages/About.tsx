@@ -4,16 +4,12 @@ import helenImg from '../assets/helen-q-avatar.jpg';
 
 const englishText = `An AI optimist.
 
-I started chasing AI in 2022.
-Ran fast for three years,
-until 2025, when I finally looked down at where I was standing.
-I stopped. I recalibrated.
+I followed the acceleration of AI,
+then stopped to recalibrate what creative work should become.
 
-2026 marks the starting point of a new narrative for my creativity.
-
-I’ve spent 15 years in PR, communications, and brand activations.
-I’m used to breaking down complex problems into executable actions—
-and packaging them neatly into decks for clients.
+My background spans PR, communications, and brand activations.
+I’m used to breaking complex problems into executable actions—
+and turning them into clear narratives.
 
 That background made me good at building “concepts,”
 and telling stories that resonate.
@@ -51,22 +47,20 @@ I’m no longer here to explain the world.
 From this point forward,
 I choose direction.
 
-For the past 15 years:
-Strategist, Creative Director, Thinker.
+What shaped me:
+Strategy, creative direction, and systems thinking.
 
 For what’s next:
 Independent Contributor, Coach, Decision-Maker.`;
 
 const chineseText = `一个AI乐观主义者。
 
-从2022年开始，做追赶AI的人，
-直到2025年看清自己的脚下，停下来，重新校准。
+我曾追赶 AI 的加速度，
+后来停下来，重新校准创造力应该走向哪里。
 
-2026，是我创造力新叙事的起点。
-
-我做了15年的公关传播与品牌活动策划，习惯把复杂的问题拆成可以执行的动作。
-并用PPT呈现给客户，
-曾经的行业经验让我擅长造“概念”，也擅长讲述一个足够动人的故事。
+我的经验覆盖公关传播与品牌活动策划，习惯把复杂问题拆成可执行动作，
+并将它们组织成清晰的叙事。
+行业经验让我擅长造“概念”，也擅长讲述一个足够动人的故事。
 
 但AI让我明白，仅有概念和故事是不够的。
 叙事必须带来更切实的变化。
@@ -86,8 +80,8 @@ AI不是工具升级，也不是效率优化。
 不再解释世界，
 从接下来的每一步，我选择方向。
 
-15年的：
-策划人，创意指导，思考者。
+塑造我的：
+策略、创意指导与系统思考。
 
 未来的：
 独立贡献者、教练和决策者。`;

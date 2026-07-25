@@ -144,7 +144,11 @@
                             <i data-lucide="image" class="w-8 h-8"></i>
                         </div>
                         <h2 class="text-xl font-medium tracking-wider mb-2 text-amber-200">投递一张风景照片</h2>
-                        <p class="text-xs text-slate-400 max-w-sm leading-relaxed mb-6">照片将变为窗外的无尽夜色，列车由此启动。温柔的乘务广播会与你深夜长谈，倾听你所有的故事。</p>
+                        <p class="text-xs text-slate-400 max-w-sm leading-relaxed mb-4">隐私安全模式下，照片只在当前标签页临时显示，不上传、不保存；关闭标签页即清除。语音和远程 AI 对话默认关闭。</p>
+                        <label class="mb-5 flex max-w-sm items-start gap-2 text-left text-[11px] leading-relaxed text-slate-300">
+                            <input id="privacy-consent" type="checkbox" class="mt-0.5 accent-amber-500">
+                            <span>我同意在当前标签页临时读取这张图片，并理解关闭页面后内容会被清除。</span>
+                        </label>
                         <button onclick="document.getElementById('input-file').click()" class="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-900 font-bold rounded-full shadow-lg shadow-amber-500/20 text-sm tracking-widest transition transform hover:scale-105 active:scale-95">
                             分享今晚的画面
                         </button>
@@ -312,7 +316,8 @@
         // ==========================================
         // 核心配置与 Gemini API 极简多轮交互
         // ==========================================
-        const apiKey = ""; // 运行时环境提供
+        const apiKey = ""; // 不得在前端注入生产密钥
+        const PRIVACY_SAFE_MODE = true;
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'railroad-treehole-app';
 
         // 状态存储（多轮对话核心）
@@ -350,8 +355,8 @@
             updateTime();
             setInterval(updateTime, 60000);
             
-            // 从本地 LocalStorage 读取以前存过的车票
             loadLocalDiaries();
+            window.addEventListener('beforeunload', clearEphemeralData);
         });
 
         function updateTime() {
@@ -362,22 +367,16 @@
 
         function loadLocalDiaries() {
             try {
-                const stored = localStorage.getItem(`diaries_${appId}`);
-                if (stored) {
-                    state.diaries = JSON.parse(stored);
-                    renderDiaries();
-                }
+                localStorage.removeItem(`diaries_${appId}`);
+                state.diaries = [];
+                renderDiaries();
             } catch (e) {
-                console.warn("未能成功读取本地日记缓存:", e);
+                console.warn("未能清理旧的本地日记缓存:", e);
             }
         }
 
         function saveLocalDiaries() {
-            try {
-                localStorage.setItem(`diaries_${appId}`, JSON.stringify(state.diaries));
-            } catch (e) {
-                console.warn("未能成功保存日记到本地:", e);
-            }
+            showNotification("隐私安全模式不保存图片、语音或对话。");
         }
 
         // ==========================================
@@ -506,6 +505,12 @@
         function handleImageUpload(e) {
             const file = e.target.files[0];
             if (!file) return;
+            const consent = document.getElementById('privacy-consent');
+            if (!consent?.checked) {
+                e.target.value = '';
+                showNotification("请先确认仅在当前标签页临时处理。");
+                return;
+            }
 
             state.uploadedImageFile = file;
 
@@ -717,6 +722,10 @@
 
             // 在聊天区挂接 AI 气泡
             const aiBubbleId = appendAiBubbleToFeed(text);
+            if (PRIVACY_SAFE_MODE) {
+                setTimeout(() => handlePostSpeechTransition(isFarewell), 250);
+                return;
+            }
 
             const payload = {
                 contents: [{ parts: [{ text: `Say gently: ${text}` }] }],
@@ -859,6 +868,11 @@
         }
 
         function setupSpeechRecognition() {
+            if (PRIVACY_SAFE_MODE) {
+                if (!state.isKeyboardMode) toggleKeyboardMode();
+                showNotification("隐私安全模式已关闭语音识别，请使用键盘输入。");
+                return;
+            }
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (SpeechRecognition) {
                 recognition = new SpeechRecognition();
@@ -905,6 +919,10 @@
         // 声音车票存档 & 往期浏览
         // ==========================================
         function saveDiaryToTicket() {
+            if (PRIVACY_SAFE_MODE) {
+                showNotification("隐私安全模式不保存车票；关闭标签页即清除。");
+                return;
+            }
             if (state.chatHistory.length < 2) return;
 
             const ticketId = 'TICKET-' + Math.floor(100000 + Math.random() * 900000);
@@ -1382,6 +1400,9 @@
         }
 
         async function fetchWithRetry(url, options, retries = 5, delay = 1000) {
+            if (PRIVACY_SAFE_MODE) {
+                throw new Error("Privacy safe mode blocks all remote AI requests.");
+            }
             try {
                 const response = await fetch(url, options);
                 if (!response.ok) throw new Error(`HTTP 异常错误: ${response.status}`);
@@ -1397,6 +1418,21 @@
 
         function getRandomElement(arr) {
             return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function clearEphemeralData() {
+            if (state.audioUrl) URL.revokeObjectURL(state.audioUrl);
+            state.uploadedImage = null;
+            state.uploadedImageFile = null;
+            state.chatHistory = [];
+            state.audioBlob = null;
+            state.audioUrl = null;
+            state.diaries = [];
+            try {
+                localStorage.removeItem(`diaries_${appId}`);
+            } catch (e) {
+                console.warn("未能清理临时数据:", e);
+            }
         }
 
         function showNotification(msg) {

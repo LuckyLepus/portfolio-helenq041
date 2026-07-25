@@ -16,9 +16,6 @@ export default function Navbar() {
           <Link to="/playground" className="hover:opacity-50 transition-opacity">Playground</Link>
           <Link to="/about" className="hover:opacity-50 transition-opacity">About</Link>
           <button onClick={() => setIsContactOpen(true)} className="hover:opacity-50 transition-opacity mt-4 cursor-none">EMAIL /</button>
-          <button onClick={() => setIsContactOpen(true)} className="hover:opacity-50 transition-opacity cursor-none">RED /</button>
-          <button onClick={() => setIsContactOpen(true)} className="hover:opacity-50 transition-opacity cursor-none">WECHAT /</button>
-          <button onClick={() => setIsContactOpen(true)} className="hover:opacity-50 transition-opacity cursor-none">PHONE /</button>
         </div>
       </nav>
       

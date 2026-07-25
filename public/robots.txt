@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /
+
+# Privacy-first GEO documents remain directly fetchable when their URLs are supplied.
+# HTTP X-Robots-Tag headers still instruct search engines not to index or archive them.

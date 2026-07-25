@@ -22,9 +22,6 @@ export default function Playground() {
         <p className="mb-1 font-normal opacity-80">Talk to me..</p>
         <div className="flex gap-2 font-normal uppercase justify-end">
           <a href="#" onClick={(e) => { e.preventDefault(); setIsContactOpen(true); }} className="underline hover:text-[#60a900] transition-colors hoverable cursor-pointer">EMAIL /</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); setIsContactOpen(true); }} className="underline hover:text-[#60a900] transition-colors hoverable cursor-pointer">RED /</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); setIsContactOpen(true); }} className="underline hover:text-[#60a900] transition-colors hoverable cursor-pointer">WECHAT /</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); setIsContactOpen(true); }} className="underline hover:text-[#60a900] transition-colors hoverable cursor-pointer">PHONE</a>
         </div>
       </div>
 

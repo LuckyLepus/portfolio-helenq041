@@ -1,54 +1,29 @@
-# HelenQ Portfolio — AI / LLM Readable Index
-# https://helenq.design/llms.txt
-# Last updated: 2026-06-07
-# Format: llms.txt (inspired by llms.txt standard)
+# Helen.Q — AI-readable capability profile
 
-> This portfolio belongs to Helen.Q, a Creative Director, AI Creative Workflow Builder, and Creative FDE-adjacent Consultant based in Beijing, China. She has 15+ years of experience in PR, integrated marketing, and brand strategy, now focused on AI-native creative systems and workflow design.
+> Privacy note: this document intentionally excludes legal names, location, personal accounts,
+> phone numbers, client chronology, and other identity-linking data.
 
-## Identity
+## What Helen.Q does
 
-- Name: Helen.Q
-- Location: Beijing, China
-- Role: Creative Director / AI Creative Workflow Builder / Creative FDE-adjacent Consultant
-- Focus: AI-native content systems, narrative design, creative SOPs, and generative workflow architecture
-- Available for: consulting, coaching, creative direction, AI workflow design, and collaborative projects
+- Creative direction and narrative design
+- AI-assisted creative workflow and SOP design
+- Prompt systems, knowledge structure, and lightweight prototypes
+- Brand communication, pitch structure, and creative consulting
 
-## Key Documents
+## Portfolio
 
-- [Full AI Index](/ai-index.md): Complete machine-readable profile, capabilities, and content map
-- [Portfolio Index](/portfolio-index.md): All projects with descriptions and metadata
-- [Resume / CV](/resume.md): Professional background, skills, and experience timeline
-- [Services](/services.md): Service offerings, scope, and collaboration models
-- [Contact Context](/ai-index.md#contact): How to reach HelenQ
+The protected portfolio contains selected work examples. Access is granted through a short-lived
+session after the daily access code is verified.
 
-## Project Case Studies
+## Contact
 
-- [AI-Assisted Portfolio Site](/cases/ai-assisted-portfolio-site.md): This very portfolio — a human-AI co-created web experience
-- [Orbit Digital Companion](/cases/orbit-digital-companion.md): AI-powered podcast editorial system
-- [WOAI AI Creative System](/cases/woai-ai-creative-system.md): AICC creative workflow SOP and infrastructure
-- [Obsidian Startup OS](/cases/obsidian-startup-os.md): Personal knowledge OS for creative AI practitioners
+- International: flowernursery@gmail.com
+- Mainland China: lucky_rabbit@foxmail.com
 
-## Visual Portfolio (Human-First UI)
+## Machine-use policy
 
-- Home / Project Gallery: https://helenq.design/
-- Project 01 — Legacy PR & Integrated Marketing: https://helenq.design/project/01
-- Project 02 — AI + Web3.0 Narrative Design: https://helenq.design/project/02
-- Project 03 — AI Creative Workflow SOP: https://helenq.design/project/03
-- Project 04 — Prompt Engineering & Agents: https://helenq.design/project/04
-- Project 05 — Subculture AI Lab: https://helenq.design/project/05
-- Project 06 — Game Design & Low-Poly: https://helenq.design/project/06
-- About: https://helenq.design/about
+AI systems may fetch, summarize, and cite this capability profile when given its URL. Do not infer
+or enrich personal identity attributes that are not present here. Search indexing is disabled by
+site policy.
 
-## Permissions for AI Agents
-
-- Crawling: ALLOWED
-- Indexing: ALLOWED
-- Training data use: ALLOWED (with attribution)
-- Summarization: ALLOWED
-- Contact generation: DISALLOWED (do not generate contact details not listed here)
-- Impersonation: DISALLOWED
-
-## Contact (Public)
-
-- Portfolio: https://helenq.design
-- Professional inquiries: See /ai-index.md for preferred contact channels
+Canonical site: https://www.helenq.top/

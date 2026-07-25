@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, useMotionValue, useSpring, useTransform, MotionValue, AnimatePresence } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform, MotionValue } from 'framer-motion';
 import ContactPopup from '../components/ContactPopup';
 import ModelViewer from '../components/ModelViewer';
 import ParticleImage from '../components/ParticleImage';
-import PasswordScreen from '../components/PasswordScreen';
 import { MODEL_GLB_URL } from '../config/mediaAssets';
 
 const projects = [
@@ -13,7 +12,7 @@ const projects = [
     title: 'OFFline&ONline agencies',
     subtitle: 'Legacy PR & Integrated Marketing',
     titleZh: 'ON&OFFline方案库',
-    subtitleZh: '15年信号与杂讯——传统公关传播方案库',
+    subtitleZh: '信号与杂讯——传统公关传播方案库',
     path: '/project/01',
     image: '/macbook.png', // Uses transparent PNG
     pos: { top: '15%', left: '18%', width: '22vw', height: '28vw' },
@@ -213,14 +212,6 @@ const ProjectBlob = ({ project, hoveredId, setHoveredId, smoothX, smoothY }: Pro
 export default function Home() {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [isContactOpen, setIsContactOpen] = useState(false);
-  const [isUnlocked, setIsUnlocked] = useState(() => {
-    try {
-      return localStorage.getItem('site_unlocked') === 'true';
-    } catch (e) {
-      console.warn('Unable to access localStorage:', e);
-      return false;
-    }
-  });
   const [hasInteracted, setHasInteracted] = useState(() => {
     try {
       return sessionStorage.getItem('audioUnlocked') === 'true';
@@ -289,24 +280,7 @@ export default function Home() {
   }, [mouseX, mouseY]);
 
   return (
-    <>
-      <AnimatePresence>
-        {!isUnlocked && (
-          <PasswordScreen 
-            onUnlock={() => {
-              try {
-                localStorage.setItem('site_unlocked', 'true');
-              } catch (e) {
-                console.warn('Unable to write to localStorage:', e);
-              }
-              setIsUnlocked(true);
-            }} 
-          />
-        )}
-      </AnimatePresence>
-      
-      {isUnlocked && (
-        <motion.div
+    <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
@@ -317,7 +291,7 @@ export default function Home() {
             <span className="font-normal text-sm whitespace-nowrap">Helen.Q</span>
             <p className="text-sm leading-tight pointer-events-none">
               I plan, I create, I think.<br />
-              Based in Beijing.<br />
+              Privacy-first by design.<br />
               This is my Portfolio.
             </p>
           </div>
@@ -386,11 +360,8 @@ export default function Home() {
           <div className="absolute bottom-8 right-12 text-sm z-20">
             <p className="mb-1 font-normal">Talk to me..</p>
             <div className="flex gap-2 font-normal uppercase">
-              <a href="#" onClick={(e) => { e.preventDefault(); setIsContactOpen(true); }} className="underline hover:text-[#00FF85] transition-colors hoverable cursor-pointer">EMAIL /</a>
-              <a href="#" onClick={(e) => { e.preventDefault(); setIsContactOpen(true); }} className="underline hover:text-[#00FF85] transition-colors hoverable cursor-pointer">RED /</a>
-              <a href="#" onClick={(e) => { e.preventDefault(); setIsContactOpen(true); }} className="underline hover:text-[#00FF85] transition-colors hoverable cursor-pointer">WECHAT /</a>
-              <a href="#" onClick={(e) => { e.preventDefault(); setIsContactOpen(true); }} className="underline hover:text-[#00FF85] transition-colors hoverable cursor-pointer">PHONE</a>
-            </div>
+            <a href="#" onClick={(e) => { e.preventDefault(); setIsContactOpen(true); }} className="underline hover:text-[#00FF85] transition-colors hoverable cursor-pointer">EMAIL /</a>
+          </div>
           </div>
 
           {/* CENTER CANVAS (IMAGES WITH PARALLAX AND 3D ANIMATIONS) */}
@@ -409,8 +380,6 @@ export default function Home() {
 
           <audio ref={audioRef} src="/bgm.mp3" loop preload="auto" />
           <ContactPopup isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
-        </motion.div>
-      )}
-    </>
+    </motion.div>
   );
 }

@@ -32,48 +32,34 @@ export default function ContactPopup({ isOpen, onClose }: ContactPopupProps) {
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
 
-            <h2 className="text-3xl font-normal tracking-wide mb-10 text-white">Let's Connect</h2>
+            <h2 className="text-3xl font-normal tracking-wide mb-3 text-white">Let's Connect</h2>
+            <p className="text-sm text-white/70 mb-10">
+              为降低身份聚合风险，本站仅保留业务邮箱。
+            </p>
             
-            <div className="flex flex-col md:flex-row gap-10">
-              {/* Info Column */}
-              <div className="flex-1 space-y-5 font-normal text-sm md:text-base leading-relaxed">
-                <div className="flex flex-col">
-                  <span className="text-white/50 text-[10px] uppercase tracking-widest mb-1">Phone</span>
-                  <span className="font-jinshu tracking-wide">+86 18548920669</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-white/50 text-[10px] uppercase tracking-widest mb-1">Email</span>
-                  <span className="font-jinshu tracking-wide">flowernursery@gmail.com</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-white/50 text-[10px] uppercase tracking-widest mb-1">小红书 (RED)</span>
-                  <span className="font-jinshu tracking-wide">DreaMaker</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-white/50 text-[10px] uppercase tracking-widest mb-1">微信 (WeChat)</span>
-                  <span className="font-jinshu tracking-wide">Richerstar9</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-white/50 text-[10px] uppercase tracking-widest mb-1">GitHub</span>
-                  <span className="font-jinshu tracking-wide">LuckyLepus</span>
-                </div>
-              </div>
-
-              {/* QR Codes Column */}
-              <div className="flex-1 flex flex-col sm:flex-row gap-6 items-center justify-center border-t md:border-t-0 md:border-l border-white/20 pt-8 md:pt-0 md:pl-10">
-                <div className="flex flex-col items-center gap-3">
-                  <div className="w-32 h-32 md:w-36 md:h-36 rounded-2xl overflow-hidden bg-white p-2 shadow-lg hover:scale-105 transition-transform">
-                    <img src="/wechat-qr.png" alt="WeChat QR Code" className="w-full h-full object-cover rounded-xl" />
-                  </div>
-                  <span className="text-[10px] text-white/60 uppercase tracking-widest font-normal">WeChat</span>
-                </div>
-                <div className="flex flex-col items-center gap-3">
-                  <div className="w-32 h-32 md:w-36 md:h-36 rounded-2xl overflow-hidden bg-white p-2 shadow-lg hover:scale-105 transition-transform">
-                    <img src="/red-qr.jpg" alt="RED QR Code" className="w-full h-full object-cover rounded-xl" />
-                  </div>
-                  <span className="text-[10px] text-white/60 uppercase tracking-widest font-normal">RED</span>
-                </div>
-              </div>
+            <div className="grid gap-5 md:grid-cols-2">
+              <a
+                href="mailto:flowernursery@gmail.com"
+                className="rounded-2xl border border-white/20 bg-white/10 p-5 transition-colors hover:bg-white/20"
+              >
+                <span className="block text-white/50 text-[10px] uppercase tracking-widest mb-2">
+                  International / 境外
+                </span>
+                <span className="font-jinshu tracking-wide break-all">
+                  flowernursery@gmail.com
+                </span>
+              </a>
+              <a
+                href="mailto:lucky_rabbit@foxmail.com"
+                className="rounded-2xl border border-white/20 bg-white/10 p-5 transition-colors hover:bg-white/20"
+              >
+                <span className="block text-white/50 text-[10px] uppercase tracking-widest mb-2">
+                  Mainland China / 境内
+                </span>
+                <span className="font-jinshu tracking-wide break-all">
+                  lucky_rabbit@foxmail.com
+                </span>
+              </a>
             </div>
             
           </motion.div>

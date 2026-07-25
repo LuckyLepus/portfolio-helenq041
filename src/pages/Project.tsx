@@ -621,9 +621,9 @@ const projectsData: Record<string, ProjectItem> = {
     title: 'OFFline&ONline agencies',
     subtitle: 'Legacy PR & Integrated Marketing',
     titleZh: '方法论与积淀',
-    subtitleZh: '15年 信号与杂讯——传统公关传播方案库',
-    description: '这里收录了我过去 15 年在传统公关传播、线上线下整合营销及大型品牌战役中的核心实践方案与创意积淀。\n\n从互联网巨头的高光时刻、科技巨擘的行业峰会，到潮流新锐的跨界狂欢，每一个案例都是我们在瞬息万变的市场杂讯中，为品牌捕捉并释放的独特信号。\n\n这是对方法论的不断淬炼，也是公关传播从‘传统’迈向‘数字化与智能化’演进轨迹的真实写照。',
-    location: 'Beijing & Greater China, 2020-2025',
+    subtitleZh: '信号与杂讯——传统公关传播方案库',
+    description: '这里收录了传统公关传播、线上线下整合营销及大型品牌战役中的核心实践方案与创意积淀。\n\n从互联网平台的高光时刻、科技行业峰会，到潮流新锐的跨界创意，每一个案例都是在瞬息万变的市场杂讯中，为品牌捕捉并释放的独特信号。\n\n这是对方法论的不断淬炼，也是公关传播从“传统”迈向“数字化与智能化”演进轨迹的真实写照。',
+    location: 'Selected protected work',
     tags: 'Integrated PR. Campaign Strategy. Event SOP. Media Relations. Event Curation.',
     images: [],
     timelineItems: casesTimeline
@@ -635,7 +635,7 @@ const projectsData: Record<string, ProjectItem> = {
     titleZh: '新技术与叙事',
     subtitleZh: '用新方法让“PPT”设计新叙事',
     description: '由 HelenQ 与 Gemini 共同打造的革命性 Web-Native 提案体验。彻底打破传统线性幻灯片的束缚，借助现代前端技术，融合丝滑的卷轴视差动画与实时可交互的 3D 模型，带来跨平台、沉浸式的交互叙事艺术场域。',
-    location: 'Co-created by HelenQ & Gemini, 2026',
+    location: 'Co-created by Helen.Q & AI',
     tags: 'Interactive Presentations. Web-Native Narratives. 3D WebGL.',
     images: [
       'https://images.unsplash.com/photo-1544396821-4dd40b938ad3?q=80&w=1200&auto=format&fit=crop',
@@ -649,7 +649,7 @@ const projectsData: Record<string, ProjectItem> = {
     titleZh: '效率骨架与坠机复盘',
     subtitleZh: 'AI创意全流程SOP与知识库失败复盘',
     description: '这里汇总了我在探索 AICC 工作流过程中的核心经验与实践成果，以及对价值200万AI知识库项目的完整失败复盘。\n\n从提炼 Prompt 工程策略、搭建底层框架的效率工具箱；到深入解构“完美的执行悖论”，探讨为什么用错误的方法解决错误的问题会导致系统崩溃。\n\n无论是可复制的自动化流程骨架，还是重构进化型组织大脑的深度审计，都在于帮助团队实现灵感的精准落地与系统迭代进化。',
-    location: 'Beijing, 2023-2026',
+    location: 'AI workflow study',
     tags: 'AI Workflow. SOP. Prompt Engineering. System Architecture. Autopsy.',
     images: []
   },
@@ -660,7 +660,7 @@ const projectsData: Record<string, ProjectItem> = {
     titleZh: '灵魂与代码',
     subtitleZh: '致敬《攻壳机动队》，把Prompt包装成具有生命力的“soul”',
     description: '一只潜伏在代码深处的赛博小蜘蛛。它不织寻常的蛛网，而是用字符编织精确的 Prompt 与系统指令。\n\n作为致敬《攻壳机动队》的数字生命体，它将冰冷的代码封装成具有自主意识的“灵魂（Soul）”，在无形的赛博空间中穿梭，为 AI Agent 注入执行复杂任务的能力。',
-    location: 'Cyber Space, 2024',
+    location: 'Cyber Space',
     tags: 'Prompt Engineering. AI Agents. Cyberpunk. Digital Life.',
     images: [
       'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?q=80&w=1200&auto=format&fit=crop',
@@ -674,7 +674,7 @@ const projectsData: Record<string, ProjectItem> = {
     titleZh: '实验与审美',
     subtitleZh: '我的AI驱动的泛兴趣实验室',
     description: 'ALYONA Алёна - 诞生于 AI 与复古蒸汽波美学融合的虚拟俄罗斯女歌手。本项目探索了合成人声、生成式视觉与次文化音乐运动的交汇点。通过她的首张 5 轨可交互唱片，带你体验霓虹闪烁的怀旧情结与数字时代特有的忧郁情绪。',
-    location: 'Cyberspace, 2026',
+    location: 'Cyberspace',
     tags: 'Virtual Singer. Vaporwave. AI Generation. 3D WebGL.',
     images: []
   },
@@ -685,7 +685,7 @@ const projectsData: Record<string, ProjectItem> = {
     titleZh: '交互与边界',
     subtitleZh: '无边界探索ING-游戏与低多边形艺术实验',
     description: '探索游戏、交互与三维空间的视觉诗歌。当低多边形艺术与交互代码交融，设计的边界开始消融，开启了数字感官体验的新维度。',
-    location: 'Beijing & Cyberspace, 2026',
+    location: 'Isolated interaction lab',
     tags: 'HCI Exploration. WebGL Experiential. Webcam Parallax. Low-Poly Aesthetics. Interactive Design.',
     images: [
       'https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=1200&auto=format&fit=crop',
@@ -735,7 +735,7 @@ export default function Project() {
           <Link to="/" className="font-normal text-sm whitespace-nowrap hoverable hover:text-[#00FF85] transition-colors">Helen.Q</Link>
           <p className="text-sm leading-tight">
             I plan, I create, I think.<br />
-            Based in Beijing.<br />
+            Privacy-first by design.<br />
             This is my Portfolio.
           </p>
         </div>
@@ -1035,9 +1035,6 @@ export default function Project() {
           <p className="mb-1 font-normal">Talk to me..</p>
           <div className="flex gap-2 font-normal uppercase justify-end">
             <a href="#" onClick={(e) => { e.preventDefault(); setIsContactOpen(true); }} className="underline hover:text-[#00FF85] transition-colors hoverable cursor-pointer">EMAIL /</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); setIsContactOpen(true); }} className="underline hover:text-[#00FF85] transition-colors hoverable cursor-pointer">RED /</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); setIsContactOpen(true); }} className="underline hover:text-[#00FF85] transition-colors hoverable cursor-pointer">WECHAT /</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); setIsContactOpen(true); }} className="underline hover:text-[#00FF85] transition-colors hoverable cursor-pointer">PHONE</a>
           </div>
         </div>
       </div>

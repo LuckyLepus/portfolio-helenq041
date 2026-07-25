@@ -133,7 +133,7 @@ WOAI's core contribution is a **template for AI workflow systemization** applica
 
 ## Keywords
 
-AI creative workflow, AICC, SOP design, prompt engineering, Midjourney, Stable Diffusion, ComfyUI, event industry, brand events, creative production pipeline, AI tool adoption, knowledge management, creative director, Beijing, China
+AI creative workflow, AICC, SOP design, prompt engineering, Midjourney, Stable Diffusion, ComfyUI, event industry, brand events, creative production pipeline, AI tool adoption, knowledge management, creative director
 
 ---
 
