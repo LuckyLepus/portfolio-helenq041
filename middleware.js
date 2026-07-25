@@ -17,11 +17,25 @@ const PRIVATE_HEADERS = {
 };
 
 const PUBLIC_HEADERS = {
+  'Content-Security-Policy': "frame-ancestors 'none'",
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
   'Referrer-Policy': 'no-referrer',
   'X-Content-Type-Options': 'nosniff',
   'X-Frame-Options': 'DENY',
   'X-Robots-Tag': 'noindex, nofollow, noarchive',
 };
+
+const SAME_ORIGIN_EMBED_HEADERS = {
+  ...PRIVATE_HEADERS,
+  'Content-Security-Policy': "frame-ancestors 'self'",
+  'X-Frame-Options': 'SAMEORIGIN',
+};
+
+export function getAuthorizedHeaders(pathname) {
+  return pathname.startsWith('/podcast/')
+    ? SAME_ORIGIN_EMBED_HEADERS
+    : PRIVATE_HEADERS;
+}
 
 const PUBLIC_PATHS = new Set([
   '/unlock.html',
@@ -52,7 +66,7 @@ export default function middleware(request) {
   const token = readCookie(request.headers.get('cookie'), SESSION_COOKIE);
 
   if (verifySessionToken(token, secret)) {
-    return next({ headers: PRIVATE_HEADERS });
+    return next({ headers: getAuthorizedHeaders(requestedUrl.pathname) });
   }
 
   const unlockUrl = new URL('/unlock.html', request.url);

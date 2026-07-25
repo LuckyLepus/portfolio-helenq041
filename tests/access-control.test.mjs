@@ -11,6 +11,7 @@ import {
   SESSION_COOKIE,
   verifySessionToken,
 } from '../api/_session.js';
+import { getAuthorizedHeaders } from '../middleware.js';
 
 const secret = 'test-secret-that-is-long-enough-and-never-used-in-production';
 
@@ -40,4 +41,18 @@ test('cookie parser reads only the exact session cookie', () => {
   const header = `theme=dark; ${SESSION_COOKIE}=${encodeURIComponent(token)}; other=1`;
   assert.equal(readCookie(header, SESSION_COOKIE), token);
   assert.equal(readCookie(header, 'missing'), undefined);
+});
+
+test('only podcast assets may be embedded by the same origin', () => {
+  const podcastHeaders = getAuthorizedHeaders('/podcast/index.html');
+  const portfolioHeaders = getAuthorizedHeaders('/project/06');
+
+  assert.equal(podcastHeaders['X-Frame-Options'], 'SAMEORIGIN');
+  assert.equal(podcastHeaders['Content-Security-Policy'], "frame-ancestors 'self'");
+  assert.equal(
+    podcastHeaders['Permissions-Policy'],
+    'camera=(), microphone=(), geolocation=()',
+  );
+  assert.equal(portfolioHeaders['X-Frame-Options'], 'DENY');
+  assert.equal(portfolioHeaders['Content-Security-Policy'], "frame-ancestors 'none'");
 });
