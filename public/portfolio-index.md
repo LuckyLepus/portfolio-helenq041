@@ -25,8 +25,9 @@ Small creative technology experiments, visual studies, and interaction prototype
 
 ## Meta Play & Maker
 
-Game-inspired interface studies and low-poly aesthetic experiments. Live experiments are isolated
-from the main portfolio and are not embedded on the primary origin.
+Privacy-reviewed interaction studies: a static online storybook and an on-device gesture-controlled
+Backrooms scene. The former Gemini conversation prototype is preserved only as a product note; its
+image, voice, dialogue, and storage features are not online.
 
 ## Contact
 

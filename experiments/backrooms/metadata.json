@@ -1,0 +1,6 @@
+{
+  "name": "Backrooms Parallax",
+  "description": "A local-only Backrooms interaction study using on-device face and hand landmarks for parallax.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": []
+}

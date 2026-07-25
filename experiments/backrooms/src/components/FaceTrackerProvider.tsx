@@ -1,5 +1,5 @@
 import { FaceLandmarker, HandLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
-import { useEffect, useRef, useState, createContext, useContext } from 'react';
+import { useCallback, useEffect, useRef, useState, createContext, useContext } from 'react';
 
 type FaceTrackingContextType = {
   headMovement: { x: number; y: number; z: number };
@@ -7,6 +7,7 @@ type FaceTrackingContextType = {
   isTracking: boolean;
   error: string | null;
   videoRef: React.RefObject<HTMLVideoElement | null>;
+  stopTracking: () => void;
 };
 
 const FaceTrackingContext = createContext<FaceTrackingContextType | null>(null);
@@ -27,6 +28,25 @@ export const FaceTrackingProvider = ({ children }: { children: React.ReactNode }
   const handLandmarkerRef = useRef<HandLandmarker | null>(null);
   const lastVideoTimeRef = useRef(-1);
   const animationFrameRef = useRef<number>(0);
+
+  const releaseResources = useCallback(() => {
+    const stream = videoRef.current?.srcObject as MediaStream | null;
+    stream?.getTracks().forEach(track => track.stop());
+    if (videoRef.current) videoRef.current.srcObject = null;
+    if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+    animationFrameRef.current = 0;
+    landmarkerRef.current?.close();
+    landmarkerRef.current = null;
+    handLandmarkerRef.current?.close();
+    handLandmarkerRef.current = null;
+  }, []);
+
+  const stopTracking = useCallback(() => {
+    releaseResources();
+    setIsTracking(false);
+    setHeadMovement({ x: 0, y: 0, z: 0 });
+    setHandPush(0);
+  }, [releaseResources]);
 
   useEffect(() => {
     let active = true;
@@ -86,15 +106,9 @@ export const FaceTrackingProvider = ({ children }: { children: React.ReactNode }
 
     return () => {
       active = false;
-      if (videoRef.current && videoRef.current.srcObject) {
-        const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
-        tracks.forEach(track => track.stop());
-      }
-      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
-      if (landmarkerRef.current) landmarkerRef.current.close();
-      if (handLandmarkerRef.current) handLandmarkerRef.current.close();
+      releaseResources();
     };
-  }, []);
+  }, [releaseResources]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -183,7 +197,7 @@ export const FaceTrackingProvider = ({ children }: { children: React.ReactNode }
   }, [isTracking]);
 
   return (
-    <FaceTrackingContext.Provider value={{ headMovement, handPush, isTracking, error, videoRef }}>
+    <FaceTrackingContext.Provider value={{ headMovement, handPush, isTracking, error, videoRef, stopTracking }}>
       {children}
     </FaceTrackingContext.Provider>
   );

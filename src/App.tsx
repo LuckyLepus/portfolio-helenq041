@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import Project from './pages/Project';
 import Playground from './pages/Playground';
 import About from './pages/About';
+import RailroadNote from './pages/RailroadNote';
 import Layout from './components/Layout';
 import { useProtection } from './hooks/useProtection';
 
@@ -22,6 +23,7 @@ export default function App() {
           <Route path="/project/:id" element={<Project />} />
           <Route path="/playground" element={<Playground />} />
           <Route path="/about" element={<About />} />
+          <Route path="/notes/railroad-treehole" element={<RailroadNote />} />
         </Routes>
       </Layout>
     </Router>

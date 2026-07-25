@@ -56,3 +56,23 @@ test('only podcast assets may be embedded by the same origin', () => {
   assert.equal(portfolioHeaders['X-Frame-Options'], 'DENY');
   assert.equal(portfolioHeaders['Content-Security-Policy'], "frame-ancestors 'none'");
 });
+
+test('camera permission is scoped to the authenticated Backrooms lab path', () => {
+  const cameraLabHeaders = getAuthorizedHeaders('/lab/backrooms/index.html');
+  const storybookHeaders = getAuthorizedHeaders('/lab/storybook/index.html');
+  const portfolioHeaders = getAuthorizedHeaders('/project/06');
+
+  assert.equal(
+    cameraLabHeaders['Permissions-Policy'],
+    'camera=(self), microphone=(), geolocation=()',
+  );
+  assert.equal(
+    storybookHeaders['Permissions-Policy'],
+    'camera=(), microphone=(), geolocation=()',
+  );
+  assert.equal(
+    portfolioHeaders['Permissions-Policy'],
+    'camera=(), microphone=(), geolocation=()',
+  );
+  assert.equal(cameraLabHeaders['X-Frame-Options'], 'DENY');
+});

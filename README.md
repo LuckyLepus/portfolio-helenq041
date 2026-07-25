@@ -16,10 +16,17 @@ Routing Middleware 会在缓存和静态文件之前检查会话，因此页面�
 公开例外仅包括开屏页、两只业务邮箱、`robots.txt` 和去身份化的 GEO 文档。
 个人电话、社交账号和个人二维码不得放入仓库或部署产物。
 
-## 隔离实验
+## Meta Lab
 
-`public/project06` 仍作为本地迁移源保留，但生产构建结束后会从 `dist` 删除。Railroad 等涉及
-图片、语音或对话的实验必须在独立域名上完成明确同意、默认不保存、到期和删除机制后再部署。
+Meta 页面只保留两个低数据风险实验：
+
+- 在线绘本：纯静态 HTML、图片与浏览器端音频。
+- Backrooms 手势控制：点击明确同意后才开启摄像头，视频帧仅在当前标签页本地处理；不上传、
+  不保存，停止按钮或切换标签页会释放摄像头。
+
+Backrooms 源码位于 `experiments/backrooms`，生产产物输出到 `public/lab/backrooms`。
+原 Gemini Railroad 对话树洞已下线，改写为不连接模型、不收集访问者数据的静态设计笔记。
+构建脚本仍会删除任何遗留的 `dist/project06` 内容。
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 

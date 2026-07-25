@@ -31,7 +31,15 @@ const SAME_ORIGIN_EMBED_HEADERS = {
   'X-Frame-Options': 'SAMEORIGIN',
 };
 
+const CAMERA_LAB_HEADERS = {
+  ...PRIVATE_HEADERS,
+  'Permissions-Policy': 'camera=(self), microphone=(), geolocation=()',
+};
+
 export function getAuthorizedHeaders(pathname) {
+  if (pathname.startsWith('/lab/backrooms/')) {
+    return CAMERA_LAB_HEADERS;
+  }
   return pathname.startsWith('/podcast/')
     ? SAME_ORIGIN_EMBED_HEADERS
     : PRIVATE_HEADERS;

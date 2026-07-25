@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Backrooms is generated from experiments/backrooms during the production build.
+public/lab/backrooms/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

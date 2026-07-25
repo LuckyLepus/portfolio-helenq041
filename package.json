@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node scripts/remove-private-experiments.mjs",
+    "build": "npm run lab:build && vite build && node scripts/remove-private-experiments.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "code:today": "node --env-file-if-exists=.env.local scripts/daily-access-code.mjs",
+    "lab:build": "npm ci --prefix experiments/backrooms && npm run build --prefix experiments/backrooms",
     "secret:init": "node scripts/init-access-secret.mjs",
     "test:security": "node --test tests/access-control.test.mjs"
   },
