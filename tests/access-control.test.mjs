@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import {
   createDailyAccessCode,
@@ -75,4 +76,19 @@ test('camera permission is scoped to the authenticated Backrooms lab path', () =
     'camera=(), microphone=(), geolocation=()',
   );
   assert.equal(cameraLabHeaders['X-Frame-Options'], 'DENY');
+});
+
+test('public unlock preview is synthetic and contains no private contact or portfolio assets', async () => {
+  const unlockHtml = await readFile(new URL('../public/unlock.html', import.meta.url), 'utf8');
+
+  assert.doesNotMatch(
+    unlockHtml,
+    /mailto:|flowernursery@gmail\.com|lucky_rabbit@foxmail\.com/i,
+  );
+  assert.doesNotMatch(
+    unlockHtml,
+    /<(?:img|video|audio|iframe|source)\b|\/cases\/|\/project(?:2|06)\b/i,
+  );
+  assert.doesNotMatch(unlockHtml, /(?:src|href)=["']https?:\/\//i);
+  assert.match(unlockHtml, /class="preview" aria-hidden="true"/);
 });
