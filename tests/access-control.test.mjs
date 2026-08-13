@@ -91,6 +91,8 @@ test('public unlock preview is synthetic and contains no private contact or port
   );
   assert.doesNotMatch(unlockHtml, /(?:src|href)=["']https?:\/\//i);
   assert.match(unlockHtml, /class="preview" aria-hidden="true"/);
+  assert.match(unlockHtml, /--brand-violet: #4a3aff;/);
+  assert.match(unlockHtml, /--accent: #00ff85;/);
   assert.match(unlockHtml, /location\.protocol === 'file:'/);
   assert.match(unlockHtml, /http:\/\/localhost:5173\/unlock\.html/);
 });
